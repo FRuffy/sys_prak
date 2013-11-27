@@ -34,7 +34,9 @@ return EXIT_SUCCESS;
 /**
  * Schreibt eine Fehlermeldung mit Timestamp in die Datei log.txt
  * Um Zeilenzahl genau zu halten, bitte neben Syscalls aufrufen.
+ * 
  * @param Filepointer zur log Datei
+ * @param String im Format: "Dateipfad:Zeilennummer".
  * @return Gibt 0 zurueck.
  */
 int writelog(FILE *filename,const char *location){
