@@ -16,12 +16,17 @@
 #define PORTNUMMER 1357
 #define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define AT __FILE__ ":" TOSTRING(__LINE__)
+
 char *ID; //Die modifizierte GameID die wir mit der performConnection Funktion teilen werden
 char * playerNum; // Die gewuenschte Spielernummer die wir optional angeben koennen
 config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
 
 int main (int argc, char** argv )
 {
+    FILE *logdatei=fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
     char *gameID;
     ID = malloc(sizeof(char)*30);
@@ -39,8 +44,8 @@ int main (int argc, char** argv )
 	pid = fork();
 
 	//Ab hier Aufspaltung in 2 Prozesse
-	if ((pid) < 0) {
-	    fprintf(stderr, "Fehler bei fork(): %s\n", strerror(errno));
+	if ((pid) < 0) { 
+	    fprintf(stderr, "Fehler bei fork(): %s\n", strerror(errno)); writelog(logdatei,AT);
 	}
 	else if (pid == 0) {
 		//Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren)
@@ -78,7 +83,7 @@ int main (int argc, char** argv )
 	    }
 
 	    // Initialisiert den fuer die Verbindung benoetigten Socket //
-	    int sock = socket(AF_INET, SOCK_STREAM, 0);
+	    int sock = socket(AF_INET, SOCK_STREAM, 0); writelog(logdatei,AT);
 	    struct sockaddr_in host;
 	    struct hostent* ip;
 	    ip = (gethostbyname(conf->hostname)); //uebersetze HOSTNAME in IP Adresse
@@ -88,11 +93,11 @@ int main (int argc, char** argv )
 
 	    if (connect(sock,(struct sockaddr*)&host, sizeof(host)) == 0) //Verbinde mit Server
 	    {
-	        printf("\nVerbindung mit %s hergestellt!\n",conf->hostname);
+	        printf("\nVerbindung mit %s hergestellt!\n",conf->hostname); writelog(logdatei,AT);
 	    }
 	    else
 	    {
-	        perror("\n Fehler beim Verbindungsaufbau");
+	        perror("\n Fehler beim Verbindungsaufbau"); writelog(logdatei,AT);
 	        return EXIT_FAILURE;
 	    }
 	    performConnection(sock);//Fuehre Prolog Protokoll aus
