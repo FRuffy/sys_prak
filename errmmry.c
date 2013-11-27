@@ -16,7 +16,7 @@ int varcount=0; // Anzahl der zugewiesenen Speicherbereiche
 int addfree(int* adr){
 varadresses[varcount]=adr;
 varcount++;
-return EXIT_SUCCESS;	
+return EXIT_SUCCESS;        
 }
 /**
  * Befreit alle in das Array bisher aufgenommenen Speicherbereiche.
@@ -26,29 +26,24 @@ return EXIT_SUCCESS;
 int freeall(){
 int i;
 for(i=0;i<=varcount;i++){
-	free(varadresses[i]);
+        free(varadresses[i]);
 }
 printf("Es wurden %d Variablen befreit \n",varcount);
 return EXIT_SUCCESS;
 }
 /**
  * Schreibt eine Fehlermeldung mit Timestamp in die Datei log.txt
- *
+ * Um Zeilenzahl genau zu halten, bitte neben Syscalls aufrufen.
+ * @param Filepointer zur log Datei
  * @return Gibt 0 zurueck.
  */
-int writelog(){
-FILE *logfile;
+int writelog(FILE *filename,const char *location){
 time_t result = time(NULL);
 char *t = ctime(&result);
 t[strlen(t)-1] = 0;
-if ((logfile = fopen("log.txt","a"))==0){
-  logfile = fopen("log.txt","w");
-}
-  char *errorstring=strdup(strerror(errno));
-  fprintf(logfile,"%s --> ",t);
-  fputs(errorstring,logfile);
-  fprintf(logfile,"\n");
-  close(logfile);
-  free(errorstring);
-  return EXIT_SUCCESS;
+if (errno!=0) printf("Ein Fehler wurde in der Logdatei dokumentiert. \n");
+fprintf(filename,"%s --> ",t);
+fputs(strerror(errno),filename);
+fprintf(filename," at %s \n",location);
+return EXIT_SUCCESS;
 }
