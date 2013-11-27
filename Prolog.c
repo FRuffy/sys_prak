@@ -28,8 +28,6 @@ int main (int argc, char** argv )
     playerNum = malloc(sizeof(char)*10);
     gameID = malloc(sizeof(char)*20);
     strcpy(ID,"ID "); // Vorbereitung der GameID fuer performConnection
-	pid_t pid = 0;
-	pid = fork();
 	int shmID;  // ID des SHM
 	char *sharedmem; // Pointer auf SHM Speicherbereich
 	int shmSize = 100*sizeof(char); //Zu Testzwecken auf 100 gesetzt - muss spaeter abhaengig von Spielfeldgroesse sein
@@ -37,6 +35,8 @@ int main (int argc, char** argv )
 	// sharedMem Hilfe: http://www.nt.fh-koeln.de/vogt/bs/animationen/SharedMemAnimation.pdf
 	shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT);
 	sharedmem = shmat(shmID, 0, 0); //SHM einhaengen
+	pid_t pid = 0;
+	pid = fork();
 
 	//Ab hier Aufspaltung in 2 Prozesse
 	if ((pid) < 0) {
