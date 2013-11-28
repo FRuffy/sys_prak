@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -Werror
 LDFLAGS=
 SOURCES=Prolog.c performConnection.c config.c errmmry.c sharedVariables.h
 OBJECTS=$(SOURCES:.c=.o)
