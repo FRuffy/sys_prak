@@ -20,5 +20,6 @@ extern int openConfig(char* name);
 extern int performConnection(int socket);
 extern char *ID;
 extern char* playerNum;
+extern struct sharedmem *shm;
 
 #endif
