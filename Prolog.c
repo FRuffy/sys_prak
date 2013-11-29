@@ -12,6 +12,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include "sharedVariables.h"
+#include "errmmry.h"
 
 #define PORTNUMMER 1357
 #define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
@@ -29,29 +30,40 @@ int main (int argc, char** argv )
     FILE *logdatei=fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
     char *gameID;
-    ID = malloc(sizeof(char)*30);
+    ID = malloc(sizeof(char)*14);
     playerNum = malloc(sizeof(char)*10);
-    gameID = malloc(sizeof(char)*20);
+    gameID = malloc(sizeof(char)*11);
     strcpy(ID,"ID "); // Vorbereitung der GameID fuer performConnection
 	int shmID;  // ID des SHM
-	char *sharedmem; // Pointer auf SHM Speicherbereich
-	int shmSize = 100*sizeof(char); //Zu Testzwecken auf 100 gesetzt - muss spaeter abhaengig von Spielfeldgroesse sein
-
+	struct sharedmem {
+		pid_t pidDad;
+		pid_t pidKid;
+		char gameID2[14]; //Name des Spiels
+		int playerNumber; //Eigene Spielernummer
+		int playerCount; //Anzahl Spieler
+	} ;
+	int shmSize = sizeof(struct sharedmem);
 	// sharedMem Hilfe: http://www.nt.fh-koeln.de/vogt/bs/animationen/SharedMemAnimation.pdf
-	shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT);
-	sharedmem = shmat(shmID, 0, 0); //SHM einhaengen
+	shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | IPC_EXCL | 0775);
+	if (shmID < 1) {
+		printf("Error: No SHM");
+		return 0;
+	}
+
+	struct sharedmem *shm = shmat(shmID, 0, 0); //SHM einhaengen ;
+
+	if (shm == (void *) -1) { //Im Fehlerfall pointed shm auf -1
+		fprintf(stderr, "Fehler, shm: %s\n", strerror(errno)); writelog(logdatei,AT);
+	}
 	pid_t pid = 0;
 	pid = fork();
 
 	//Ab hier Aufspaltung in 2 Prozesse
-	if ((pid) < 0) { 
+	if ((pid) < 0) {
 	    fprintf(stderr, "Fehler bei fork(): %s\n", strerror(errno)); writelog(logdatei,AT);
 	}
 	else if (pid == 0) {
 		//Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren)
-		printf("Kind(wird zum Connector): \n%d %d \n\n", getpid(), pid);
-
-	    // char* buffer = (char*) malloc(sizeof(char)*BUFFR); //Buffer fuer den Stream
 
 	    //ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
 	    if ( argc == 1 || (strlen (argv[1])) != 11)
@@ -80,6 +92,14 @@ int main (int argc, char** argv )
 	        strcpy(gameID,argv[1]);
 	        printf("Deine Game ID: %s\n",gameID);
 	        strcat(ID,gameID);
+
+	    	strcpy(shm->gameID2,"ID "); // Vorbereitung der GameID fuer performConnection
+	    	strcat(shm->gameID2,argv[1]);
+	    	shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
+			shm->pidKid = getppid();
+
+			printf("\n\n %s \n\n", shm->gameID2);
+			printf("\n\n %s \n\n", ID); //Hier mache ich morgen weiter - als sollte die Variable gameID ueberfluessig werden und durch shm->gameID bzw im moment heisst sie noch gameID2 ersetzt werden
 	    }
 
 	    // Initialisiert den fuer die Verbindung benoetigten Socket //
