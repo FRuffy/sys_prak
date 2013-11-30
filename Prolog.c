@@ -21,27 +21,13 @@
 #define TOSTRING(x) STRINGIFY(x)
 #define AT __FILE__ ":" TOSTRING(__LINE__)
 
-char *ID; //Die modifizierte GameID die wir mit der performConnection Funktion teilen werden
-char * playerNum; // Die gewuenschte Spielernummer die wir optional angeben koennen
-config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
-
 int main (int argc, char** argv )
 {
     FILE *logdatei=fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
-    char *gameID;
-    ID = malloc(sizeof(char)*14);
     playerNum = malloc(sizeof(char)*10);
-    gameID = malloc(sizeof(char)*11);
-    strcpy(ID,"ID "); // Vorbereitung der GameID fuer performConnection
 	int shmID;  // ID des SHM
-	struct sharedmem {
-		pid_t pidDad;
-		pid_t pidKid;
-		char gameID2[14]; //Name des Spiels
-		int playerNumber; //Eigene Spielernummer
-		int playerCount; //Anzahl Spieler
-	} ;
+
 	int shmSize = sizeof(struct sharedmem);
 	// sharedMem Hilfe: http://www.nt.fh-koeln.de/vogt/bs/animationen/SharedMemAnimation.pdf
 	shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | IPC_EXCL | 0775);
@@ -50,7 +36,7 @@ int main (int argc, char** argv )
 		return 0;
 	}
 
-	struct sharedmem *shm = shmat(shmID, 0, 0); //SHM einhaengen ;
+	shm = shmat(shmID, 0, 0); //SHM einhaengen ;
 
 	if (shm == (void *) -1) { //Im Fehlerfall pointed shm auf -1
 		fprintf(stderr, "Fehler, shm: %s\n", strerror(errno)); writelog(logdatei,AT);
@@ -89,17 +75,12 @@ int main (int argc, char** argv )
 	                return EXIT_FAILURE;
 	            }
 	        }
-	        strcpy(gameID,argv[1]);
-	        printf("Deine Game ID: %s\n",gameID);
-	        strcat(ID,gameID);
+	        printf("Deine Game ID: %s\n",shm->gameID);
 
-	    	strcpy(shm->gameID2,"ID "); // Vorbereitung der GameID fuer performConnection
-	    	strcat(shm->gameID2,argv[1]);
+	    	//strcpy(shm->gameID,"ID "); // Vorbereitung der GameID fuer performConnection
+	    	strcat(shm->gameID,argv[1]);
 	    	shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
 			shm->pidKid = getppid();
-
-			printf("\n\n %s \n\n", shm->gameID2);
-			printf("\n\n %s \n\n", ID); //Hier mache ich morgen weiter - als sollte die Variable gameID ueberfluessig werden und durch shm->gameID bzw im moment heisst sie noch gameID2 ersetzt werden
 	    }
 
 	    // Initialisiert den fuer die Verbindung benoetigten Socket //
@@ -129,8 +110,8 @@ int main (int argc, char** argv )
 
 		waitpid(pid, NULL, 0); //Wartet auf sein Kind und beendet sich nach diesem
 		free(playerNum);
-	    free(gameID);
-	    free(ID);
+	    //free(gameID);
+	    //free(ID);
 	    free(conf);
 	}
 
