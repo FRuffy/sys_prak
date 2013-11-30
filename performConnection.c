@@ -58,7 +58,6 @@ int sendReplyFormatted(int sock, char* reply)
 int performConnection(int sock)
 {
 
-    // gameID = malloc(sizeof(char)*20);
     char* buffer =  malloc(sizeof(char)*BUFFR); //Initialisiere den Buffer für die Kommunikation
     //strcpy(gameID,"ID  fm1y4PiVKfU");
     //strcpy(gameID,"ID  528902d1b0074");
@@ -104,6 +103,12 @@ int performConnection(int sock)
     {
         printf("\nDie Client-Version wurde akzeptiert, uebertrage Spiel-ID...\n");
     }
+
+    // Durch Umbau der sendReplyFormatted, sodass sie Values und keine References entgegen nimmt koennte man sich einiges sparen
+    char *ID=NULL; //Die modifizierte GameID die wir mit der performConnection Funktion teilen werden
+    ID = malloc(sizeof(char)*13);
+    strcpy(ID,"ID ");
+    strcat(ID, shm->gameID);
 
     err = sendReplyFormatted(sock, ID); //Schicke Spiel-ID an Server
     err = recv(sock, buffer, BUFFR-1, 0);
