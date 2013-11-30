@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-c -Wall -Werror
 LDFLAGS=
-SOURCES=Prolog.c performConnection.c config.c errmmry.c sharedVariables.h
+SOURCES=Prolog.c performConnection.c initConnection.c config.c errmmry.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=client
 
