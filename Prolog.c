@@ -3,117 +3,79 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-#include <sys/ipc.h>
 #include <sys/shm.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include "sharedVariables.h"
 #include "errmmry.h"
-
-#define PORTNUMMER 1357
-#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define AT __FILE__ ":" TOSTRING(__LINE__)
 
+FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeichnet und den Ort angibt
+
+
 int main (int argc, char** argv )
 {
-    FILE *logdatei=fopen("log.txt","w+");
+    logdatei =fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
-    playerNum = malloc(sizeof(char)*10);
-	int shmID;  // ID des SHM
 
-	int shmSize = sizeof(struct sharedmem);
-	// sharedMem Hilfe: http://www.nt.fh-koeln.de/vogt/bs/animationen/SharedMemAnimation.pdf
-	shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | IPC_EXCL | 0775);
-	if (shmID < 1) {
-		printf("Error: No SHM");
-		return 0;
-	}
+    /* Initialisierung der Shared Memory */
+    int shmID;
+    int shmSize = sizeof(struct sharedmem);
+    // sharedMem Hilfe: http://www.nt.fh-koeln.de/vogt/bs/animationen/SharedMemAnimation.pdf
 
-	shm = shmat(shmID, 0, 0); //SHM einhaengen ;
+    shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | IPC_EXCL | 0775);
 
-	if (shm == (void *) -1) { //Im Fehlerfall pointed shm auf -1
-		fprintf(stderr, "Fehler, shm: %s\n", strerror(errno)); writelog(logdatei,AT);
-	}
-	pid_t pid = 0;
-	pid = fork();
+    if (shmID < 1)
+    {
+        printf("Error: No SHM");
+        free(conf);
+        fclose(logdatei);
+        return EXIT_FAILURE;
+    }
 
-	//Ab hier Aufspaltung in 2 Prozesse
-	if ((pid) < 0) {
-	    fprintf(stderr, "Fehler bei fork(): %s\n", strerror(errno)); writelog(logdatei,AT);
-	}
-	else if (pid == 0) {
-		//Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren)
+    shm = shmat(shmID, 0, 0); //SHM einhaengen ;
 
-	    //ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
-	    if ( argc == 1 || (strlen (argv[1])) != 11)
-	    {
-	        printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
-	        return EXIT_FAILURE;
-	    }
-	    else
-	    {
-	        strcpy(playerNum, "PLAYER "); //Vorbereitung der Spielernummer fuer performConnection
+    if (shm == (void *) -1)   //Im Fehlerfall pointed shm auf -1
+    {
+        fprintf(stderr, "Fehler, shm: %s\n", strerror(errno));
+        writelog(logdatei,AT);
+    }
+    pid_t pid = 0;
+    pid = fork();
 
-	        if (argc == 3)
-	        {
-	            if (openConfig(argv[2])!= 0) //Falls Custom-config angegeben wurde
-	            {
-	                return EXIT_FAILURE;
-	            }
-	        }
-	        else
-	        {
-	            if (openConfig("client.conf") != 0) //Sonst Standard-config
-	            {
-	                return EXIT_FAILURE;
-	            }
-	        }
-	        printf("Deine Game ID: %s\n",shm->gameID);
+    /* Ab hier wird in 2 Prozesse, dem Think und dem Connector, aufgespalten */
 
-	    	//strcpy(shm->gameID,"ID "); // Vorbereitung der GameID fuer performConnection
-	    	strcat(shm->gameID,argv[1]);
-	    	shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
-			shm->pidKid = getppid();
-	    }
+    if ((pid) < 0)
+    {
+        fprintf(stderr, "Fehler bei fork(): %s\n", strerror(errno));
+        writelog(logdatei,AT);
 
-	    // Initialisiert den fuer die Verbindung benoetigten Socket //
-	    int sock = socket(AF_INET, SOCK_STREAM, 0); writelog(logdatei,AT);
-	    struct sockaddr_in host;
-	    struct hostent* ip;
-	    ip = (gethostbyname(conf->hostname)); //uebersetze HOSTNAME in IP Adresse
-	    memcpy(&(host.sin_addr),ip ->h_addr,ip ->h_length);
-	    host.sin_family = AF_INET;
-	    host.sin_port = htons(conf->portnumber);
+        shmctl(shmID,IPC_RMID, NULL);
+        fclose(logdatei);
+        free(conf);
+        return EXIT_FAILURE;
+    }
+    else if (pid == 0)
+    {
+        //Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren)
+        initConnection(argc, argv);
 
-	    if (connect(sock,(struct sockaddr*)&host, sizeof(host)) == 0) //Verbinde mit Server
-	    {
-	        printf("\nVerbindung mit %s hergestellt!\n",conf->hostname); writelog(logdatei,AT);
-	    }
-	    else
-	    {
-	        perror("\n Fehler beim Verbindungsaufbau"); writelog(logdatei,AT);
-	        return EXIT_FAILURE;
-	    }
-	    performConnection(sock);//Fuehre Prolog Protokoll aus
-	}
-	else {
-		//Elternprozess - soll laut Spezifikation den Thinker implementieren
+    }
+    else
+    {
+        //Elternprozess - soll laut Spezifikation den Thinker implementieren
 
         //Hier kommt spaeter der Thinker hin
 
-		waitpid(pid, NULL, 0); //Wartet auf sein Kind und beendet sich nach diesem
-		free(playerNum);
-	    //free(gameID);
-	    //free(ID);
-	    free(conf);
-	}
+        waitpid(pid, NULL, 0); //Wartet auf sein Kind und beendet sich nach diesem
 
-		return EXIT_SUCCESS;
+    }
+
+    shmctl(shmID,IPC_RMID, NULL);
+    fclose(logdatei);
+    free(conf);
+    return EXIT_SUCCESS;
 }
