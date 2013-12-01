@@ -53,7 +53,7 @@ char* antistrcat(char* dest, char* src)
 
 int performConnection(int sock)
 {
-    int readInt, readInt2, size; // readInt um Intwerte des Buffers zu scannen, size zur Fehlerbehandlung für recv
+    int readInt, enemyReady, size; // readInt um Intwerte des Buffers zu scannen, size zur Fehlerbehandlung für recv
     char* reader;
     char* temp;
     reader = malloc(sizeof(char)*20);
@@ -152,25 +152,25 @@ int performConnection(int sock)
     }
     else
     {
-        sscanf(buffer, "%*s %*s %d %s",&readInt, reader);
-        printf("\nDu spielst mit dem Namen %s, deine Nummer ist %d\n", reader,readInt);
+        sscanf(buffer, "%*s %*s %d %s",&shm->playerNumber, reader);
+        printf("\nDu spielst mit dem Namen %s, deine Nummer ist %d\n", reader,shm->playerNumber);
     }
     /* Teil 3.2: Hier wird der Übergang in die Spielverlaufsphase eingeleitet.
        Der Server sendet uns die Namen unseres Gegenspielers und des Spielernummer, wobei überprüft wird ob ein Spieler bereits verbunden ist.
     */
     size = recv(sock, buffer, BUFFR-1, 0);
     if (size > 0) buffer[size]='\0';
-    sscanf(buffer, "%*s %*s %i", &readInt2);
-    printf("\nEs spielen %i Spieler.", readInt2);
-    sscanf(buffer, "%*[^\n]%*s %d %s %i", &readInt,reader,&readInt2);
+    sscanf(buffer, "%*s %*s %i", &(shm->playerCount));
+    printf("\nEs spielen %i Spieler.", shm->playerCount);
+    sscanf(buffer, "%*[^\n]%*s %d %s %i", &readInt, reader, &enemyReady);
 
-    if (readInt2 == 0)
+    if (enemyReady == 0)
     {
-        printf("\nSpieler %s mit der Nummer %d ist noch nicht bereit.\n",reader,readInt );
+        printf("\nSpieler %s mit der Nummer %d ist noch nicht bereit.\n",reader,readInt);
     }
     else
     {
-        printf("\nSpieler %s mit der Nummer %d ist bereit!\n",reader,readInt );
+        printf("\nSpieler %s mit der Nummer %d ist bereit!\n",reader,readInt);
     }
 
 
