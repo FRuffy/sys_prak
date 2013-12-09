@@ -131,7 +131,7 @@ int recvServerInfo(char* buffer)
 
     //Verarbeite: "+ FIELD 4,4" (Spielfeldgroesse)
     sscanf(buffer2, "%*s %*s %d%*[,]%d", &(shm->fieldX), &(shm->fieldY));
-    printf("Unser momentanes Spielfeld. Größe: %d x %d\n",shm->fieldX, shm->fieldY);
+    printf("Unser momentanes Spielfeld. Groesse: %d x %d\n",shm->fieldX, shm->fieldY);
 
     //Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren und einhaengen (2x Groesse von fieldX wegen 4 Merkmalen pro Stein!)
     pfID = shmget(IPC_PRIVATE, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)), IPC_CREAT | IPC_EXCL | 0775);
