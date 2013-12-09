@@ -6,11 +6,10 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include "sharedVariables.h"
+#include "auxiliaryFunctions.h"
 #include "errmmry.h"
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define AT __FILE__ ":" TOSTRING(__LINE__)
+
 
 
 
@@ -71,6 +70,8 @@ int initConnection(int argc, char ** argv)
         return EXIT_FAILURE;
     }
     performConnection(sock);//Fuehre Prolog Protokoll aus
+
+
     close(sock);
 
     return EXIT_SUCCESS;
