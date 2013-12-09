@@ -8,10 +8,10 @@
 #include <sys/shm.h>
 #include "sharedVariables.h"
 #include "errmmry.h"
+#include "auxiliaryFunctions.h"
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define AT __FILE__ ":" TOSTRING(__LINE__)
+
+
 
 FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeichnet und den Ort angibt
 
