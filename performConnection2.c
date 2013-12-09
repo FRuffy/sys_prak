@@ -80,7 +80,7 @@ int recvServerInfo(char* buffer)
     char* bufrptr;
     buffer2 = malloc(sizeof(char)*512);
     bufrptr = buffer2;
-    int i = 0;
+    int i = 1;
 
     /* sscanf(buffer,"%*s %*s %d %*s %d %s %i %*[^\n] %*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d"
             ,&(shm->playerCount),&shm->player[i].playerNumber, &shm->player[i].playerName, &shm->player[i].playerReady, &(shm->thinkTime), &(shm->nextStone)
