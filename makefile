@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-c -Wall -Werror
 LDFLAGS=
-SOURCES=Prolog.c performConnection.c initConnection.c config.c errmmry.c
+SOURCES=Main.c performConnection.c initConnection.c config.c errmmry.c auxiliaryFunctions.c Playtime.c Serverinfo.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=client
 
