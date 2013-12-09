@@ -18,7 +18,7 @@ int initConnection(int argc, char ** argv)
 {
 
     //überpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
-    if ( argc == 1 || (strlen (argv[1])) != 11)
+    if ( argc == 1 || (strlen (argv[1])) > 18)
     {
         printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
         return EXIT_FAILURE;
@@ -42,10 +42,12 @@ int initConnection(int argc, char ** argv)
         }
 
 
-        strcat(shm->gameID,argv[1]);
+        strcpy(shm->gameID,argv[1]);
 
         shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
-        shm->pidKid = getppid();
+        shm->pidKid = getpid();
+
+
     }
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -69,7 +71,7 @@ int initConnection(int argc, char ** argv)
         return EXIT_FAILURE;
     }
     performConnection(sock);//Fuehre Prolog Protokoll aus
-
+    close(sock);
 
     return EXIT_SUCCESS;
 }
