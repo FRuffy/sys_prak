@@ -26,7 +26,7 @@ void sendReplyFormatted(int sock, char* reply)
     free(container);
 }
 
-/* Eine simple umgedrehte strcat Funktion um custom strings zu übergeben, die für die korrekte Übertragung nötig sind */
+/* Eine simple umgedrehte strcat Funktion um custom strings zu uebergeben, die fuer die korrekte Übertragung noetig sind */
 char* antistrcat(char* dest, char* src)
 {
     char * container;
@@ -39,7 +39,7 @@ char* antistrcat(char* dest, char* src)
 
 int performConnection(int sock)
 {
-    int size;//size zur Fehlerbehandlung für recv
+    int size;//size zur Fehlerbehandlung fuer recv
     char* reader;
     char* temp;
     reader = malloc(sizeof(char)*20);
@@ -103,9 +103,9 @@ int performConnection(int sock)
     {
         printf("\nDer Server moechte %s spielen. Und wir auch!\n", reader);
     }
-    /* Teil 3.1: Hatten wir mit unserer ID Erfolg erfahren wir zunächst den Namen des Spiels
-    und senden die ggf. übergebene Spielernummer.
-    Anschließend wird die Antwort des Servers auf die Nummer behandelt und Name und Nummer des Spielerplatzes ausgelesen
+    /* Teil 3.1: Hatten wir mit unserer ID Erfolg erfahren wir zunaechst den Namen des Spiels
+    und senden die ggf. uebergebene Spielernummer.
+    Anschliessend wird die Antwort des Servers auf die Nummer behandelt und Name und Nummer des Spielerplatzes ausgelesen
     */
 
     size = recv(sock, buffer, BUFFR-1, 0);
@@ -140,8 +140,8 @@ int performConnection(int sock)
         sscanf(buffer, "%*s %*s %d %s",&(shm->player[0].playerNumber), (shm->player[0].playerName));
         //printf("\nDu spielst mit dem Namen %s, deine Nummer ist %d\n", shm->player[0].playerName,shm->player[0].playerNumber);
     }
-    /* Teil 3.2: Hier wird der Übergang in die Spielverlaufsphase eingeleitet.
-    Der Server sendet uns die Namen unseres Gegenspielers und des Spielernummer, wobei überprüft wird ob ein Spieler bereits verbunden ist.
+    /* Teil 3.2: Hier wird der Uebergang in die Spielverlaufsphase eingeleitet.
+    Der Server sendet uns die Namen unseres Gegenspielers und des Spielernummer, wobei ueberprueft wird ob ein Spieler bereits verbunden ist.
     */
     size = recv(sock, buffer, BUFFR-1, 0);
     if (size > 0) buffer[size]='\0';
@@ -158,7 +158,7 @@ int performConnection(int sock)
 
     recvServerInfo(buffer);
 
-    //WAIT <->OKWAIT Schleife, später zu implementieren.
+    //WAIT <->OKWAIT Schleife, spaeter zu implementieren.
     do
     {
         send(sock,"OKWAIT\n",strlen("OKWAIT\n"),0);
