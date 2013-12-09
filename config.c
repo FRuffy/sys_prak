@@ -7,34 +7,34 @@
 //Prüfe Parametername
 int checkName(char* name, char* wert)
 {
-    if (strcmp(name,"Hostname") == 0)
+    if (strcasecmp(name,"Hostname") == 0)
     {
         memcpy(conf->hostname,wert,strlen(wert));
         return EXIT_SUCCESS;
     }
-    else if (strcmp(name,"Version") == 0)
+    else if (strcasecmp(name,"Version") == 0)
     {
         memcpy(conf->version,wert,strlen(wert));
         return EXIT_SUCCESS;
     }
-    else if (strcmp(name,"Spieltyp") == 0)
+    else if (strcasecmp(name,"Spieltyp") == 0)
     {
         memcpy(conf->gamekindname,wert,strlen(wert));
         return EXIT_SUCCESS;
     }
-    else if (strcmp(name,"Portnummer") == 0)
+    else if (strcasecmp(name,"Portnummer") == 0)
     {
         conf->portnumber =  strtol(wert,(char**) NULL, 10);
         return EXIT_SUCCESS;
     }
-    else if (strcmp(name,"Spielernummer") == 0)
+    else if (strcasecmp(name,"Spielernummer") == 0)
     {
         memcpy(conf->playernumber,wert,strlen(wert));
         return EXIT_SUCCESS;
     }
     else
     {
-        printf("Parameter nicht gefunden, bitte prüfen ob die Konfigurationsdatei korrekt ist!\n");
+        printf("Parameter nicht gefunden, bitte pruefen ob die Konfigurationsdatei korrekt ist!\n");
         return EXIT_FAILURE;
     }
 }
@@ -42,8 +42,7 @@ int checkName(char* name, char* wert)
 //Standarprozedur um Datei zu öffnen
 FILE* openFile(char* name)
 {
-    char* fileName;
-    fileName = malloc(sizeof(char)*128);
+
     FILE* file = NULL;
 
     if (name == NULL)
@@ -51,16 +50,12 @@ FILE* openFile(char* name)
         printf("\nVon nichts kommt nichts.\n");
         return file;
     }
-    else
+
+    if ((file=fopen(name,"r")) == NULL)
     {
-        strncpy(fileName,name,sizeof(char)*128);
-    }
-    if ((file=fopen(fileName,"r")) == NULL)
-    {
-        perror("Datei konnte nicht geöffnet werden");
+        perror("Datei konnte nicht geoeffnet werden");
         return file;
     }
-    free(fileName);
     return file;
 }
 
@@ -71,7 +66,7 @@ int readConfig(FILE* configFile)
     char* pName = malloc(sizeof(char)*128*10);
     char* pValue = malloc(sizeof(char)*128*10);
 
-    while ((fscanf(configFile,"%[^ =] = %s \n",&pName[count*128],&pValue[count*128])) != EOF)
+    while ((fscanf(configFile," %[^ =] = %s \n",&pName[count*128],&pValue[count*128])) != EOF)
     {
         count++;
     }
