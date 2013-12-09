@@ -2,40 +2,18 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/shm.h>
 #include <unistd.h>
 #include <errno.h>
 #include "sharedVariables.h"
 #include "errmmry.h"
+#include "auxiliaryFunctions.h"
+
 
 #define BUFFR 512
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define AT __FILE__ ":" TOSTRING(__LINE__)
+
+
 
 /*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
-void sendReplyFormatted(int sock, char* reply)
-{
-    char * container;
-    container = malloc(sizeof(char)*(strlen(reply)+2));
-    strcpy(container,reply);
-    strcat(container, "\n");
-    send(sock,container,strlen(container),0);
-    free(container);
-}
-
-/* Eine simple umgedrehte strcat Funktion um custom strings zu uebergeben, die fuer die korrekte Übertragung noetig sind */
-char* antistrcat(char* dest, char* src)
-{
-    char * container;
-    container = malloc(sizeof(char)*(strlen(dest)+strlen(src)+1));
-    strcpy(container,src);
-    strcat(container, dest);
-
-    return container;
-}
 
 int performConnection(int sock)
 {
@@ -153,22 +131,31 @@ int performConnection(int sock)
         return EXIT_FAILURE;
     }
 
-
-
-
-    recvServerInfo(buffer);
-
-    //WAIT <->OKWAIT Schleife, spaeter zu implementieren.
-    do
+ /*   if (recvServerInfo(buffer) == NULL)
     {
-        send(sock,"OKWAIT\n",strlen("OKWAIT\n"),0);
-        size = recv(sock, buffer, BUFFR-1, 0);
-        if (size > 0) buffer[size]='\0';
-        printf("\nServer bittet zu warten.\n");
-        printf("\n%s",buffer);
-
+        free(buffer);
+        free(reader);
+        return EXIT_FAILURE;
     }
-    while (strcmp(buffer,"+ WAIT\n") == 0);
+
+*/
+    strcpy(buffer, recvServerInfo(buffer));
+    checkServerReply(sock,buffer);
+
+  sendReplyFormatted(sock, "THINKING");
+   size = recv(sock, buffer, BUFFR-1, 0);
+  if (size > 0) buffer[size]='\0';
+    printf("\n%s\n",buffer);
+
+
+  sendReplyFormatted(sock, "PLAY A2,10");
+
+   size = recv(sock, buffer, BUFFR-1, 0);
+if (size > 0) buffer[size]='\0';
+
+    printf("\n%s\n",buffer);
+
+
     free(buffer);
     free(reader);
     return EXIT_SUCCESS;
