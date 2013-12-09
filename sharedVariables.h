@@ -15,26 +15,28 @@ typedef struct config_struct {
 
 int openConfig(char* name);
 int performConnection(int socket);
+int recvServerInfo(char* buffer);
 
 config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
 int initConnection(int argc, char** argv);
 FILE* logdatei;
 
 struct sharedmem {
-	pid_t pidDad;
-	pid_t pidKid;
-	char gameID[MAXGAMEID];
-	char gameName[MAXGAMENAME];
-	int playerCount, thinkTime, fieldX, fieldY, nextStone;
-	struct spieler {
-		int playerNumber;
-		char playerName[MAXPLAYERNAME];
-		int playerReady;
-		int playerRegisterd;
-	} player[8];
+        pid_t pidDad;
+        pid_t pidKid;
+        char gameID[MAXGAMEID];
+        char gameName[MAXGAMENAME];
+        int playerCount, thinkTime, fieldX, fieldY, nextStone;
+        struct spieler {
+                int playerNumber;
+                char playerName[MAXPLAYERNAME];
+                int playerReady;
+                int playerRegisterd;
+        } player[8];
 };
 
-int pfID, *pf;
+int pfID;
+int *pf;
 struct sharedmem *shm;
 
 #endif
