@@ -13,12 +13,9 @@ typedef struct config_struct {
     int portnumber;
 } config_struct;
 
-int openConfig(char* name);
-int performConnection(int socket);
-int recvServerInfo(char* buffer);
 
 config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
-int initConnection(int argc, char** argv);
+
 FILE* logdatei;
 
 struct sharedmem {
@@ -37,6 +34,7 @@ struct sharedmem {
 
 int pfID;
 int *pf;
+
 struct sharedmem *shm;
 
 #endif
