@@ -22,9 +22,10 @@ int performConnection(int sock)
     char* temp;
     reader = malloc(sizeof(char)*20);
     char* buffer = malloc(sizeof(char)*BUFFR);
-    temp = malloc(sizeof(char)*30);
+   // temp = malloc(sizeof(char)*256);
     //strcpy(gameID,"ID fm1y4PiVKfU");
     //strcpy(gameID,"ID 528902d1b0074");
+    //strcpy(gameID,"ID lQrL8n8sTKs");
 
     /* Teil 1: Lese die Client-Version des Servers und antworte mit eigener (formatierten) Version
     Behandle die Antwort des Servers */
@@ -139,8 +140,14 @@ int performConnection(int sock)
     }
 
 */
-    strcpy(buffer, recvServerInfo(buffer));
-    checkServerReply(sock,buffer);
+
+
+if (recvServerInfo(buffer) == NULL) {
+
+return EXIT_FAILURE;
+
+}
+checkServerReply(sock,buffer);
 
 
 // SENDE PLAY MOVE
