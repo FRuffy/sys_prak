@@ -11,9 +11,9 @@ char* recvServerInfo(char* buffer)
 {
 
     char* buffer2;
-    char* bufrptr;
+    char* bfrptr;
     buffer2 = malloc(sizeof(char)*256);
-    bufrptr = buffer2;
+    bfrptr = buffer2;
     int i = 1;
 
     /* sscanf(buffer,"%*s %*s %d %*s %d %s %i %*[^\n] %*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d"
@@ -21,7 +21,6 @@ char* recvServerInfo(char* buffer)
             ,&(shm->fieldX), &(shm->fieldY)); */
 
     strcpy(buffer2,buffer);
-    bufrptr = buffer2;
 
     printf("\n%s\n",buffer2);
     buffer2 = strtok( buffer2, "\n" );
@@ -32,7 +31,6 @@ char* recvServerInfo(char* buffer)
     if (shm->playerCount > 8)
     {
         printf("\nDiese Version des Clients unterstuetzt maximal 8 Spieler!\n");
-        free(bufrptr);
         return NULL;
     }
 
@@ -55,8 +53,11 @@ char* recvServerInfo(char* buffer)
     buffer2 = strtok( NULL, "" );
     //printf("\n%s\n",buffer2);
 
-    free(bufrptr);
 
-    return buffer2;
+strcpy(buffer, buffer2);
+free(bfrptr);
+
+
+    return buffer;
 
 }
