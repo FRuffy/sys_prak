@@ -11,14 +11,12 @@ char* recvServerInfo(char* buffer)
 {
 
     char* buffer2;
-    char* bfrptr;
+    char* bfrptr; //Wichtig, falls strtok zur Modifikation des Strings verwendet wird.
+                 //Der Pointer ändert sich im Verlauf, die geschriebenen Daten aber nicht.
+ 
     buffer2 = malloc(sizeof(char)*256);
     bfrptr = buffer2;
     int i = 1;
-
-    /* sscanf(buffer,"%*s %*s %d %*s %d %s %i %*[^\n] %*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d"
-            ,&(shm->playerCount),&shm->player[i].playerNumber, &shm->player[i].playerName, &shm->player[i].playerReady, &(shm->thinkTime), &(shm->nextStone)
-            ,&(shm->fieldX), &(shm->fieldY)); */
 
     strcpy(buffer2,buffer);
 
