@@ -106,7 +106,7 @@ int performConnection(int sock)
         }
         else
         {
-            printf("\nAlle Plaetze sind bereits belegt, versuchen sie es spaeter noch einmal!\n");
+            printf("\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
             //ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde!
         }
         free(buffer);
@@ -142,16 +142,18 @@ int performConnection(int sock)
     strcpy(buffer, recvServerInfo(buffer));
     checkServerReply(sock,buffer);
 
+
+// SENDE PLAY MOVE
   sendReplyFormatted(sock, "THINKING");
    size = recv(sock, buffer, BUFFR-1, 0);
   if (size > 0) buffer[size]='\0';
     printf("\n%s\n",buffer);
 
 
-  sendReplyFormatted(sock, "PLAY A2,10");
+  sendReplyFormatted(sock, "PLAY D3,7");
 
    size = recv(sock, buffer, BUFFR-1, 0);
-if (size > 0) buffer[size]='\0';
+   if (size > 0) buffer[size]='\0';
 
     printf("\n%s\n",buffer);
 
