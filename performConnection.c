@@ -146,7 +146,7 @@ und mit dem Thinker zusammenarbeitet, wie das genauer implementiert wird, weiß 
 checkServerReply(sock,buffer);
 
 
-// SENDE PLAY MOVE Testfunktionen
+// SENDE PLAY MOVE Testfunktionen, auch gut für das Protokoll
 // Hier könnt ihr ein wenig rumprobieren und bereits ein Spiel spielen. 
   sendReplyFormatted(sock, "THINKING");
    size = recv(sock, buffer, BUFFR-1, 0);
