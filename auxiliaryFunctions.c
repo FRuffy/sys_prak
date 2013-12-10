@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include "sharedVariables.h"
 
-
+/* Hängt /n an den String für den Server an */
 void sendReplyFormatted(int sock, char* reply)
 {
     char * container;
