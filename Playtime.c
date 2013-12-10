@@ -13,7 +13,10 @@
  Es scheint, dass der Connector diese Schliefen übernehmen muss.
  Evtl diese Funktion einfach in Serverinfo übernehmen und dann mit einer anderen weiterarbeiten.
 */
-
+/*Edit:
+Habs hinbekommen, diese Funktion funktioniert jetzt auch während des Spieles und kann vom Connector zur Kommunikation 
+verwendet werden. Der untere auskommentierte Teil ist die alte Version, falls jemand nachvollziehen möchte was hier 
+hier eigentlich gemacht wird */
 
 int checkServerReply(int sock, char* buffer)
 {
@@ -52,10 +55,9 @@ int checkServerReply(int sock, char* buffer)
     + 1 13 * * *
     + ENDFIELD
 
-
-
     vs.
-    BEISPIELOUTPUT WAEHREND SPIEL
+    
+    BEISPIELOUTPUT VOM SERVER WAEHREND SPIEL
     + NEXT 5
     + FIELD 4,4
     + 4 12 4 15 11
