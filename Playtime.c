@@ -18,8 +18,7 @@
 int checkServerReply(int sock, char* buffer)
 {
     int size;
-
-// if then else falls WAIT zurücgegeben wird.
+// if then else, falls WAIT zurücgegeben wird.
     if(strcmp(buffer,"+ WAIT\n") == 0)
     {
         do
@@ -29,19 +28,49 @@ int checkServerReply(int sock, char* buffer)
             size = recv(sock, buffer, BUFFR-1, 0);
             if (size > 0) buffer[size]='\0';
 
-
         }
         while (strcmp(buffer,"+ WAIT\n") == 0);
+        size = recv(sock, buffer, BUFFR-1, 0);
+        if (size > 0) buffer[size]='\0';
+        sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
+
+    }
+    else
+    {
+        sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
+        printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
+
     }
 
+    /* BEISPIELOUTPUT SERVER START
+    + MOVE 3000
+    + NEXT 8
+    + FIELD 4,4
+    + 4 12 4 15 *
+    + 3 3 10 * *
+    + 2 9 * * *
+    + 1 13 * * *
+    + ENDFIELD
 
-    sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
-    printf("\nFuer deinen Zug hast du %d ms, ",shm->thinkTime);
-    printf("du musst Stein %d setzen!\n\n",shm->nextStone);
+
+
+    vs.
+    BEISPIELOUTPUT WAEHREND SPIEL
+    + NEXT 5
+    + FIELD 4,4
+    + 4 12 4 15 11
+    + 3 3 10 8 *
+    + 2 9 2 * 1
+    + 1 13 * 6 14
+    + ENDFIELD
+
+    */
+
+    printf("Stein %d ist zu setzen!\n\n",shm->nextStone);
     printf("Unser momentanes Spielfeld. Groesse: %d x %d\n",shm->fieldX, shm->fieldY);
 
-/* @FLO bitte eine if clause Einfügen die checkt ob pfID bereits existiert, falls ja die Erstellung ignorieren.
-Die Funktion wird warscheinlich oft benutzt werden */
+    /* @FLO bitte eine if clause Einfügen die checkt ob pfID bereits existiert, falls ja die Erstellung ignorieren.
+    Die Funktion wird warscheinlich oft benutzt werden */
 
     //Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren und einhaengen (2x Groesse von fieldX wegen 4 Merkmalen pro Stein!)
     pfID = shmget(IPC_PRIVATE, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)), IPC_CREAT | IPC_EXCL | 0775);
