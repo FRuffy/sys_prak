@@ -59,12 +59,11 @@ int readGameField(char *buffer)
         // printf("\n%s\n", buffer2);
         sscanf (buffer2,"%*s %d %[0-9* ]", &znr, buffer2);
 
-        for (i=0; i<=shm->fieldX; i++)
+        for (i=0; i<shm->fieldX; i++)
         {
             *(pf+i+(znr-1)*(shm->fieldX)) = -1;
             sscanf (buffer2,"%d %[0-9* ]",(pf+i+(znr-1)*(shm->fieldY)), buffer2);
 //                         printf("=>%d \n", *(pf+i+(znr-1)*shm->fieldY));
-            sscanf (buffer2,"%*s %[0-9* ]",buffer2);
 //                         printf(": %s \n", buffer2);
         }
         buffer2 = strtok( NULL, "\n" );
