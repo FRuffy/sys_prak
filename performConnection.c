@@ -130,27 +130,24 @@ int performConnection(int sock)
         free(buffer);
         free(reader);
         return EXIT_FAILURE;
-    }
 
- /*   if (recvServerInfo(buffer) == NULL)
-    {
-        free(buffer);
-        free(reader);
-        return EXIT_FAILURE;
-    }
-
-*/
-
-
+//Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden 
 if (recvServerInfo(buffer) == NULL) {
-
+ free(buffer);
+ free(reader);
 return EXIT_FAILURE;
 
 }
+/* Hier fängt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt 
+und mit dem Thinker zusammenarbeitet, wie das genauer implementiert wird, weiß ich leider noch nicht. 
+@Harun würdest du das machen? 
+*/ 
+
 checkServerReply(sock,buffer);
 
 
-// SENDE PLAY MOVE
+// SENDE PLAY MOVE Testfunktionen
+// Hier könnt ihr ein wenig rumprobieren und bereits ein Spiel spielen. 
   sendReplyFormatted(sock, "THINKING");
    size = recv(sock, buffer, BUFFR-1, 0);
   if (size > 0) buffer[size]='\0';
