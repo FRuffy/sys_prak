@@ -130,7 +130,7 @@ int performConnection(int sock)
         free(buffer);
         free(reader);
         return EXIT_FAILURE;
-
+    }
 //Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden 
 if (recvServerInfo(buffer) == NULL) {
  free(buffer);
