@@ -15,7 +15,7 @@
 
 /*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
 
-int performConnection(int sock)
+int performConnection(int sock,sharedmem * shm, config_struct* conf)
 {
     int size;//size zur Fehlerbehandlung fuer recv
     char* reader;
@@ -131,23 +131,23 @@ int performConnection(int sock)
         free(reader);
         return EXIT_FAILURE;
     }
-//Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden 
-if (recvServerInfo(buffer) == NULL) {
+//Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden
+if (recvServerInfo(buffer,shm) == NULL) {
  free(buffer);
  free(reader);
 return EXIT_FAILURE;
 
 }
-/* Hier fängt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt 
-und mit dem Thinker zusammenarbeitet, wie das genauer implementiert wird, weiß ich leider noch nicht. 
-@Harun würdest du das machen? 
-*/ 
+/* Hier fängt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
+und mit dem Thinker zusammenarbeitet, wie das genauer implementiert wird, weiß ich leider noch nicht.
+@Harun würdest du das machen?
+*/
 
-checkServerReply(sock,buffer);
+checkServerReply(sock,buffer,shm);
 
 
 // SENDE PLAY MOVE Testfunktionen, auch gut für das Protokoll
-// Hier könnt ihr ein wenig rumprobieren und bereits ein Spiel spielen. 
+// Hier könnt ihr ein wenig rumprobieren und bereits ein Spiel spielen.
   sendReplyFormatted(sock, "THINKING");
    size = recv(sock, buffer, BUFFR-1, 0);
   if (size > 0) buffer[size]='\0';

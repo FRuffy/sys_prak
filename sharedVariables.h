@@ -14,11 +14,7 @@ typedef struct config_struct {
 } config_struct;
 
 
-config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
-
-FILE* logdatei;
-
-struct sharedmem {
+typedef struct sharedmem {
         pid_t pidDad;
         pid_t pidKid;
         char gameID[MAXGAMEID];
@@ -30,11 +26,12 @@ struct sharedmem {
                 int playerReady;
                 int playerRegisterd;
         } player[8];
-};
+}sharedmem;
 
+FILE* logdatei;
 int pfID;
 int *pf;
 
-struct sharedmem *shm;
+
 
 #endif

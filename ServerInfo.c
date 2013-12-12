@@ -7,13 +7,13 @@
 #include "errmmry.h"
 
 
-char* recvServerInfo(char* buffer)
+char* recvServerInfo(char* buffer,sharedmem * shm)
 {
 
     char* buffer2;
     char* bfrptr; //Wichtig, falls strtok zur Modifikation des Strings verwendet wird.
                  //Der Pointer ändert sich im Verlauf, die geschriebenen Daten aber nicht.
- 
+
     buffer2 = malloc(sizeof(char)*256);
     bfrptr = buffer2;
     int i = 1;

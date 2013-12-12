@@ -13,7 +13,7 @@
 
 
 
-int initConnection(int argc, char ** argv)
+int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf)
 {
 
     //überpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
@@ -27,14 +27,14 @@ int initConnection(int argc, char ** argv)
 
         if (argc == 3)
         {
-            if (openConfig(argv[2])!= 0) //Falls Custom-config angegeben wurde
+            if (openConfig(argv[2],conf)!= 0) //Falls Custom-config angegeben wurde
             {
                 return EXIT_FAILURE;
             }
         }
         else
         {
-            if (openConfig("client.conf") != 0) //Sonst Standard-config
+            if (openConfig("client.conf",conf) != 0) //Sonst Standard-config
             {
                 return EXIT_FAILURE;
             }
@@ -69,7 +69,7 @@ int initConnection(int argc, char ** argv)
         writelog(logdatei,AT);
         return EXIT_FAILURE;
     }
-    performConnection(sock);//Fuehre Prolog Protokoll aus
+    performConnection(sock,shm, conf);//Fuehre Prolog Protokoll aus
 
 
     close(sock);

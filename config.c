@@ -5,7 +5,7 @@
 /* Funktion, die unsere Konfigdatei ausliest und Werte der Struktur zuweist */
 
 //Prüfe Parametername
-int checkName(char* name, char* wert)
+int checkName(char* name, char* wert, config_struct* conf)
 {
     if (strcasecmp(name,"Hostname") == 0)
     {
@@ -59,7 +59,7 @@ FILE* openFile(char* name)
     return file;
 }
 
-int readConfig(FILE* configFile)
+int readConfig(FILE* configFile, config_struct* conf)
 {
     int count = 0; //Zähle die Zeilen der Datei
     int i;
@@ -73,7 +73,7 @@ int readConfig(FILE* configFile)
 
     for (i = 0; i< count; i++)
     {
-        checkName(&pName[i*128],&pValue[i*128]); //Prüfe den Parameternamen und weise anschließend den korrekten Wert der Struktur zu
+        checkName(&pName[i*128],&pValue[i*128],conf); //Prüfe den Parameternamen und weise anschließend den korrekten Wert der Struktur zu
     }
 
     free(pName);
@@ -81,7 +81,7 @@ int readConfig(FILE* configFile)
     return EXIT_SUCCESS;
 }
 
-int openConfig(char* name)
+int openConfig(char* name,config_struct* conf)
 {
     //name = malloc(sizeof(char)*64);
     //name = "/home/r/ruffy/Systempraktikum/Systempraktikum/client.conf";
@@ -93,7 +93,7 @@ int openConfig(char* name)
         return EXIT_FAILURE;
     }
 
-    readConfig(file);  //Lese Parameter aus der Datei aus und schreibe sie in die Struktur
+    readConfig(file,conf);  //Lese Parameter aus der Datei aus und schreibe sie in die Struktur
     fclose(file);
     return EXIT_SUCCESS;
 }

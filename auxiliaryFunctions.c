@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include "sharedVariables.h"
 
+
 /* Hängt /n an den String für den Server an */
 void sendReplyFormatted(int sock, char* reply)
 {
@@ -37,7 +38,7 @@ char* antistrcat(char* dest, char* src)
 * + ENDFIELD
 */
 
-int readGameField(char *buffer)
+int readGameField(char *buffer,sharedmem * shm)
 {
     char* buffer2;
     buffer2 = malloc(sizeof(char)*128);
@@ -46,7 +47,7 @@ int readGameField(char *buffer)
     buffer2 = strstr(buffer,"+ FIELD");
     buffer2 = strtok( buffer2, "\n" );
     buffer2 = strtok( NULL , "\n" );
-    
+
     while (strcmp(buffer2,"+ ENDFIELD") != 0)
     {
     	//Folgende 4 Kommentarzeichen entfernen um zu kapieren wie die Funktion funktioniert!
@@ -74,7 +75,7 @@ int readGameField(char *buffer)
 * printGameField gibt aktuellen Zustand des Spielfeldes aus
 */
 
-int printGameField()
+int printGameField(sharedmem * shm)
 {
     int i,j;
     for (i=shm->fieldY-1; i>=0; i--)

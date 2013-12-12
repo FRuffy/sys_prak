@@ -14,11 +14,11 @@
  Evtl diese Funktion einfach in Serverinfo übernehmen und dann mit einer anderen weiterarbeiten.
 */
 /*Edit:
-Habs hinbekommen, diese Funktion funktioniert jetzt auch während des Spieles und kann vom Connector zur Kommunikation 
-verwendet werden. Der untere auskommentierte Teil ist die alte Version, falls jemand nachvollziehen möchte was hier 
+Habs hinbekommen, diese Funktion funktioniert jetzt auch während des Spieles und kann vom Connector zur Kommunikation
+verwendet werden. Der untere auskommentierte Teil ist die alte Version, falls jemand nachvollziehen möchte was hier
 hier eigentlich gemacht wird */
 
-int checkServerReply(int sock, char* buffer)
+int checkServerReply(int sock, char* buffer,sharedmem * shm)
 {
     int size;
 // if then else, falls WAIT zurücgegeben wird.
@@ -56,7 +56,7 @@ int checkServerReply(int sock, char* buffer)
     + ENDFIELD
 
     vs.
-    
+
     BEISPIELOUTPUT VOM SERVER WAEHREND SPIEL
     + NEXT 5
     + FIELD 4,4
@@ -91,8 +91,8 @@ int checkServerReply(int sock, char* buffer)
     }
 
 
-    readGameField(buffer);
-    printGameField();
+    readGameField(buffer, shm);
+    printGameField(shm);
 
     return EXIT_SUCCESS;
 }

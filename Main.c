@@ -18,9 +18,11 @@ FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeich
 
 int main (int argc, char** argv )
 {
+    config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
+
     logdatei =fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
-
+   struct sharedmem *shm = calloc(50,sizeof(sharedmem));
     /* Initialisierung der Shared Memory */
     int shmID;
     int shmSize = sizeof(struct sharedmem);
@@ -43,6 +45,7 @@ int main (int argc, char** argv )
         fprintf(stderr, "Fehler, shm: %s\n", strerror(errno));
         writelog(logdatei,AT);
     }
+
     pid_t pid = 0;
     pid = fork();
 
@@ -62,7 +65,7 @@ int main (int argc, char** argv )
     else if (pid == 0)
     {
         //Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren)
-        initConnection(argc, argv);
+ initConnection(argc, argv,shm,conf);
 
     }
     else
