@@ -43,7 +43,7 @@ int readGameField(char *buffer,sharedmem * shm)
     char* buffer2;
     buffer2 = malloc(sizeof(char)*128);
     int i=0, znr=0;
-    char tmp[1] = "*";
+    char tmp= '*';
     buffer2 = strstr(buffer,"+ FIELD");
     buffer2 = strtok( buffer2, "\n" );
     buffer2 = strtok( NULL , "\n" );
@@ -57,7 +57,7 @@ int readGameField(char *buffer,sharedmem * shm)
     		    for (i=0; i<shm->fieldX; i++) {
     		    	*(pf+i+(znr-1)*shm->fieldX) = -1;
     	//	    	printf("Buffer2: %s\n", buffer2);
-    		    	if (buffer2 == strpbrk(buffer2, tmp)) {
+    		    	if (buffer2 == strchr(buffer2, tmp)) {
     	//	    		printf("X=> *\n");
     		    		sscanf(buffer2,"%*s %[0-9* ]", buffer2);
     		    	}
