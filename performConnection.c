@@ -154,7 +154,7 @@ checkServerReply(sock,buffer,shm);
     printf("\n%s\n",buffer);
 
 
-  sendReplyFormatted(sock, "PLAY D3,7");
+ sendReplyFormatted(sock, think(shm));
 
    size = recv(sock, buffer, BUFFR-1, 0);
    if (size > 0) buffer[size]='\0';
