@@ -11,7 +11,7 @@ void sendReplyFormatted(int sock, char* reply);
 char* antistrcat(char* dest, char* src);
 int readGameField(char *buffer,sharedmem * shm);
 int printGameField();
-
+char* think (sharedmem *shm);
 
 
 #endif
