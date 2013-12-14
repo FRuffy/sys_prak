@@ -5,7 +5,8 @@
 #include "errmmry.h"
 #include <time.h>
 
-int varcount=0; // Anzahl der zugewiesenen Speicherbereiche
+int countint=0; // Anzahl der zugewiesenen Speicherbereiche
+int countchar=0;
 
 /**
  * Fuegt den Pointer auf den spaeter zu befreienden Bereich in ein Array hinzu.
@@ -13,9 +14,15 @@ int varcount=0; // Anzahl der zugewiesenen Speicherbereiche
  * @param  adr Der Pointer auf den Speicherbereich
  * @return Gibt 0 zurueck.
  */
-int addfree(int* adr){
-varadresses[varcount]=adr;
-varcount++;
+int addint(int* intadr){
+varadr_int[countint]=intadr;
+countint++;
+return EXIT_SUCCESS;        
+}
+
+int addchar(char* charadr){
+varadr_char[countchar]=charadr;
+countchar++;
 return EXIT_SUCCESS;        
 }
 /**
@@ -25,10 +32,13 @@ return EXIT_SUCCESS;
  */
 int freeall(){
 int i;
-for(i=0;i<=varcount;i++){
-        free(varadresses[i]);
+for(i=0;i<=countint;i++){
+        free(varadr_int[i]);
 }
-printf("Es wurden %d Variablen befreit \n",varcount);
+for(i=0;i<=countchar;i++){
+        free(varadr_char[i]);
+}
+printf("Es wurden %d Variablen befreit \n",countint+countchar);
 return EXIT_SUCCESS;
 }
 /**
