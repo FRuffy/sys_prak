@@ -9,6 +9,8 @@
 #include "sharedVariables.h"
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
+#include <signal.h>
+#include "thinker.h"
 
 
 
@@ -19,7 +21,6 @@ FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeich
 int main (int argc, char** argv )
 {
     config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
-
     logdatei =fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
    struct sharedmem *shm = calloc(50,sizeof(sharedmem));
@@ -46,6 +47,11 @@ int main (int argc, char** argv )
         writelog(logdatei,AT);
     }
 
+    if (pipe(fd) < 0) { 
+    perror ("Fehler beim Einrichten der Pipe.");
+    exit(EXIT_FAILURE);
+ }
+
     pid_t pid = 0;
     pid = fork();
 
@@ -55,33 +61,76 @@ int main (int argc, char** argv )
     {
         fprintf(stderr, "Fehler bei fork(): %s\n", strerror(errno));
         writelog(logdatei,AT);
-
+        shmdt(shm);
         shmctl(shmID,IPC_RMID, NULL);
         fclose(logdatei);
         free(conf);
-        shmdt(shm);
         return EXIT_FAILURE;
     }
     else if (pid == 0)
     {
         //Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren)
- initConnection(argc, argv,shm,conf);
+
+        close(fd[1]); // schliesst input ende von der Pipe
+        initConnection(argc, argv,shm,conf);
 
     }
     else
     {
         //Elternprozess - soll laut Spezifikation den Thinker implementieren
+        firstsig=0;
+        close(fd[0]);
 
-        //Hier kommt spaeter der Thinker hin
+        /**
+        *Signal Handler.                           
+        * 
+        * Definiert, wie auf ein Signal reagiert werden soll.
+        *
+        * @param  Wert des Signals.          
+        */
+        void sig_handler(int signo){
+            if (signo == SIGUSR1){
+                printf("Signal nummer %d \n",firstsig);
+                if (firstsig==0)            // Falls das Signal zum ersten mal ankommt, wird  pf-SHM erzeugt und attached, sonst geht es gleich mit thinker() weiter
+                {
+                    firstsig++;
+                    pfID = shmget(KEY,(sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)),0775);
+                    if (pfID < 1)
+                    {
+                        printf("VATER: Error: No pf-SHM \n");
+                    }   
+                    pf = shmat(pfID, 0, 0); //pf einhaengen
+                    if (pf == (void *) -1) //Im Fehlerfall pointed pf auf -1
+                    {
+                        fprintf(stderr, "Fehler, pf-shm: %s\n", strerror(errno));
+                        writelog(logdatei,AT);
+                    }
+                }
+                if (thinker(shm)!=0)
+                    perror("VATER: thinker konnte nicht in pipe schreiben \n");
+            }
+        }
+        int status;
+        pid_t result;
 
-        waitpid(pid, NULL, 0); //Wartet auf sein Kind und beendet sich nach diesem
-
+        if (signal(SIGUSR1, sig_handler) == SIG_ERR) { // setzt den Signal Handler auf
+            perror("An error occurred while setting a signal handler.\n");
+            return EXIT_FAILURE;
+        }
+        do {
+            sleep(1);
+            result = waitpid(pid, &status, WNOHANG);
+            if (result!=0) printf("VATER: Beende mich selbst... \n"); // ueberprueft ob Kind noch existiert
+        }
+        while (result == 0); // so lange Kind noch existiert
+        shmdt(pf);
+        shmdt(shm);
+       
     }
 
     shmctl(shmID,IPC_RMID, NULL);
+    shmctl(pfID,IPC_RMID, NULL); //zerstoere pf SHM
     fclose(logdatei);
     free(conf);
-    shmdt(pf);
-    shmdt(shm);
     return EXIT_SUCCESS;
 }
