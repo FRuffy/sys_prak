@@ -75,12 +75,10 @@ int checkServerReply(int sock, char* buffer,sharedmem * shm)
     Die Funktion wird warscheinlich oft benutzt werden */
 
     //Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren und einhaengen (2x Groesse von fieldX wegen 4 Merkmalen pro Stein!)
-    pfID = shmget(IPC_PRIVATE, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)), IPC_CREAT | IPC_EXCL | 0775);
+    pfID = shmget(KEY, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)),IPC_CREAT | IPC_EXCL | 0775);
     if (pfID < 1)
     {
-        printf("Error: No pf-SHM");
-
-
+        printf("KIND: Error: No pf-SHM");
         return EXIT_FAILURE;
     }
     pf = shmat(pfID, 0, 0); //pf einhaengen
