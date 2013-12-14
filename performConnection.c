@@ -7,6 +7,7 @@
 #include "sharedVariables.h"
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
+#include <signal.h>
 
 
 #define BUFFR 512
@@ -16,7 +17,11 @@
 /*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
 
 int performConnection(int sock,sharedmem * shm, config_struct* conf)
-{
+{   
+    int bytesread;
+    int n=15; // Max Groesse des Spielzug-Strings in Bytes
+    char readbuffer[n]; //Hier wird der Spielzug-String aus der Pipe abgespeichert.
+
     int size;//size zur Fehlerbehandlung fuer recv
     char* reader;
     char* temp;
@@ -141,9 +146,12 @@ return EXIT_FAILURE;
 /* Hier fängt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
 und mit dem Thinker zusammenarbeitet, wie das genauer implementiert wird, weiß ich leider noch nicht.
 @Harun würdest du das machen?
+
+Harun: muss ich mir noch ueberlegen, wenn jemand ne Idee hat bitte schreiben
 */
 
 checkServerReply(sock,buffer,shm);
+
 
 
 // SENDE PLAY MOVE Testfunktionen, auch gut für das Protokoll
@@ -153,13 +161,24 @@ checkServerReply(sock,buffer,shm);
   if (size > 0) buffer[size]='\0';
     printf("\n%s\n",buffer);
 
+    kill(shm->pidDad, SIGUSR1); // Sende Signal an Vater
 
- sendReplyFormatted(sock, think(shm));
+     bytesread = read (fd[0],readbuffer, n); //Leseseite auslesen 
+        if (bytesread < 9) {                 //Falls weniger als 9 Zeichen stimmt was nicht mit dem Spielzug-String
+            perror ("Fehler bei write()."); 
+            exit (EXIT_FAILURE); 
+        }
+        printf("KIND: Lese %s aus Pipe!\n",readbuffer); //Spielzug ist im readbuffer gespeichert
 
-   size = recv(sock, buffer, BUFFR-1, 0);
+
+  sendReplyFormatted(sock, "PLAY D3,7");  // versuchen readbuffer zu ubergeben.
+
+/* size = recv(sock, buffer, BUFFR-1, 0);
    if (size > 0) buffer[size]='\0';
 
     printf("\n%s\n",buffer);
+
+*/
 
 
     free(buffer);
