@@ -47,12 +47,12 @@ if(strcmp(buffer,"+ WAIT\n") == 0)
 		//Return 2, für Spiel beendet. Looper gibt dann EXIT_SUCCESS(1) zurück.
 		return 2;
 	}
-	else
-	{
-		sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
-		printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
-
-	}
+}
+else
+{
+	sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
+	printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
+}
 
 	/* BEISPIELOUTPUT SERVER START
 	 + MOVE 3000
