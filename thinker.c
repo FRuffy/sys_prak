@@ -1,11 +1,18 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <errno.h>
-#include <time.h>
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <signal.h>
 #include "sharedVariables.h"
+#include "thinker.h"
+#include "auxiliaryFunctions.h"
+#include <time.h>
 
+// Anfang der KI vom Fabian
 
 char* formatMove(int move)
 {
@@ -146,3 +153,26 @@ printf("\n%s\n",reply);
 return reply;
 
 }
+
+// Ender der KI vom Fabian
+
+/**
+ * Thinker.                           
+ * 
+ * Schreibt einen von der KI (siehe oben) berechneten Spielzug in die Pipe
+ *
+ * @param  shared memory pointer.          
+ */
+int thinker(sharedmem * shm){
+int n=15; // Max Groesse des Spielzug strings in Bytes.	
+printf("VATER: habe ein Signal erhalten, berechne Spielzug \n");
+char* move4pipe=think(shm);
+
+                if ((write (fd[1], move4pipe, n)) < 9) { // Falls kleiner 9 ist der Spielzug String falsch. Ansonsten wird in die Pipe geschrieben.
+ 						perror ("Fehler bei write()."); 
+ 						return 1;
+ 					}
+                else
+                	    printf("VATER: thinker hat Spielzug in pipe fertiggeschrieben \n");
+                return 0;
+            }
