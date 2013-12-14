@@ -12,6 +12,7 @@ char* antistrcat(char* dest, char* src);
 int readGameField(char *buffer,sharedmem * shm);
 int printGameField();
 char* think (sharedmem *shm);
-
+void loop(int sock, char* buffer, sharedmem * shm);
+int doMove(int sock, char* buffer, sharedmem * shm);
 
 #endif
