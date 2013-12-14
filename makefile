@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-c -Wall -Werror
 LDFLAGS=
-SOURCES=Main.c performConnection.c initConnection.c config.c errmmry.c auxiliaryFunctions.c Playtime.c ServerInfo.c
+SOURCES=Main.c performConnection.c initConnection.c config.c errmmry.c auxiliaryFunctions.c Playtime.c ServerInfo.c thinker.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=client
 
@@ -15,4 +15,3 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm $(EXECUTABLE) $(OBJECTS) log.txt
-
