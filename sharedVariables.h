@@ -4,6 +4,7 @@
 #define MAXGAMEID 30
 #define MAXGAMENAME 50
 #define MAXPLAYERNAME 50
+#define KEY 5678
 
 typedef struct config_struct {
     char hostname[100];
@@ -31,7 +32,10 @@ typedef struct sharedmem {
 FILE* logdatei;
 int pfID;
 int *pf;
+int fd[2]; // fuer Pipe
+int firstsig; // um zu uberpruefen ob Signal zum ersten mal eintrifft
 
 
 
 #endif
+
