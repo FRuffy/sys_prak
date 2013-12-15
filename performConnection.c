@@ -13,11 +13,10 @@
 
 /*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
 
-//TODO: Refactor! Eine Methode mit mehr als 80 Zeilen gilt allgemein als falsch.
 int performConnection(int sock, sharedmem * shm, config_struct* conf) {
-	int bytesread;
-	int n = 15; // Max Groesse des Spielzug-Strings in Bytes
-	char readbuffer[n]; //Hier wird der Spielzug-String aus der Pipe abgespeichert.
+	//int bytesread;
+	//int n = 15; // Max Groesse des Spielzug-Strings in Bytes
+	//char readbuffer[n]; //Hier wird der Spielzug-String aus der Pipe abgespeichert.
 
 	int size; //size zur Fehlerbehandlung fuer recv
 	char* reader;

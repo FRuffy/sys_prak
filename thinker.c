@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
@@ -100,79 +101,99 @@ int testStone(int stone,int placeStone)
     return EXIT_SUCCESS;
 
 }
-int chooseStone(int placeStone){
-srand(time(NULL));
+int chooseStone(int placeStone)
+{
+    srand(time(NULL));
 
-  int check = 0;
+    int check = 0;
 
     int stone;
 
 
-    while( check== 0) {
-       stone = rand()%16;
+    while( check== 0)
+    {
+        stone = rand()%16;
 
-if(testStone(stone,placeStone)==0) {
+        if(testStone(stone,placeStone)==EXIT_SUCCESS)
+        {
 
-    check = 1;
-}
+            check = 1;
+        }
+
 
 
     }
 
-return stone;
+    return stone;
 }
 
 
-char* think (sharedmem * shm) {
+char* think (sharedmem * shm)
+{
 
-char* reply = malloc(sizeof(char)*15);
+    char* reply = malloc(sizeof(char)*15);
 
-srand(time(NULL));
-
-
-/*
-int i;
-    for (i=0; i<16;i++) {
+    srand(time(NULL));
 
 
-printf(" %d ", *(pf+i));
-    } */
+
+
+
+
+
+
+
     int check = 0;
     int move;
 
-    while( check == 0) {
-       move = rand()%16;
+    while( check == 0)
+    {
+        move = rand()%16;
         if (*(pf+move) == -1 )
             check= 1;
     }
 
+if (formatMove(move)==NULL) {
+    return NULL; }
+
+    sprintf(reply,"PLAY %s,%d",formatMove(move),chooseStone(shm->nextStone));
+    printf("\n%s\n",reply);
+    return reply;
 
 
-sprintf(reply,"PLAY %s,%d",formatMove(move),chooseStone(shm->nextStone));
-printf("\n%s\n",reply);
-return reply;
+
+
 
 }
 
 // Ender der KI vom Fabian
 
 /**
- * Thinker.                           
- * 
+ * Thinker.
+ *
  * Schreibt einen von der KI (siehe oben) berechneten Spielzug in die Pipe
  *
- * @param  shared memory pointer.          
+ * @param  shared memory pointer.
  */
-int thinker(sharedmem * shm){
-int n=15; // Max Groesse des Spielzug strings in Bytes.	
-printf("VATER: habe ein Signal erhalten, berechne Spielzug \n");
-char* move4pipe=think(shm);
+int thinker(sharedmem * shm)
+{
+    int n=15; // Max Groesse des Spielzug strings in Bytes.
+    printf("VATER: habe ein Signal erhalten, berechne Spielzug \n");
+    char* move4pipe = malloc(sizeof(char)*10);
 
-                if ((write (fd[1], move4pipe, n)) < 9) { // Falls kleiner 9 ist der Spielzug String falsch. Ansonsten wird in die Pipe geschrieben.
- 						perror ("Fehler bei write()."); 
- 						return 1;
- 					}
-                else
-                	    printf("VATER: thinker hat Spielzug in pipe fertiggeschrieben \n");
-                return 0;
-            }
+strcpy(move4pipe,think(shm));
+    if ((write (fd[1], move4pipe, n)) < 9)   // Falls kleiner 9 ist der Spielzug String falsch. Ansonsten wird in die Pipe geschrieben.
+    {
+        perror ("\nFehler bei write().\n");
+        return EXIT_FAILURE;
+    }
+
+
+
+    else
+    {
+        printf("\nVATER: Thinker hat Spielzug in pipe fertiggeschrieben \n");
+    }
+    free(move4pipe);
+    return EXIT_SUCCESS;
+}
