@@ -68,6 +68,7 @@ int readGameField(char *buffer,sharedmem * shm)
     		    }
     		    buffer2 = strtok( NULL, "\n" );
     	        }
+    	        free(buffer2);
     		return EXIT_SUCCESS;
     	}
 
