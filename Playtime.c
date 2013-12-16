@@ -20,7 +20,17 @@
 
 int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 	int size;
+
 // if then else, falls WAIT zurücgegeben wird.
+
+if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
+size = recv(sock, buffer, BUFFR - 1, 0);
+		if (size > 0)
+			buffer[size] = '\0';
+		printf("\nRECIEVESERVERINFO2000: %s\n", buffer);
+
+}
+else
 if(strcmp(buffer,"+ WAIT\n") == 0)
 {
 	do
