@@ -13,6 +13,8 @@
 #include "thinker.h"
 
 
+
+
 FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeichnet und den Ort angibt
 
 
@@ -72,7 +74,7 @@ int main (int argc, char** argv )
 
         close(fd[1]); // schliesst input ende von der Pipe
         initConnection(argc, argv,shm,conf);
-        shmdt(shm->pf);
+        shmdt(pf);
         shmdt(shm);
 
     }
@@ -98,22 +100,22 @@ int main (int argc, char** argv )
                 if (firstsig==0)            // Falls das Signal zum ersten mal ankommt, wird  pf-SHM erzeugt und attached, sonst geht es gleich mit thinker() weiter
                 {
                     firstsig++;
-                    if (shm->pfID == 0)
+                    if (pfID == 0)
                     {
-                        shm->pfID = shmget(KEY, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)), 0775 );
+                        pfID = shmget(KEY, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)), 0775 );
                         writelog(logdatei,AT);
-                        if (shm->pfID < 1)
+                        if (pfID < 1)
                         {
                             printf("KIND: Error: No pf-SHM");
 
                         }
-                        shm->pf = shmat(shm->pfID, 0, 0);                        writelog(logdatei,AT);
+                        pf = shmat(pfID, 0, 0);                        writelog(logdatei,AT);
  //pf einhaengen
                     }
-                    printf("\n%d\n",shm->pfID);
+                    printf("\n%d\n",pfID);
 
 
-                    if (shm->pf == (void *) -1) //Im Fehlerfall pointed pf auf -1
+                    if (pf == (void *) -1) //Im Fehlerfall pointed pf auf -1
                     {
                         fprintf(stderr, "Fehler, pf-shm: %s\n", strerror(errno));
                         writelog(logdatei,AT);
@@ -135,19 +137,19 @@ int main (int argc, char** argv )
         do
         {
 
-            result = waitpid(pid, &status, WNOHANG);                         writelog(logdatei,AT);
+            result = waitpid(pid, &status, WNOHANG);                        // writelog(logdatei,AT);
 
             if (result!=0) printf("VATER: Beende mich selbst... \n"); // ueberprueft ob Kind noch existiert
         }
         while (result == 0); // so lange Kind noch existiert
-        shmdt(shm->pf);
+        shmdt(pf);
         shmdt(shm);
 
 
     }
 
     shmctl(shmID,IPC_RMID, NULL);
-    shmctl(shm->pfID,IPC_RMID, NULL); //zerstoere pf SHM
+    shmctl(pfID,IPC_RMID, NULL); //zerstoere pf SHM
     fclose(logdatei);
     free(conf);
     return EXIT_SUCCESS;
