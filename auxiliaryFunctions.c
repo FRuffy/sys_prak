@@ -55,14 +55,14 @@ int readGameField(char *buffer,sharedmem * shm)
     		    sscanf (buffer2,"%*s %d %[0-9* ]", &znr, buffer2);
 
     		    for (i=0; i<shm->fieldX; i++) {
-    		    	*(pf+i+(znr-1)*shm->fieldX) = -1;
+    		    	*(shm->pf+i+(znr-1)*shm->fieldX) = -1;
     	//	    	printf("Buffer2: %s\n", buffer2);
     		    	if (buffer2 == strchr(buffer2, tmp)) {
     	//	    		printf("X=> *\n");
     		    		sscanf(buffer2,"%*s %[0-9* ]", buffer2);
     		    	}
     		    	else {
-    		    		sscanf (buffer2,"%d %[0-9* ]",(pf+i+(znr-1)*(shm->fieldY)), buffer2);
+    		    		sscanf (buffer2,"%d %[0-9* ]",(shm->pf+i+(znr-1)*(shm->fieldY)), buffer2);
     	//	    		printf(" => %d \n", *(pf+i+(znr-1)*shm->fieldY));
     		    	}
     		    }
@@ -83,13 +83,13 @@ int printGameField(sharedmem * shm)
         printf("\n %d: ", i+1);
         for (j=0; j<shm->fieldX; j++)
         {
-            if (*(pf+j+i*shm->fieldY)==-1)
+            if (*(shm->pf+j+i*shm->fieldY)==-1)
             {
                 printf(" *");
             }
             else
             {
-                printf(" %d", *(pf+j+i*shm->fieldY));
+                printf(" %d", *(shm->pf+j+i*shm->fieldY));
             }
         }
     }
