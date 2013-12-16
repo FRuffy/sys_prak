@@ -85,7 +85,7 @@ char* formatMove(int move)
     return NULL;
 }
 
-int testStone(int stone,int placeStone, int * pf)
+int testStone(int stone,int placeStone)
 {
 
     int i=0;
@@ -101,7 +101,7 @@ int testStone(int stone,int placeStone, int * pf)
     return EXIT_SUCCESS;
 
 }
-int chooseStone(int placeStone, int * pf)
+int chooseStone(int placeStone)
 {
     srand(time(NULL));
 
@@ -114,7 +114,7 @@ int chooseStone(int placeStone, int * pf)
     {
         stone = rand()%16;
 
-        if(testStone(stone,placeStone, pf)==EXIT_SUCCESS)
+        if(testStone(stone,placeStone)==EXIT_SUCCESS)
         {
 
             check = 1;
@@ -149,14 +149,14 @@ char* think (sharedmem * shm)
     while( check == 0)
     {
         move = rand()%16;
-        if (*(shm->pf+move) == -1 )
+        if (*(pf+move) == -1 )
             check= 1;
     }
 
 if (formatMove(move)==NULL) {
     return NULL; }
 
-    sprintf(reply,"PLAY %s,%d",formatMove(move),chooseStone(shm->nextStone, shm->pf));
+    sprintf(reply,"PLAY %s,%d",formatMove(move),chooseStone(shm->nextStone));
     printf("\n%s\n",reply);
     return reply;
 
