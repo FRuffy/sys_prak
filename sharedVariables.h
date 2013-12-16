@@ -20,8 +20,7 @@ typedef struct sharedmem {
         pid_t pidKid;
         char gameID[MAXGAMEID];
         char gameName[MAXGAMENAME];
-        int playerCount, thinkTime, fieldX, fieldY, nextStone, pfID;
-        int *pf;
+        int playerCount, thinkTime, fieldX, fieldY, nextStone;
         struct spieler {
                 int playerNumber;
                 char playerName[MAXPLAYERNAME];
@@ -31,10 +30,11 @@ typedef struct sharedmem {
 }sharedmem;
 
 FILE* logdatei;
+int pfID;
+int *pf;
 int fd[2]; // fuer Pipe
 int firstsig; // um zu uberpruefen ob Signal zum ersten mal eintrifft
 
 
 
 #endif
-
