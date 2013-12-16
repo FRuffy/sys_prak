@@ -27,7 +27,8 @@ if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
 size = recv(sock, buffer, BUFFR - 1, 0);
 		if (size > 0)
 			buffer[size] = '\0';
-		printf("\nRECIEVESERVERINFO2000: %s\n", buffer);
+	sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
+	printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
 
 }
 else
