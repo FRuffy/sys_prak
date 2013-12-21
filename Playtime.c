@@ -9,19 +9,11 @@
 #include "auxiliaryFunctions.h"
 
 #define BUFFR 512
-/* Diese Funktion funktioniert NICHT während eines Spieles, da der Server hier andere Felder zurückschickt"
- Es scheint, dass der Connector diese Schliefen übernehmen muss.
- Evtl diese Funktion einfach in Serverinfo übernehmen und dann mit einer anderen weiterarbeiten.
- */
-/*Edit:
- Habs hinbekommen, diese Funktion funktioniert jetzt auch während des Spieles und kann vom Connector zur Kommunikation
- verwendet werden. Der untere auskommentierte Teil ist die alte Version, falls jemand nachvollziehen möchte was hier
- hier eigentlich gemacht wird */
 
 int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 	int size;
 
-// if then else, falls WAIT zurücgegeben wird.
+// if then else, falls WAIT zuruecgegeben wird.
 
 if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
 size = recv(sock, buffer, BUFFR - 1, 0);
@@ -55,7 +47,7 @@ if(strcmp(buffer,"+ WAIT\n") == 0)
 		char playerName[BUFFR];
 		sscanf(buffer, "%*s %*s %d %s", &playerNumber, playerName);
 		printf("\nDas Spiel ist zu ende. Der Gewinner ist: %d - %s\n", playerNumber, playerName);
-		//Return 2, für Spiel beendet. Looper gibt dann EXIT_SUCCESS(1) zurück.
+		//Return 2, fuer Spiel beendet. Looper gibt dann EXIT_SUCCESS(1) zurueck.
 		return 2;
 	}
 }
@@ -101,31 +93,31 @@ else
 	printf("Stein %d ist zu setzen!\n\n",shm->nextStone);
 	printf("Unser momentanes Spielfeld. Groesse: %d x %d\n",shm->fieldX, shm->fieldY);
 
-	/* @FLO bitte eine if clause Einfügen die checkt ob pfID bereits existiert, falls ja die Erstellung ignorieren.
+	/* @FLO bitte eine if clause Einfuegen die checkt ob pfID bereits existiert, falls ja die Erstellung ignorieren.
 	 Die Funktion wird warscheinlich oft benutzt werden */
-printf("\n%d\n",pfID);
+printf("\n%d\n",shm->pfID);
 
 	//Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren und einhaengen (2x Groesse von fieldX wegen 4 Merkmalen pro Stein!)
-	if (pfID == 0) {
-	pfID = shmget(KEY, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)),IPC_CREAT  | 0775 ); 	writelog(logdatei,AT);
-	if (pfID < 1)
-        	{
-		printf("KIND: Error: No pf-SHM");
-		return EXIT_FAILURE;
-	}
-	pf = shmat(pfID, 0, 0);writelog(logdatei,AT); //pf einhaengen
+	if (shm->pfID == 0) {
+		shm->pfID = shmget(KEY, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)),IPC_CREAT  | 0775 ); 	writelog(logdatei,AT);
+		if (shm->pfID < 1)
+				{
+			printf("KIND: Error: No pf-SHM");
+			return EXIT_FAILURE;
+		}
+		shm->pf = shmat(shm->pfID, 0, 0);writelog(logdatei,AT); //pf einhaengen
 	}
 		printf("\nSoweit kommen wir noch.\n");
 
 
 
-	if (pf == (void *) -1)//Im Fehlerfall pointed pf auf -1
+	if (shm->pf == (void *) -1)//Im Fehlerfall pointed pf auf -1
 	{
 		fprintf(stderr, "Fehler, pf-shm: %s\n", strerror(errno));
 		writelog(logdatei,AT);
 	}
 		printf("\nSoweit kommen wir noch.2\n");
-printf("\n%d\n",pfID);
+printf("\n%d\n",shm->pfID);
 
 	readGameField(buffer, shm);
 	printGameField(shm);
