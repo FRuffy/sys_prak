@@ -85,63 +85,41 @@ char* formatMove(int move)
     return NULL;
 }
 
-int testStone(int stone,int placeStone)
+int testStone(int stone,int placeStone, int *pf)
 {
 
     int i=0;
     for (i=0; i<16; i++)
     {
-
         if (*(pf+i) == stone || stone == placeStone)
         {
-
             return EXIT_FAILURE;
         }
     }
     return EXIT_SUCCESS;
 
 }
-int chooseStone(int placeStone)
+int chooseStone(int placeStone, int *pf)
 {
     srand(time(NULL));
-
     int check = 0;
-
     int stone;
-
 
     while( check== 0)
     {
         stone = rand()%16;
-
-        if(testStone(stone,placeStone)==EXIT_SUCCESS)
+        if(testStone(stone,placeStone,pf)==EXIT_SUCCESS)
         {
-
             check = 1;
         }
-
-
-
     }
-
     return stone;
 }
 
-
 char* think (sharedmem * shm)
 {
-
     char* reply = malloc(sizeof(char)*15);
-
     srand(time(NULL));
-
-
-
-
-
-
-
-
 
     int check = 0;
     int move;
@@ -149,24 +127,19 @@ char* think (sharedmem * shm)
     while( check == 0)
     {
         move = rand()%16;
-        if (*(pf+move) == -1 )
+        if (*(shm->pf+move) == -1 )
             check= 1;
     }
 
 if (formatMove(move)==NULL) {
     return NULL; }
 
-    sprintf(reply,"PLAY %s,%d",formatMove(move),chooseStone(shm->nextStone));
+    sprintf(reply,"PLAY %s,%d",formatMove(move),chooseStone(shm->nextStone, shm->pf));
     printf("\n%s\n",reply);
     return reply;
-
-
-
-
-
 }
 
-// Ender der KI vom Fabian
+// Ende der KI vom Fabian
 
 /**
  * Thinker.
@@ -187,9 +160,6 @@ strcpy(move4pipe,think(shm));
         perror ("\nFehler bei write().\n");
         return EXIT_FAILURE;
     }
-
-
-
     else
     {
         printf("\nVATER: Thinker hat Spielzug in pipe fertiggeschrieben \n");
