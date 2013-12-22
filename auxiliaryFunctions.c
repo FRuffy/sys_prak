@@ -6,7 +6,6 @@
 #include <sys/types.h>
 #include "sharedVariables.h"
 
-
 /* Haengt /n an den String fuer den Server an */
 void sendReplyFormatted(int sock, char* reply)
 {
@@ -19,14 +18,11 @@ void sendReplyFormatted(int sock, char* reply)
 }
 
 /* Eine simple umgedrehte strcat Funktion um custom strings zu uebergeben, die fuer die korrekte uebertragung noetig sind */
-char* antistrcat(char* dest, char* src)
+int antistrcat(char* dest, char* src, char* temp)
 {
-    char * container;
-    container = malloc(sizeof(char)*(strlen(dest)+strlen(src)+1));
-    strcpy(container,src);
-    strcat(container, dest);
-
-    return container;
+    strcpy(temp,src);
+    strcat(temp, dest);
+    return EXIT_SUCCESS;
 }
 
 /**
