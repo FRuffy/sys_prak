@@ -23,7 +23,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 	char* temp = malloc(sizeof(char)*256);
 	char* buffer = malloc(sizeof(char) * BUFFR);
 	if (reader == NULL || temp == NULL || buffer == NULL) {
-		free(reader); free(temp); free(buffer);
+		free(reader); free(temp); free(buffer); perror("Fehler bei malloc");
 		return EXIT_FAILURE;
 	}
 
