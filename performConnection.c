@@ -19,14 +19,13 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 	//char readbuffer[n]; //Hier wird der Spielzug-String aus der Pipe abgespeichert.
 
 	int size; //size zur Fehlerbehandlung fuer recv
-	char* reader;
-	char* temp;
-	reader = malloc(sizeof(char) * 20);
+	char* reader = malloc(sizeof(char) * 20);
+	char* temp = malloc(sizeof(char)*256);
 	char* buffer = malloc(sizeof(char) * BUFFR);
-	// temp = malloc(sizeof(char)*256);
-	//strcpy(gameID,"ID fm1y4PiVKfU");
-	//strcpy(gameID,"ID 528902d1b0074");
-	//strcpy(gameID,"ID lQrL8n8sTKs");
+	if (reader == NULL || temp == NULL || buffer == NULL) {
+		free(reader); free(temp); free(buffer);
+		return EXIT_FAILURE;
+	}
 
 	/* Teil 1: Lese die Client-Version des Servers und antworte mit eigener (formatierten) Version
 	 Behandle die Antwort des Servers */
@@ -136,9 +135,9 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 		return EXIT_FAILURE;
 
 	}
-	/* Hier fängt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
+	/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
 	 und mit dem Thinker zusammenarbeitet, wie das genauer implementiert wird, weiß ich leider noch nicht.
-	 @Harun würdest du das machen?
+	 @Harun wuerdest du das machen?
 
 	 Harun: muss ich mir noch ueberlegen, wenn jemand ne Idee hat bitte schreiben
 	 */
