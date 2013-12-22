@@ -17,71 +17,22 @@
 
 char* formatMove(int move)
 {
-
-    if (move == 0)
-    {
-        return "A1";
-    }
-    if (move == 1)
-    {
-        return "B1";
-    }
-    if (move == 2)
-    {
-        return "C1";
-    }
-    if (move == 3)
-    {
-        return "D1";
-    }
-    if (move == 4)
-    {
-        return "A2";
-    }
-    if (move == 5)
-    {
-        return "B2";
-    }
-    if (move == 6)
-    {
-        return "C2";
-    }
-    if (move == 7)
-    {
-        return "D2";
-    }
-    if (move == 8)
-    {
-        return "A3";
-    }
-    if (move == 9)
-    {
-        return "B3";
-    }
-    if (move == 10)
-    {
-        return "C3";
-    }
-    if (move == 11)
-    {
-        return "D3";
-    }
-    if (move == 12)
-    {
-        return "A4";
-    }
-    if (move == 13)
-    {
-        return "B4";
-    }
-    if (move == 14)
-    {
-        return "C4";
-    }
-    if (move == 15)
-    {
-        return "D4";
-    }
+    if (move == 0)  return "A1";
+    if (move == 1)  return "B1";
+    if (move == 2)  return "C1";
+    if (move == 3)  return "D1";
+    if (move == 4)  return "A2";
+    if (move == 5)  return "B2";
+    if (move == 6)  return "C2";
+    if (move == 7)  return "D2";
+    if (move == 8)  return "A3";
+    if (move == 9)  return "B3";
+    if (move == 10) return "C3";
+    if (move == 11) return "D3";
+    if (move == 12) return "A4";
+    if (move == 13) return "B4";
+    if (move == 14) return "C4";
+    if (move == 15) return "D4";
     return NULL;
 }
 
@@ -119,6 +70,7 @@ int chooseStone(int placeStone, int *pf)
 char* think (sharedmem * shm)
 {
     char* reply = malloc(sizeof(char)*15);
+    if (NULL == reply) perror("Fehler bei malloc"); return (char*) EXIT_FAILURE;
     srand(time(NULL));
 
     int check = 0;
@@ -153,6 +105,7 @@ int thinker(sharedmem * shm)
     int n=15; // Max Groesse des Spielzug strings in Bytes.
     printf("VATER: habe ein Signal erhalten, berechne Spielzug \n");
     char* move4pipe = malloc(sizeof(char)*10);
+    if (move4pipe == NULL) perror("Fehler bei malloc"); return EXIT_FAILURE;
 
 strcpy(move4pipe,think(shm));
     if ((write (fd[1], move4pipe, n)) < 9)   // Falls kleiner 9 ist der Spielzug String falsch. Ansonsten wird in die Pipe geschrieben.
