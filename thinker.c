@@ -70,7 +70,8 @@ int chooseStone(int placeStone, int *pf)
 char* think (sharedmem * shm)
 {
     char* reply = malloc(sizeof(char)*15);
-    if (NULL == reply) perror("Fehler bei malloc"); return (char*) EXIT_FAILURE;
+    // if (NULL == reply) perror("Fehler bei malloc"); return (char*) EXIT_FAILURE; 
+    //vonFlo: Hat hier jemand eine Idee fuer die Fehlerbehandlung? Die Zeile oben fuehrt wegen dem cast zu nem SegFault - ohne cast kommt Fehler (...) makes integer from Pointer without a cas
     srand(time(NULL));
 
     int check = 0;
