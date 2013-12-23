@@ -73,9 +73,6 @@ int main (int argc, char** argv )
         shmdt(shm->pf);
         shmdt(shm);
         free(conf);
-        shmctl(shm->pfID,IPC_RMID, NULL); //zerstoere pf SHM
-
-
     }
     else
     {
@@ -141,12 +138,12 @@ int main (int argc, char** argv )
             if (result!=0) printf("VATER: Beende mich selbst... \n"); // ueberprueft ob Kind noch existiert
         }
         while (result == 0); // so lange Kind noch existiert
+        free(conf);
         shmdt(shm->pf);
         shmdt(shm);
         shmctl(shmID,IPC_RMID, NULL);
-        free(conf);
+        shmctl(KEY,IPC_RMID, NULL); //zerstoere pf SHM
     }
-
     fclose(logdatei);
     return EXIT_SUCCESS;
 }
