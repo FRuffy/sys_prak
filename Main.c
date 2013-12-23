@@ -62,7 +62,6 @@ int main (int argc, char** argv )
         shmdt(shm);
         shmctl(shmID,IPC_RMID, NULL);
         fclose(logdatei);
-        free(conf);
         return EXIT_FAILURE;
     }
     else if (pid == 0)
@@ -73,6 +72,9 @@ int main (int argc, char** argv )
         initConnection(argc, argv,shm,conf);
         shmdt(shm->pf);
         shmdt(shm);
+        free(conf);
+        shmctl(shm->pfID,IPC_RMID, NULL); //zerstoere pf SHM
+
 
     }
     else
@@ -141,13 +143,10 @@ int main (int argc, char** argv )
         while (result == 0); // so lange Kind noch existiert
         shmdt(shm->pf);
         shmdt(shm);
-
-
+        shmctl(shmID,IPC_RMID, NULL);
+        free(conf);
     }
 
-    shmctl(shmID,IPC_RMID, NULL);
-    shmctl(shm->pfID,IPC_RMID, NULL); //zerstoere pf SHM
     fclose(logdatei);
-    free(conf);
     return EXIT_SUCCESS;
 }
