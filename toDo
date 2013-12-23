@@ -12,14 +12,6 @@ solltet ihr auf keinen Fall übergeben sondern
 den Inhalt zwischenspeichern und dann übergeben.
 - Sighandler auslagern
 
-performConnection.c
-- Nicht benötigte Zeilen löschen
-- Fehlerabfrage für malloc fehlt(z25)
-- Also mich wundert, dass ihr gar keine Probleme damit hattet. Ihr
-schreibt nach einem free(z.B. z42) wieder in den tmp
-buffer(z62)
-  -> Ersetzt das free() durch eine Funktion, die den Buffer mit "\0"
-überschreibt.
 
 Looper.c
 - Warum der vergleich mit  einem Makro "status == EXIT_SUCCESS" , dass
@@ -27,9 +19,6 @@ hier nichts zu suchen hat. Bitte Zahlen verwenden
 wenn Rückgabewerte abgefragt werden.(Hab ich auch noch woanders
 gesehen)
 - Kommentieren :-P
-
-auxiliaryFunctions.c 
-- Malloc Fehlerabfrage fehlt (z44)
 
 config.c
 - printfs entfernen bzw. durch perror, stdout etc. ersetzen (z.B z50)
@@ -68,3 +57,32 @@ in initConnection.c und falls der Block nicht selbsterklärend ist
 darüber funktion kommentieren.
 Abschließend kann ich nur sagen löscht die sharedvariables.h und benutzt
 h-files bitte richtig.
+
+
+==========================================================================
+Bereits erledigt (einfach hier runter kopieren)
+==========================================================================
+
+22.12. - Flo
+performConnection.c
+- Nicht benötigte Zeilen löschen
+- Fehlerabfrage für malloc fehlt(z25)
+- Also mich wundert, dass ihr gar keine Probleme damit hattet. Ihr
+schreibt nach einem free(z.B. z42) wieder in den tmp
+buffer(z62)
+  -> Ersetzt das free() durch eine Funktion, die den Buffer mit "\0"
+überschreibt.
+
+--------------------------------------------------------------------------
+
+23.12. - Flo
+auxiliaryFunctions.c 
+- Malloc Fehlerabfrage fehlt (z44)
+
+--------------------------------------------------------------------------
+Datum - Name
+
+--------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------
