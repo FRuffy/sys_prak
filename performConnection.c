@@ -20,7 +20,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 
 	int size; //size zur Fehlerbehandlung fuer recv
 	char* reader = malloc(sizeof(char) * 20);
-	char* temp = malloc(sizeof(char)*256);
+	char* temp = malloc(sizeof(char) * BUFFR);
 	char* buffer = malloc(sizeof(char) * BUFFR);
 	if (reader == NULL || temp == NULL || buffer == NULL) {
 		free(reader); free(temp); free(buffer); perror("Fehler bei malloc");
@@ -36,9 +36,8 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 		buffer[size] = '\0';
 	printf("\nDie Version des Servers ist: %s\n", reader);
 
-	temp = antistrcat(conf->version, "VERSION ");
+	antistrcat(conf->version, "VERSION ", temp);
 	sendReplyFormatted(sock, temp);
-	free(temp);
 
 	size = recv(sock, buffer, BUFFR - 1, 0);
 	if (size > 0)
@@ -49,6 +48,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 				conf->version);
 		free(buffer);
 		free(reader);
+		free(temp);
 		return EXIT_FAILURE;
 	} else {
 		printf(
@@ -58,9 +58,8 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 	/* Teil 2: Der Server erwartet Game-ID, schicke diese und behandle Antwort.
 	 Falls die ID fehlerhart oder das Spiel des Servers nicht Quarto ist wird die Verbindung beendet*/
 
-	temp = antistrcat(shm->gameID, "ID ");
+	antistrcat(shm->gameID, "ID ", temp);
 	sendReplyFormatted(sock, temp);
-	free(temp);
 	size = recv(sock, buffer, BUFFR - 1, 0);
 	if (size > 0)
 		buffer[size] = '\0';
@@ -71,12 +70,14 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 				"\nDie uebergebene Game-ID fehlt oder ist fehlerhaft! Beende Verbindung\n");
 		free(buffer);
 		free(reader);
+		free(temp);
 		return EXIT_FAILURE;
 	} else if (strcmp(reader, "Quarto") != 0) {
 		printf(
 				"\nDas Spiel, das der Server spielt, ist nicht Quarto! Beende Verbindung.\n");
 		free(buffer);
 		free(reader);
+		free(temp);
 		return EXIT_FAILURE;
 	} else {
 		printf("\nDer Server moechte %s spielen. Und wir auch!\n", reader);
@@ -92,9 +93,8 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 
 	sscanf(buffer, "%*s%s", shm->gameName);
 	printf("\nSpiel: %s\n", shm->gameName); //Zeige Spielnamen an, schneide das "+" ab
-	temp = antistrcat(conf->playernumber, "PLAYER ");
+	antistrcat(conf->playernumber, "PLAYER ", temp);
 	sendReplyFormatted(sock, temp);
-	free(temp);
 	size = recv(sock, buffer, BUFFR - 1, 0);
 	if (size > 0)
 		buffer[size] = '\0';
@@ -110,6 +110,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 		}
 		free(buffer);
 		free(reader);
+		free(temp);
 		return EXIT_FAILURE;
 	} else {
 		sscanf(buffer, "%*s %*s %d %s", &(shm->player[0].playerNumber),
@@ -126,12 +127,14 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 		printf("\nFehler bei Uebermittlung der Spielparameter!\n");
 		free(buffer);
 		free(reader);
+		free(temp);
 		return EXIT_FAILURE;
 	}
 //Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden
 	if (recvServerInfo(buffer, shm) == NULL) {
 		free(buffer);
 		free(reader);
+		free(temp);
 		return EXIT_FAILURE;
 
 	}
@@ -148,5 +151,6 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 
 	free(buffer);
 	free(reader);
+	free(temp);
 	return EXIT_SUCCESS;
 }
