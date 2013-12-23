@@ -11,6 +11,8 @@ void sendReplyFormatted(int sock, char* reply)
 {
     char * container;
     container = malloc(sizeof(char)*(strlen(reply)+2));
+    if (container == NULL) perror("Fehler bei malloc"); return EXIT_FAILURE;
+
     strcpy(container,reply);
     strcat(container, "\n");
     send(sock,container,strlen(container),0);
@@ -38,6 +40,7 @@ int readGameField(char *buffer,sharedmem * shm)
 {
     char* buffer2;
     buffer2 = malloc(sizeof(char)*128);
+    if (buffer2 == NULL) perror("Fehler bei malloc"); return EXIT_FAILURE;
     char *buffer2temp = buffer2; //buffer2 wird mit strtok veraendert, fuer free wird eine Kopie benoetigt
     int i=0, znr=0;
     char tmp= '*';
