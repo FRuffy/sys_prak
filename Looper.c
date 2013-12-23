@@ -21,8 +21,10 @@ int doMove(int sock, char* buffer,sharedmem * shm) {
 	if (strcmp(buffer, "+ OKTHINK\n") != 0)
 		size = recv(sock, buffer, BUFFR - 1, 0);
 
-	sendReplyFormatted(sock, think(shm));
+	char* reply = malloc(sizeof(char)*15);
 
+	sendReplyFormatted(sock, think(shm, reply));
+	free(reply);
 
 	size = recv(sock, buffer, BUFFR - 1, 0);
 	if (size > 0)
