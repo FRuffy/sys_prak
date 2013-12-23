@@ -67,11 +67,9 @@ int chooseStone(int placeStone, int *pf)
     return stone;
 }
 
-char* think (sharedmem * shm)
+char* think(sharedmem * shm, char* reply)
 {
-    char* reply = malloc(sizeof(char)*15);
-    // if (NULL == reply) perror("Fehler bei malloc"); return (char*) EXIT_FAILURE; 
-    //vonFlo: Hat hier jemand eine Idee fuer die Fehlerbehandlung? Die Zeile oben fuehrt wegen dem cast zu nem SegFault - ohne cast kommt Fehler (...) makes integer from Pointer without a cas
+
     srand(time(NULL));
 
     int check = 0;
@@ -108,7 +106,11 @@ int thinker(sharedmem * shm)
     char* move4pipe = malloc(sizeof(char)*10);
     if (move4pipe == NULL) perror("Fehler bei malloc"); return EXIT_FAILURE;
 
-strcpy(move4pipe,think(shm));
+    //unschoen: das mit dem reply muss nochmal geaendert werden, nur temp Loesung
+    char* reply = malloc(sizeof(char)*15);
+    strcpy(move4pipe,think(shm, reply));
+	free(reply);
+
     if ((write (fd[1], move4pipe, n)) < 9)   // Falls kleiner 9 ist der Spielzug String falsch. Ansonsten wird in die Pipe geschrieben.
     {
         perror ("\nFehler bei write().\n");
