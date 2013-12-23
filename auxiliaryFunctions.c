@@ -38,6 +38,7 @@ int readGameField(char *buffer,sharedmem * shm)
 {
     char* buffer2;
     buffer2 = malloc(sizeof(char)*128);
+    char *buffer2temp = buffer2; //buffer2 wird mit strtok veraendert, fuer free wird eine Kopie benoetigt
     int i=0, znr=0;
     char tmp= '*';
     buffer2 = strstr(buffer,"+ FIELD");
@@ -64,6 +65,7 @@ int readGameField(char *buffer,sharedmem * shm)
     		    }
     		    buffer2 = strtok( NULL, "\n" );
     	        }
+    		free(buffer2temp);
     		return EXIT_SUCCESS;
     	}
 
