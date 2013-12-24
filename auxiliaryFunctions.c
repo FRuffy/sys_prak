@@ -6,20 +6,28 @@
 #include <sys/types.h>
 #include "sharedVariables.h"
 
-/* Haengt /n an den String fuer den Server an */
+/**
+ * Haengt /n an den String fuer den Server an
+ *
+ * @param  Socket, Pointer auf String wo das \n dran soll
+ * @return Pointer auf String mit angehaengtem \n
+ */
 void sendReplyFormatted(int sock, char* reply)
 {
     char * container;
     container = malloc(sizeof(char)*(strlen(reply)+2));
-    if (container == NULL) perror("Fehler bei malloc"); return EXIT_FAILURE;
-
     strcpy(container,reply);
     strcat(container, "\n");
     send(sock,container,strlen(container),0);
     free(container);
 }
 
-/* Eine simple umgedrehte strcat Funktion um custom strings zu uebergeben, die fuer die korrekte uebertragung noetig sind */
+/**
+ * umgedrehte strcat Funktion um custom strings zu uebergeben, die fuer die korrekte uebertragung noetig sind
+ *
+ * @param  Pointer
+ * @return 
+ */
 int antistrcat(char* dest, char* src, char* temp)
 {
     strcpy(temp,src);
@@ -28,19 +36,20 @@ int antistrcat(char* dest, char* src, char* temp)
 }
 
 /**
-* readGameField bekommt folgendes uebergeben und liesst es in den pf-SHM ein
-* + 4 * * 15 *
-* + 3 * * * *
-* + 2 * * * *
-* + 1 * * * *
-* + ENDFIELD
-*/
-
+ * readGameField bekommt folgendes uebergeben und liesst es in den pf-SHM ein
+ * + 4 * * 15 *
+ * + 3 * * * *
+ * + 2 * * * *
+ * + 1 * * * *
+ * + ENDFIELD
+ *
+ * @param  Puffer, SHM
+ * @return 0 (Eingelesenes Spielfeld in *pf)
+ */
 int readGameField(char *buffer,sharedmem * shm)
 {
     char* buffer2;
     buffer2 = malloc(sizeof(char)*128);
-    if (buffer2 == NULL) perror("Fehler bei malloc"); return EXIT_FAILURE;
     char *buffer2temp = buffer2; //buffer2 wird mit strtok veraendert, fuer free wird eine Kopie benoetigt
     int i=0, znr=0;
     char tmp= '*';
@@ -72,10 +81,12 @@ int readGameField(char *buffer,sharedmem * shm)
     		return EXIT_SUCCESS;
     	}
 
-/*
-* printGameField gibt aktuellen Zustand des Spielfeldes aus
-*/
-
+/**
+ * gibt Spielfeld aus
+ *
+ * @param  Pointer auf SHM
+ * @return 0 (Spielfeld auf Konsole)
+ */
 int printGameField(sharedmem * shm)
 {
     int i,j;
