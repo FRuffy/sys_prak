@@ -13,8 +13,14 @@
 #include "auxiliaryFunctions.h"
 #include <time.h>
 
-// Anfang der KI vom Fabian
+// Anfang der KI
 
+/**
+ * Umsetzung SpielfeldNr => Spielfeldkoordinaten (wie von Server benoetigt)
+ *
+ * @param  SpielfeldNr
+ * @return Spielfeldkoordinaten(wie von Server benoetigt)
+ */
 char* formatMove(int move)
 {
     if (move == 0)  return "A1";
@@ -36,6 +42,12 @@ char* formatMove(int move)
     return NULL;
 }
 
+/**
+ *  Testet ob ein Stein noch verfuegbar ist
+ *
+ * @param  zufaellig ausgewaehlter Stein, naechster zu setzender Stein, Pointer auf Spielfeld
+ * @return "setzbarer" Stein
+ */
 int testStone(int stone,int placeStone, int *pf)
 {
 
@@ -50,6 +62,13 @@ int testStone(int stone,int placeStone, int *pf)
     return EXIT_SUCCESS;
 
 }
+
+/**
+ *  Waehlt zufaelligen Stein aus, testet (mittels testStone) dessen verfuegbarkeit
+ *
+ * @param  placeStone (naechster zu plazierender Stein), Pointer auf Spielfeld
+ * @return "setzbarer" Stein
+ */
 int chooseStone(int placeStone, int *pf)
 {
     srand(time(NULL));
@@ -67,6 +86,12 @@ int chooseStone(int placeStone, int *pf)
     return stone;
 }
 
+/**
+ * Berechnet naechsten Spielzug
+ *
+ * @param  SharedMemory, Pointer fuer naechsten Spielzug
+ * @return berechneter Spielzug
+ */
 char* think(sharedmem * shm, char* reply)
 {
 
@@ -90,7 +115,7 @@ if (formatMove(move)==NULL) {
     return reply;
 }
 
-// Ende der KI vom Fabian
+// Ende der KI
 
 /**
  * Thinker.
@@ -99,7 +124,7 @@ if (formatMove(move)==NULL) {
  *
  * @param  shared memory pointer.
  */
-int thinker(sharedmem * shm)
+int thinker(sharedmem * shm) // DIESER TEIL IST MOMENTAN NOCH OHNE JEGLICHE FUNKTION!!!!!!!!!!!!!
 {
     int n=15; // Max Groesse des Spielzug strings in Bytes.
     printf("VATER: habe ein Signal erhalten, berechne Spielzug \n");
