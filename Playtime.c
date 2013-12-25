@@ -13,13 +13,13 @@
 int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 	int size;
 
-// if then else, falls WAIT zuruecgegeben wird.
+// if then else, falls WAIT zurueckgegeben wird.
 
 if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
 size = recv(sock, buffer, BUFFR - 1, 0);
 		if (size > 0)
 			buffer[size] = '\0';
-	sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
+	sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
 	printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
 
 }
@@ -37,7 +37,7 @@ if(strcmp(buffer,"+ WAIT\n") == 0)
 	while (strcmp(buffer,"+ WAIT\n") == 0);
 	size = recv(sock, buffer, BUFFR-1, 0);
 	if (size > 0) buffer[size]='\0';
-	sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
+	sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
 
 } else if (strncmp(buffer,"+ GAMEOVER", 10) == 0) {
 	if (strcmp(buffer,"+ GAMEOVER\n") == 0) {
@@ -53,7 +53,7 @@ if(strcmp(buffer,"+ WAIT\n") == 0)
 }
 else
 {
-	sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->nextStone),&(shm->fieldX), &(shm->fieldY));
+	sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
 	printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
 }
 
@@ -90,7 +90,7 @@ else
 
 	 */
 
-	printf("Stein %d ist zu setzen!\n\n",shm->nextStone);
+	printf("Stein %d ist zu setzen!\n\n",shm->StoneToPlace);
 	printf("Unser momentanes Spielfeld. Groesse: %d x %d\n",shm->fieldX, shm->fieldY);
 
 	/* @FLO bitte eine if clause Einfuegen die checkt ob pfID bereits existiert, falls ja die Erstellung ignorieren.
@@ -105,22 +105,16 @@ printf("\n%d\n",shm->pfID);
 			printf("KIND: Error: No pf-SHM");
 			return EXIT_FAILURE;
 		}
-		shm->pf = shmat(shm->pfID, 0, 0);writelog(logdatei,AT); //pf einhaengen
+		shm->pf = shmat(shm->pfID, 0, 0); writelog(logdatei,AT); //pf einhaengen
 	}
-		printf("\nSoweit kommen wir noch.\n");
-
-
 
 	if (shm->pf == (void *) -1)//Im Fehlerfall pointed pf auf -1
 	{
 		fprintf(stderr, "Fehler, pf-shm: %s\n", strerror(errno));
 		writelog(logdatei,AT);
 	}
-		printf("\nSoweit kommen wir noch.2\n");
-printf("\n%d\n",shm->pfID);
 
 	readGameField(buffer, shm);
-	printGameField(shm);
 
 	return EXIT_SUCCESS;
 }
