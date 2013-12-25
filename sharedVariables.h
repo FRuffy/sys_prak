@@ -17,9 +17,8 @@ typedef struct config_struct {
 typedef struct sharedmem {
         pid_t pidDad;
         pid_t pidKid;
-        char gameID[MAXGAMEID];
-        char gameName[MAXGAMENAME];
-        int playerCount, thinkTime, fieldX, fieldY, nextStone, pfID;
+        char gameID[MAXGAMEID], gameName[MAXGAMENAME], nextField[2];
+        int playerCount, thinkTime, thinking, pleaseThink, fieldX, fieldY, StoneToPlace, nextStone, pfID;
         int *pf;
         struct spieler {
                 int playerNumber;
@@ -31,6 +30,5 @@ typedef struct sharedmem {
 
 FILE* logdatei;
 int fd[2]; // fuer Pipe
-int firstsig; // um zu uberpruefen ob Signal zum ersten mal eintrifft
-
+sharedmem *shm; // shm MUSS global sein (wegen Signal)
 #endif
