@@ -26,7 +26,7 @@ void sendReplyFormatted(int sock, char* reply)
  * umgedrehte strcat Funktion um custom strings zu uebergeben, die fuer die korrekte uebertragung noetig sind
  *
  * @param  Pointer
- * @return 
+ * @return
  */
 int antistrcat(char* dest, char* src, char* temp)
 {
@@ -87,7 +87,7 @@ int readGameField(char *buffer,sharedmem * shm)
  * @param  Pointer auf SHM
  * @return 0 (Spielfeld auf Konsole)
  */
-int printGameField(sharedmem * shm)
+int printGameField()
 {
     int i,j;
     for (i=shm->fieldY-1; i>=0; i--)
