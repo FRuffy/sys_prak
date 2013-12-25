@@ -8,10 +8,11 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
 #include "sharedVariables.h"
 #include "thinker.h"
 #include "auxiliaryFunctions.h"
-#include <time.h>
+#include "errmmry.h"
 
 // Anfang der KI
 
@@ -45,16 +46,16 @@ char* formatMove(int move)
 /**
  *  Testet ob ein Stein noch verfuegbar ist
  *
- * @param  zufaellig ausgewaehlter Stein, naechster zu setzender Stein, Pointer auf Spielfeld
+ * @param  Pointer auf Spielfeld, zufaellig ausgewaehlter Stein
  * @return "setzbarer" Stein
  */
-int testStone(int stone,int placeStone, int *pf)
+int testStone(sharedmem * shm, int stone)
 {
 
     int i=0;
     for (i=0; i<16; i++)
     {
-        if (*(pf+i) == stone || stone == placeStone)
+        if (stone == *(shm->pf+i) || stone == shm->StoneToPlace)
         {
             return EXIT_FAILURE;
         }
@@ -66,10 +67,10 @@ int testStone(int stone,int placeStone, int *pf)
 /**
  *  Waehlt zufaelligen Stein aus, testet (mittels testStone) dessen verfuegbarkeit
  *
- * @param  placeStone (naechster zu plazierender Stein), Pointer auf Spielfeld
+ * @param  Pointer auf Spielfeld
  * @return "setzbarer" Stein
  */
-int chooseStone(int placeStone, int *pf)
+void chooseStone(sharedmem * shm)
 {
     srand(time(NULL));
     int check = 0;
@@ -78,73 +79,73 @@ int chooseStone(int placeStone, int *pf)
     while( check== 0)
     {
         stone = rand()%16;
-        if(testStone(stone,placeStone,pf)==EXIT_SUCCESS)
+        if(testStone(shm, stone)==EXIT_SUCCESS)
         {
             check = 1;
         }
     }
-    return stone;
+    shm->nextStone = stone;
 }
 
 /**
  * Berechnet naechsten Spielzug
  *
- * @param  SharedMemory, Pointer fuer naechsten Spielzug
+ * @param
  * @return berechneter Spielzug
  */
-char* think(sharedmem * shm, char* reply)
+void think()
 {
+	printGameField(shm);
+	printf("\nStarting to Think\n");
 
     srand(time(NULL));
-
     int check = 0;
     int move;
 
+    // Suche freien Platz auf Spielfeld
     while( check == 0)
     {
-        move = rand()%16;
-        if (*(shm->pf+move) == -1 )
+    	move = rand()%16;
+        if (*(shm->pf + move) == -1 )
             check= 1;
+        	strcpy(shm->nextField, formatMove(move));
     }
+    // Wofuer ist das ? ? ? ? ? (ich kapier es nicht, drum auskommentiert) Flo - 25.12.2013
+    //if (formatMove(move)==NULL) {
+    //return NULL; }
 
-if (formatMove(move)==NULL) {
-    return NULL; }
-
-    sprintf(reply,"PLAY %s,%d",formatMove(move),chooseStone(shm->nextStone, shm->pf));
-    printf("\n%s\n",reply);
-    return reply;
+    chooseStone(shm);
 }
 
 // Ende der KI
 
 /**
- * Thinker.
- *
- * Schreibt einen von der KI (siehe oben) berechneten Spielzug in die Pipe
- *
- * @param  shared memory pointer.
- */
-int thinker(sharedmem * shm) // DIESER TEIL IST MOMENTAN NOCH OHNE JEGLICHE FUNKTION!!!!!!!!!!!!!
-{
-    int n=15; // Max Groesse des Spielzug strings in Bytes.
-    printf("VATER: habe ein Signal erhalten, berechne Spielzug \n");
-    char* move4pipe = malloc(sizeof(char)*10);
-    if (move4pipe == NULL) perror("Fehler bei malloc"); return EXIT_FAILURE;
+* Signal Handler.
+*
 
-    //unschoen: das mit dem reply muss nochmal geaendert werden, nur temp Loesung
-    char* reply = malloc(sizeof(char)*15);
-    strcpy(move4pipe,think(shm, reply));
-	free(reply);
+* Definiert, wie auf ein Signal reagiert werden soll.
+*
+* @param  Wert des Signals.
+*/
+void signal_handler(int signum)
+	{
+	(void) signal;
+	    if (signum == SIGUSR1)
+	    {
+	    	shm->pf = shmat(shm->pfID, 0, 0);
 
-    if ((write (fd[1], move4pipe, n)) < 9)   // Falls kleiner 9 ist der Spielzug String falsch. Ansonsten wird in die Pipe geschrieben.
-    {
-        perror ("\nFehler bei write().\n");
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        printf("\nVATER: Thinker hat Spielzug in pipe fertiggeschrieben \n");
-    }
-    free(move4pipe);
-    return EXIT_SUCCESS;
-}
+	    	//Sicherstellen, dass SIGUSR1 vom Kind kam
+	    	if (shm->pleaseThink == 1) {
+	    		shm->pleaseThink = 0;
+	    		think();
+
+	    		char* reply = malloc(sizeof(char)*15);
+//	    		if (reply == NULL) perror("Fehler bei malloc");
+	    	    sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
+	    		write (fd[1], reply, 15); //Spielzug in Pipe schreiben
+	    		shm->thinking = 0; // Denken beendet
+	    		free(reply);
+	    	}
+	    }
+	}
+
