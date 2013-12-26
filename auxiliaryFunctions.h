@@ -12,7 +12,7 @@ char* antistrcat(char* dest, char* src, char* temp);
 int readGameField(char *buffer,sharedmem * shm);
 int printGameField();
 void loop(int sock, char* buffer, sharedmem * shm);
-void signal_handler(int signum);
-
+//void signal_handler(int signum);
+void think( sharedmem *shm);
 
 #endif

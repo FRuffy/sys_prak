@@ -87,7 +87,7 @@ int readGameField(char *buffer,sharedmem * shm)
  * @param  Pointer auf SHM
  * @return 0 (Spielfeld auf Konsole)
  */
-int printGameField()
+int printGameField(sharedmem * shm)
 {
     int i,j;
     for (i=shm->fieldY-1; i>=0; i--)
@@ -105,6 +105,5 @@ int printGameField()
             }
         }
     }
-    printf("\n     A B C D\n");
     return EXIT_SUCCESS;
 }

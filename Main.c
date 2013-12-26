@@ -20,6 +20,7 @@ int main (int argc, char** argv )
     logdatei =fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
     /* Initialisierung der Shared Memory */
+    sharedmem *shm;
     int shmID;
     int shmSize = sizeof(struct sharedmem);
 
@@ -35,16 +36,17 @@ int main (int argc, char** argv )
 
     shm = shmat(shmID, 0, 0); //SHM einhaengen ;
 
-    if (shm == (void *) -1)   //Im Fehlerfall pointed shm auf -1
+    if ( shm == (void *) -1) //Im Fehlerfall pointed shm auf -1
     {
         fprintf(stderr, "Fehler, shm: %s\n", strerror(errno));
         writelog(logdatei,AT);
+        return EXIT_FAILURE;
     }
 
     if (pipe(fd) < 0)
     {
         perror ("Fehler beim Einrichten der Pipe.");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     pid_t pid = 0;
@@ -73,14 +75,45 @@ int main (int argc, char** argv )
     else
     {
         //Elternprozess - soll laut Spezifikation den Thinker implementieren
-    	close(fd[0]);
-    	signal(SIGUSR1, signal_handler);
+        close(fd[0]);
+        void signal_handler(int signum)
+        {
+            int err;
+            (void) signal;
+            if (signum == SIGUSR1)
+            {
+                shm->pf = shmat(shm->pfID, 0, 0);
+                writelog(logdatei,AT);
+                printf("\nSPIELFELDID VATER %d\n",*(shm->pf));
+
+
+                //Sicherstellen, dass SIGUSR1 vom Kind kam
+                if (shm->pleaseThink == 1)
+                {
+                    shm->pleaseThink = 0;
+                    think(shm);
+
+                    char* reply = malloc(sizeof(char)*15);
+
+                    sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
+                    err = 	write (fd[1], reply, 15); //Spielzug in Pipe schreiben
+                    if (err <0)
+                    {
+                        perror("Fehler bei Write");
+                       //Fehlerbehandlung?
+                    }
+                    shm->thinking = 0; // Denken beendet
+                    free(reply);
+                }
+            }
+        }
+        signal(SIGUSR1, signal_handler);
         int status;
         pid_t result;
 
         do
         {
-            result = waitpid(pid, &status, WNOHANG);                        // writelog(logdatei,AT);
+            result = waitpid(pid, &status, WNOHANG); // writelog(logdatei,AT);
             if (result!=0) printf("VATER: Beende mich selbst... \n"); // ueberprueft ob Kind noch existiert
         }
         while (result == 0); // warte so lange Kind existiert

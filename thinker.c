@@ -14,6 +14,7 @@
 #include "auxiliaryFunctions.h"
 #include "errmmry.h"
 
+
 // Anfang der KI
 
 /**
@@ -53,6 +54,7 @@ int testStone(sharedmem * shm, int stone)
 {
 
     int i=0;
+
     for (i=0; i<16; i++)
     {
         if (stone == *(shm->pf+i) || stone == shm->StoneToPlace)
@@ -93,7 +95,7 @@ void chooseStone(sharedmem * shm)
  * @param
  * @return berechneter Spielzug
  */
-void think()
+void think(sharedmem * shm)
 {
 	printGameField(shm);
 	printf("\nStarting to Think\n");
@@ -108,6 +110,8 @@ void think()
     	move = rand()%16;
         if (*(shm->pf + move) == -1 )
             check= 1;
+
+
         	strcpy(shm->nextField, formatMove(move));
     }
     // Wofuer ist das ? ? ? ? ? (ich kapier es nicht, drum auskommentiert) Flo - 25.12.2013
@@ -126,9 +130,9 @@ void think()
 * Definiert, wie auf ein Signal reagiert werden soll.
 *
 * @param  Wert des Signals.
-*/
+*//*
 void signal_handler(int signum)
-	{
+	{ int err;
 	(void) signal;
 	    if (signum == SIGUSR1)
 	    {
@@ -137,15 +141,20 @@ void signal_handler(int signum)
 	    	//Sicherstellen, dass SIGUSR1 vom Kind kam
 	    	if (shm->pleaseThink == 1) {
 	    		shm->pleaseThink = 0;
-	    		think();
+	    		think(shm);
 
 	    		char* reply = malloc(sizeof(char)*15);
 //	    		if (reply == NULL) perror("Fehler bei malloc");
 	    	    sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
-	    		write (fd[1], reply, 15); //Spielzug in Pipe schreiben
+	    	err = 	write (fd[1], reply, 15); //Spielzug in Pipe schreiben
+	    	if (err <0)
+            {
+                perror("Fehler bei Write");
+            }
 	    		shm->thinking = 0; // Denken beendet
 	    		free(reply);
 	    	}
 	    }
 	}
 
+*/

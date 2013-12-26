@@ -39,14 +39,9 @@ int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf)
                 return EXIT_FAILURE;
             }
         }
-
-
         strcpy(shm->gameID,argv[1]);
-
         shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
         shm->pidKid = getpid();
-
-
     }
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -69,9 +64,12 @@ int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf)
         writelog(logdatei,AT);
         return EXIT_FAILURE;
     }
-    performConnection(sock,shm, conf);//Fuehre Prolog Protokoll aus
+    if (performConnection(sock,shm, conf) != 0)//Fuehre Prolog Protokoll aus
+    {
 
-
+        close(sock);
+        return EXIT_FAILURE;
+    }
     close(sock);
 
     return EXIT_SUCCESS;
