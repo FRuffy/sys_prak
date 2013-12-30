@@ -8,7 +8,7 @@
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
 #include <signal.h>
-
+#include "select_h.h"
 #define BUFFR 512
 
 /*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
@@ -157,8 +157,8 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf)
 
      Harun: muss ich mir noch ueberlegen, wenn jemand ne Idee hat bitte schreiben
      */
-    loop(sock, buffer, shm);
-
+   // loop(sock, buffer, shm);
+waitforfds(sock,buffer, shm);
     free(buffer);
     free(reader);
     free(temp);

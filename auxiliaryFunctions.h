@@ -14,5 +14,4 @@ int printGameField();
 void loop(int sock, char* buffer, sharedmem * shm);
 //void signal_handler(int signum);
 void think( sharedmem *shm);
-
 #endif
