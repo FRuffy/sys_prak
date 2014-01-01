@@ -16,10 +16,10 @@
 
 
 // Anfang der KI
-
+//
 /**
  * Umsetzung SpielfeldNr => Spielfeldkoordinaten (wie von Server benoetigt)
- *
+ * UNICOLOR DÜNN ECKIG GANZ
  * @param  SpielfeldNr
  * @return Spielfeldkoordinaten(wie von Server benoetigt)
  */
@@ -43,6 +43,7 @@ char* formatMove(int move)
     if (move == 15) return "D4";
     return NULL;
 }
+
 
 /**
  *  Testet ob ein Stein noch verfuegbar ist
@@ -97,15 +98,23 @@ void chooseStone(sharedmem * shm)
  */
 void think(sharedmem * shm)
 {
-	printGameField(shm);
+    printGameFieldQuarto(shm);
+
+
+	//printGameField(shm);
 	printf("\nStarting to Think\n");
 
     srand(time(NULL));
     int check = 0;
     int move;
-
+/*
+     move = calculateMove(shm);
+     if(move != -1)  {
+        printf("\nMOVE: %d\n",move);
+   strcpy(shm->nextField, formatMove1(move/4));
+ }
     // Suche freien Platz auf Spielfeld
-    while( check == 0)
+  else  */ { while( check == 0)
     {
     	move = rand()%16;
         if (*(shm->pf + move) == -1 )
@@ -117,7 +126,7 @@ void think(sharedmem * shm)
     // Wofuer ist das ? ? ? ? ? (ich kapier es nicht, drum auskommentiert) Flo - 25.12.2013
     //if (formatMove(move)==NULL) {
     //return NULL; }
-
+  }
     chooseStone(shm);
 }
 

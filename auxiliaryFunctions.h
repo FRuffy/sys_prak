@@ -10,8 +10,10 @@ int initConnection(int argc, char** argv,sharedmem * shm, config_struct* conf);
 void sendReplyFormatted(int sock, char* reply);
 char* antistrcat(char* dest, char* src, char* temp);
 int readGameField(char *buffer,sharedmem * shm);
-int printGameField();
+int printGameField( sharedmem *shm);
+int printGameFieldQuarto( sharedmem *shm);
 void loop(int sock, char* buffer, sharedmem * shm);
-//void signal_handler(int signum);
 void think( sharedmem *shm);
+char* byte_to_binary(int n);
+int calculateMove(sharedmem *shm);
 #endif

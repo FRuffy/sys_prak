@@ -14,55 +14,56 @@
 
 #define BUFFR 512
 int doMove1(int sock, char* buffer,sharedmem * shm) {
-	int size;
-	printf("\nDoMove1: %s\n", buffer);
+        int size;
+        printf("\nDoMove1: %s\n", buffer);
 
-	sendReplyFormatted(sock, "THINKING");
-	size = recv(sock, buffer, BUFFR - 1, 0);
-	if (size > 0)
-		buffer[size] = '\0';
-	if (strcmp(buffer, "+ OKTHINK\n") != 0)
-		size = recv(sock, buffer, BUFFR - 1, 0);
-	printf("\nDoMove2: %s\n", buffer);
+        sendReplyFormatted(sock, "THINKING");
+        size = recv(sock, buffer, BUFFR - 1, 0);
+        if (size > 0)
+                buffer[size] = '\0';
+        if (strcmp(buffer, "+ OKTHINK\n") != 0)
+                size = recv(sock, buffer, BUFFR - 1, 0);
+        printf("\nDoMove2: %s\n", buffer);
 
-	// Naechsten Spielzug ausdenken (ueber thinker)
-	shm->thinking = 1;
-	shm->pleaseThink = 1;
-	// Sagt dem Vater, dass er jetzt denken soll
-	kill(shm->pidDad, SIGUSR1);
+        // Naechsten Spielzug ausdenken (ueber thinker)
+        shm->thinking = 1;
+        shm->pleaseThink = 1;
+        // Sagt dem Vater, dass er jetzt denken soll
+        kill(shm->pidDad, SIGUSR1);
 return EXIT_SUCCESS;
 
 }
 int doMove2(int sock, char* buffer) {
-	int size;
+        int size;
 
-	char* reply = malloc(sizeof(char)*15);
-	size= read(fd[0], reply, 15);
-	if (size < 0)
-		perror("Fehler bei  read");
-	printf("\nReplyDoMove: %s\n", reply);
-	sendReplyFormatted(sock, reply);
-	free(reply);
+        char* reply = malloc(sizeof(char)*15);
+        size= read(fd[0], reply, 15);
+        if (size < 0)
+                perror("Fehler bei read");
+        printf("\nReplyDoMove: %s\n", reply);
+        sendReplyFormatted(sock, reply);
+    // sendReplyFormatted(sock, "A1,2");
+        free(reply);
 
 
-	size = recv(sock, buffer, BUFFR - 1, 0);
-	if (size > 0)
-		buffer[size] = '\0';
-	if (strcmp(buffer, "+ MOVEOK\n") == 0) {
+        size = recv(sock, buffer, BUFFR - 1, 0);
+        if (size > 0)
+                buffer[size] = '\0';
+        if (strcmp(buffer, "+ MOVEOK\n") == 0) {
 
-		return EXIT_SUCCESS;
-	}
-	return EXIT_FAILURE;
+                return EXIT_SUCCESS;
+        }
+        return EXIT_FAILURE;
 
 }
 
 /* This function calls select to wait for data to read from */
-/* one of the sockets passed as a parameter.                */
-/* If more than timeout.tv_sec seconds elapses,it returns   */
-/* EXIT_FAILURE hopefully due to game over                  */
-/*                                                          */
-/* @param                                                   */
-/* @return on success, 0 on failure 1                       */
+/* one of the sockets passed as a parameter. */
+/* If more than timeout.tv_sec seconds elapses,it returns */
+/* EXIT_FAILURE hopefully due to game over */
+/* */
+/* @param */
+/* @return on success, 0 on failure 1 */
 int waitforfds(int sock,char* buffer,sharedmem * shm) // nur ein Vorschlag der Parametrisierung, bitte feststellen,
 
                                                //was tatsaechlich benoetigt wird
@@ -75,14 +76,14 @@ int waitforfds(int sock,char* buffer,sharedmem * shm) // nur ein Vorschlag der P
    /* Set time limit. */
    timeout.tv_sec = 10; // hier 10 Sekunden, kann beliebig angepasst werden!
    timeout.tv_usec = 0;
-   /* Create a descriptor set containing our two filedescriptors (Socket and Pipe).  */
+   /* Create a descriptor set containing our two filedescriptors (Socket and Pipe). */
    FD_ZERO(&fds);
    FD_SET(sock, &fds);
    FD_SET(pipe, &fds);
 
    int status = checkServerReply(sock, buffer, shm);
-	int moveStatus;
-	int size;
+        int moveStatus;
+        int size;
 
    do {
 
@@ -109,21 +110,21 @@ doMove1(sock, buffer, shm);
             // Hier folgt Handling fuer das Senden der Antwort an den Server (Read aus Pipe und move senden usw).
 moveStatus = doMove2(sock, buffer);
 
- 	size = recv(sock, buffer, BUFFR - 1, 0); writelog(logdatei,AT);
-			printf("\nBuffer für Playtime: %s\n", buffer);
+         size = recv(sock, buffer, BUFFR - 1, 0); writelog(logdatei,AT);
+                        printf("\nBuffer für Playtime: %s\n", buffer);
 
-		if (size > 0)			buffer[size] = '\0';
-		if (moveStatus != EXIT_FAILURE) {
-			status = checkServerReply(sock, buffer, shm);
-			if (status != 0) {
+                if (size > 0)                        buffer[size] = '\0';
+                if (moveStatus != EXIT_FAILURE) {
+                        status = checkServerReply(sock, buffer, shm);
+                        if (status != 0) {
                 break;
-			}
-		}
+                        }
+                }
 
-		 else {
+                 else {
 
-			break;
-		}
+                        break;
+                }
             }
          // falls select 0 returned heisst die Wartezeit ist ohne Ereigniss abgelaufen
          } else perror("Select timed out, possibly due to game being over. \n");
@@ -131,5 +132,4 @@ moveStatus = doMove2(sock, buffer);
       // solange es zu keinem Timeout kommt, soll die Kommunikation in der Schleife weiterlaufen.
    return EXIT_SUCCESS; // Falls die Schleife ohne Probleme zu Ende durchlaeuft
 }
-
 

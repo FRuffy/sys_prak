@@ -53,7 +53,7 @@ FILE* openFile(char* name)
 
     if ((file=fopen(name,"r")) == NULL)
     {
-        perror("Datei konnte nicht geoeffnet werden");
+        perror("Konfigurationsdatei konnte nicht geoeffnet werden oder existiert nicht!");
         return file;
     }
     return file;
@@ -65,14 +65,16 @@ int readConfig(FILE* configFile, config_struct* conf)
     int i;
     char* pName = malloc(sizeof(char)*128*10);
     char* pValue = malloc(sizeof(char)*128*10);
-
-    while ((fscanf(configFile," %[^ =] = %s \n",&pName[count*128],&pValue[count*128])) != EOF)
+    //while ((fscanf(configFile," %[^ =] = %s \n",&pName[count*128],&pValue[count*128])) != EOF)
+//fix:
+    while ((fscanf(configFile," %[^ =] =%*[ ] %s \n",&pName[count*128],&pValue[count*128])) != EOF)
     {
         count++;
     }
 
     for (i = 0; i< count; i++)
     {
+        //printf("\nNAME: %s WERT: %s\n",&pName[i*128],&pValue[i*128]); //Debugging
         checkName(&pName[i*128],&pValue[i*128],conf); //Prüfe den Parameternamen und weise anschließend den korrekten Wert der Struktur zu
     }
 

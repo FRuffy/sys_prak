@@ -118,10 +118,11 @@ int main (int argc, char** argv )
         }
         while (result == 0); // warte so lange Kind existiert
 
-        free(conf);
+        shmdt(shm->pf);
         shmdt(shm);
         shmctl(shmID,IPC_RMID, NULL);
         shmctl(KEY,IPC_RMID, NULL); //zerstoere pf SHM
+        free(conf);
     }
     fclose(logdatei);
     return EXIT_SUCCESS;
