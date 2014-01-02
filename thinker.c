@@ -19,7 +19,7 @@
 //
 /**
  * Umsetzung SpielfeldNr => Spielfeldkoordinaten (wie von Server benoetigt)
- * UNICOLOR D�NN ECKIG GANZ
+ * UNICOLOR DÜNN ECKIG GANZ
  * @param  SpielfeldNr
  * @return Spielfeldkoordinaten(wie von Server benoetigt)
  */
@@ -43,8 +43,27 @@ char* formatMove(int move)
     if (move == 15) return "D4";
     return NULL;
 }
-
-
+/* Meine temporäre Notlösung um das Problem des umgedrehten Spielfelds zu lösen */
+char* formatMove1(int move) //Input sollte eigentlich sein:
+{
+    if (move == 0)  return "A4"; //12
+    if (move == 1)  return "B4"; //13
+    if (move == 2)  return "C4"; //14
+    if (move == 3)  return "D4"; //15
+    if (move == 4)  return "A3"; //8
+    if (move == 5)  return "B3"; //9
+    if (move == 6)  return "C3"; //10
+    if (move == 7)  return "D3"; //11
+    if (move == 8)  return "A2"; //4
+    if (move == 9)  return "B2"; //5
+    if (move == 10) return "C2"; //6
+    if (move == 11) return "D2"; //7
+    if (move == 12) return "A1"; //0
+    if (move == 13) return "B1"; //1
+    if (move == 14) return "C1"; //2
+    if (move == 15) return "D1"; //3
+    return NULL;
+}
 /**
  *  Testet ob ein Stein noch verfuegbar ist
  *
@@ -98,23 +117,22 @@ void chooseStone(sharedmem * shm)
  */
 void think(sharedmem * shm)
 {
-    printGameFieldQuarto(shm);
-
-
+    printGameFieldQuarto4x4(shm);
 	//printGameField(shm);
 	printf("\nStarting to Think\n");
 
     srand(time(NULL));
     int check = 0;
     int move;
-/*
+
+/* Kalkuliere naechsten Zug. Falls Sieg möglich setze dort, sonst random */
      move = calculateMove(shm);
      if(move != -1)  {
         printf("\nMOVE: %d\n",move);
    strcpy(shm->nextField, formatMove1(move/4));
  }
     // Suche freien Platz auf Spielfeld
-  else  */ { while( check == 0)
+  else  { while( check == 0)
     {
     	move = rand()%16;
         if (*(shm->pf + move) == -1 )
