@@ -60,22 +60,22 @@ int readGameField(char *buffer,sharedmem * shm)
     while (strcmp(buffer2,"+ ENDFIELD") != 0)
     {
         //Folgende 4 Kommentarzeichen entfernen um zu kapieren wie die Funktion funktioniert!
-        //	    printf("\n%s\n", buffer2);
+           // printf("\n%s\n", buffer2);
         sscanf (buffer2,"%*s %d %[0-9* ]", &znr, buffer2);
 
         for (i=0; i<shm->fieldX; i++)
         {
             *(shm->pf+i+(znr-1)*shm->fieldX) = -1;
-            //	    	printf("Buffer2: %s\n", buffer2);
+            	    	//printf("Buffer2: %s\n", buffer2);
             if (buffer2 == strchr(buffer2, tmp))
             {
-                //	    		printf("X=> *\n");
+                	    //		printf("X=> *\n");
                 sscanf(buffer2,"%*s %[0-9* ]", buffer2);
             }
             else
             {
                 sscanf (buffer2,"%d %[0-9* ]",(shm->pf+i+(znr-1)*(shm->fieldY)), buffer2);
-                //	    		printf(" => %d \n", *(pf+i+(znr-1)*shm->fieldY));
+                	    	//	printf(" => %d \n", *(shm->pf+i+(znr-1)*shm->fieldY));
             }
         }
         buffer2 = strtok( NULL, "\n" );
@@ -83,7 +83,9 @@ int readGameField(char *buffer,sharedmem * shm)
     free(buffer2temp);
     return EXIT_SUCCESS;
 }
-
+/**
+ * Konvertiert in 4-stellige Binaerdarstellung
+ */
 char* byte_to_binary(int n)
 {
    int c, d, count;
@@ -110,21 +112,8 @@ char* byte_to_binary(int n)
 
    return  pointer;
 }
-/*
-const char *byte_to_binary(int x,int fieldY, int fieldX)
-{
-    static char b[9];
-    b[0] = '\0';
 
-    int z;
-    for (z = (fieldY-1)*(fieldX-1); z > 0; z >>= 1)
-    {
-        strcat(b, ((x & z) == z) ? "1" : "0");
-    }
 
-    return b;
-}
-*/
 /**
  * gibt Spielfeld aus
  *
@@ -134,7 +123,7 @@ const char *byte_to_binary(int x,int fieldY, int fieldX)
 
 int printGameField(sharedmem * shm)
 {
-    char* buffer = malloc(sizeof(char)*10);
+
     int i,j;
     for (i=shm->fieldY-1; i>=0; i--)
     {
@@ -147,15 +136,18 @@ int printGameField(sharedmem * shm)
             }
             else
             {
-                strcpy(buffer,byte_to_binary(*(shm->pf+j+i*shm->fieldY)));
-                printf(" %s ", buffer);
+
+                printf(" %d ", *(shm->pf+j+i*shm->fieldY));
             }
         }
     }
     return EXIT_SUCCESS;
 }
 
-int printGameFieldQuarto(sharedmem * shm)
+/**
+ * Gibt das Spielfeld speziell für ein Quarto 4x4 Spiel aus
+ */
+int printGameFieldQuarto4x4(sharedmem * shm)
 {
     char* buffer = malloc(sizeof(char)*10);
     int i,j;
