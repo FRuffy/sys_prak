@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <sys/shm.h>
 #include <errno.h>
+#include <signal.h>
 #include "sharedVariables.h"
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
@@ -12,10 +13,9 @@
 
 int checkServerReply(int sock, char* buffer, sharedmem * shm)
 {
-    int err;
+    int err,size;
     // if then else, falls WAIT zurueckgegeben wird.
     printf("\nBuffer: %s\n", buffer);
-
     if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15))
     {
         err = recv(sock, buffer, BUFFR - 1, 0);
@@ -36,19 +36,9 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm)
 
         }
         while (strcmp(buffer,"+ WAIT\n") == 0);
-        err = recv(sock, buffer, BUFFR-1, 0);
-        if (err > 0) buffer[err]='\0';
-        printf("\nBuffer2: %s\n", buffer);
 
-        sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
-
-    }
-    else
-    {
-        sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
-    }
-
-    if (strncmp(buffer,"+ GAMEOVER", 10) == 0)
+// Ueberprueft wer gewonnen hat, falls das Spiel zu ende ist!
+	if (strncmp(buffer,"+ GAMEOVER", 10) == 0)
         {
             if (strcmp(buffer,"+ GAMEOVER\n") == 0)
             {
@@ -65,6 +55,20 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm)
             return 2;
         }
 
+
+        err = recv(sock, buffer, BUFFR-1, 0);
+        if (err > 0) buffer[err]='\0';
+        printf("\nBuffer2: %s\n", buffer);
+
+        sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
+
+    }
+    else
+    {
+        sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
+    }
+
+// Ueberprueft ob der Server die Verbindung beenden will
      if( strstr(buffer, "+ QUIT")!= NULL)
     {
          printf("\nDas Spiel ist zu Ende.\n");
@@ -112,7 +116,20 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm)
     }
     printf("\nSpielfeldID3 KIND %d\n",*(shm->pf));
     readGameField(buffer,shm);
+    
+//Bereitet den naechsten Zug vor (sendet Signal an Vater-Thinker)
+	sendReplyFormatted(sock, "THINKING");
+    
+    size = recv(sock, buffer, BUFFR - 1, 0);
+    if (size > 0)   buffer[size] = '\0';
+    if (strcmp(buffer, "+ OKTHINK\n") != 0) size = recv(sock, buffer, BUFFR - 1, 0);
+    printf("\nDoMove2: %s\n", buffer);
 
+    // Naechsten Spielzug ausdenken (ueber thinker)
+    shm->thinking = 1;
+    shm->pleaseThink = 1;
+    // Sagt dem Vater, dass er jetzt denken soll
+    kill(shm->pidDad, SIGUSR1);
 
     return EXIT_SUCCESS;
 }
