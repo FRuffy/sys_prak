@@ -1,162 +1,122 @@
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/time.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
+#include <sys/shm.h>
 #include "sharedVariables.h"
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
-#include <signal.h>
 #include "select.h"
+
 #define BUFFR 512
 
-/*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
-
-int performConnection(int sock, sharedmem * shm, config_struct* conf)
+/**
+ * Short one line description.                           
+ * 
+ * Longer description. If there were any, it would be    
+ * here.
+ * <p>
+ * And even more explanations to follow in consecutive
+ * paragraphs separated by HTML paragraph breaks.
+ *
+ * @param  variable Description text text text.          
+ * @return Description text text text.
+ */
+int doMove(int sock, char* buffer)
 {
+  int size;
+  char* reply = malloc(sizeof(char)*15);
+  size= read(fd[0], reply, 15);
+  if (size < 0) perror("Fehler bei read");
+  printf("\nReplyDoMove: %s\n", reply);
+  sendReplyFormatted(sock, reply);
+  free(reply);
+	
+  size = recv(sock, buffer, BUFFR - 1, 0);
+  if (size > 0) buffer[size] = '\0';
+  if (strcmp(buffer, "+ MOVEOK\n") == 0)  printf("Zug wurde akzeptiert!\n");
+	else return EXIT_FAILURE;
+		
+	return EXIT_SUCCESS;
+}
 
-    int err; //size zur Fehlerbehandlung fuer recv
-    char* reader = malloc(sizeof(char) * 20);
-    char* temp = malloc(sizeof(char) * BUFFR);
-    char* buffer = malloc(sizeof(char) * BUFFR);
-    if (reader == NULL || temp == NULL || buffer == NULL)
+/**
+* Diese Funktion implementiert select() und wechselt zwischen der Berechnung des naechsten
+* Zugs (Vater-Thinker) und der fortfuehrung der Kommunikation mit dem Server (Kind-Connector)
+*
+* @param Socket fuer Kommunikation mit Server, buffer fuer auslesen der Antwort, Shared Memory
+* @return on success, 0 on failure 1
+**/
+int waitforfds(int sock,char* buffer,sharedmem * shm) // nur ein Vorschlag der Parametrisierung, bitte feststellen,
+
+{
+  // Vorbereitungen fuer select() siehe man select
+  int rc,size,status,biggest;
+  int pipe=fd[0];
+  fd_set fds;
+  struct timeval timeout;
+
+  if (pipe>sock) biggest=pipe;
+  else biggest=sock;
+
+	
+  /*
+  * checkServerReply muss leider einmal ausserhalb der Schleife ausgefuehrt werden, da die Antwort des Servers schon frueher im Code 
+  * vom Socket gelesen wurde und hier im buffer uebergeben wurde
+  */
+  checkServerReply(sock, buffer, shm);
+
+  do 
+  {	
+ 	/* Unsere 2 Filedescriptoren werden hinzugefuegt. (Socket und Pipe). */
+   	FD_ZERO(&fds);
+   	FD_SET(sock, &fds);
+   	FD_SET(pipe, &fds);
+
+	 /* Zeitlimit fuer select wird eingestellt */
+   	timeout.tv_sec = 10; // hier 10 Sekunden, kann beliebig angepasst werden!
+   	timeout.tv_usec = 0;
+    
+    /*
+    * Select laesst den Prozess schlafen und beobachtet fuer eine in timeout spezifizierte Zeit lang die in fds hinzugefuegten 
+    * Filedescriptoren (in unserem Falle Socket und Pipe).
+    * Falls waehrenddessen ein Filedescriptor ready to read wird, weckt select den Prozess auf und gibt die Anzahl der ready to read
+    * Filedescriptoren zurueck. Sollte  
+    */
+    rc = select(biggest+1, &fds, NULL, NULL, &timeout);
+    if (rc==-1) 
     {
-        free(reader);
-        free(temp);
-        free(buffer);
-        perror("Fehler bei malloc");
-        return EXIT_FAILURE;
+      perror("Error, select failed! \n");
+      return EXIT_FAILURE;
     }
 
-    /* Teil 1: Lese die Client-Version des Servers und antworte mit eigener (formatierten) Version
-     Behandle die Antwort des Servers */
-
-    err = recv(sock, buffer, BUFFR - 1, 0);    writelog(logdatei,AT);
-    sscanf(buffer, "%*s%*s%*s%s", reader);
-    if (err > 0)
-        buffer[err] = '\0';
-    printf("\nDie Version des Servers ist: %s\n", reader);
-
-    antistrcat(conf->version, "VERSION ", temp);
-    sendReplyFormatted(sock, temp);
-    err = recv(sock, buffer, BUFFR - 1, 0);    writelog(logdatei,AT);
-    if (err > 0)
-        buffer[err] = '\0';
-
-    if (buffer[0] == '-')
-    {
-        printf("\nDer Server akzeptiert die Version %s dieses Clients nicht!\n",
-               conf->version);
-        free(buffer);
-        free(reader);
-        free(temp);
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        printf(
-            "\nDie Client-Version wurde akzeptiert, uebertrage Spiel-ID...\n");
-    }
-
-    /* Teil 2: Der Server erwartet Game-ID, schicke diese und behandle Antwort.
-     Falls die ID fehlerhart oder das Spiel des Servers nicht Quarto ist wird die Verbindung beendet*/
-
-    antistrcat(shm->gameID, "ID ", temp);
-    sendReplyFormatted(sock, temp);
-    err = recv(sock, buffer, BUFFR - 1, 0);    writelog(logdatei,AT);
-    if (err > 0)
-        buffer[err] = '\0';
-    sscanf(buffer, "%*s%*s%s", reader);
-
-    if (buffer[0] == '-')
-    {
-        printf("\nDie uebergebene Game-ID fehlt oder ist fehlerhaft! Beende Verbindung\n");
-        free(buffer);
-        free(reader);
-        free(temp);
-        return EXIT_FAILURE;
-    }
-    else if (strcmp(reader, "Quarto") != 0)
-    {
-        printf(
-            "\nDas Spiel, das der Server spielt, ist nicht Quarto! Beende Verbindung.\n");
-        free(buffer);
-        free(reader);
-        free(temp);
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        printf("\nDer Server moechte %s spielen. Und wir auch!\n", reader);
-    }
-    /* Teil 3.1: Hatten wir mit unserer ID Erfolg erfahren wir zunaechst den Namen des Spiels
-     und senden die ggf. uebergebene Spielernummer.
-     Anschliessend wird die Antwort des Servers auf die Nummer behandelt und Name und Nummer des Spielerplatzes ausgelesen
-     */
-
-    err = recv(sock, buffer, BUFFR - 1, 0);    writelog(logdatei,AT);
-    if (err > 0)    buffer[err] = '\0';
-
-    sscanf(buffer, "%*s%s", shm->gameName);
-    printf("\nSpiel: %s\n", shm->gameName); //Zeige Spielnamen an, schneide das "+" ab
-    antistrcat(conf->playernumber, "PLAYER ", temp);
-    sendReplyFormatted(sock, temp);
-    err = recv(sock, buffer, BUFFR - 1, 0);    writelog(logdatei,AT);
-    if (err > 0)        buffer[err] = '\0';
-
-    if (buffer[0] == '-')
-    {
-        if (buffer[2] == '-')
-        {
-            printf(
-                "\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
-        }
-        else
-        {
-            printf(
-                "\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
-            //ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde!
-        }
-        free(buffer);
-        free(reader);
-        free(temp);
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        sscanf(buffer, "%*s %*s %d %s", &(shm->player[0].playerNumber),(shm->player[0].playerName));
-        //printf("\nDu spielst mit dem Namen %s, deine Nummer ist %d\n", shm->player[0].playerName,shm->player[0].playerNumber);
-    }
-    /* Teil 3.2: Hier wird der Uebergang in die Spielverlaufsphase eingeleitet.
-     Der Server sendet uns die Namen unseres Gegenspielers und des Spielernummer, wobei ueberprueft wird ob ein Spieler bereits verbunden ist.
-     */
-    err = recv(sock, buffer, BUFFR - 1, 0);    writelog(logdatei,AT);
-    if (err > 0)        buffer[err] = '\0';
-
-    if (buffer[0] == '-')
-    {
-        printf("\nFehler bei Uebermittlung der Spielparameter!\n");
-        free(buffer);
-        free(reader);
-        free(temp);
-        return EXIT_FAILURE;
-    }
-//Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden
-    if (recvServerInfo(buffer, shm) == NULL)
-    {
-        free(buffer);
-        free(reader);
-        free(temp);
-        return EXIT_FAILURE;
-
-    }
-
-/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
-   und mit dem Thinker zusammenarbeitet */
-waitforfds(sock,buffer, shm);
-    free(buffer);
-    free(reader);
-    free(temp);
-    return EXIT_SUCCESS;
+    if (rc > 0)
+    {	
+      printf("SELECT: Number of FDs ready: %d \n",rc);
+      // Fall das Socket ready to read ist:
+      if (FD_ISSET(sock, &fds)) 
+      {
+		    printf("SELECT: Socket is ready to read!\n");
+        size = recv(sock, buffer, BUFFR - 1, 0); writelog(logdatei,AT);
+        printf("\nBuffer für Playtime: %s\n", buffer);
+				if (size > 0)                        buffer[size] = '\0';
+        status = checkServerReply(sock, buffer, shm);
+        if (status != 0) break;
+      }
+            // Fall das Pipe ready to read ist:
+      else if (FD_ISSET(pipe, &fds)) 
+      {
+		    printf("SELECT: Pipe is ready to read!\n");
+        doMove(sock, buffer);
+      }
+         // falls select 0 returned heisst die Wartezeit ist ohne Ereigniss abgelaufen
+    } else if (rc==0) perror("Select timed out!. \n");
+  } while (rc!=0);
+    // solange es zu keinem Timeout kommt, soll die Kommunikation in der Schleife weiterlaufen.
+   return EXIT_SUCCESS; // Falls die Schleife ohne Probleme zu Ende durchlaeuft
 }
