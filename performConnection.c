@@ -8,7 +8,7 @@
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
 #include <signal.h>
-#include "select_h.h"
+#include "select.h"
 #define BUFFR 512
 
 /*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
@@ -151,16 +151,13 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf)
         return EXIT_FAILURE;
 
     }
-    /* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
-     und mit dem Thinker zusammenarbeitet, wie das genauer implementiert wird, weiß ich leider noch nicht.
-     @Harun wuerdest du das machen?
 
-     Harun: muss ich mir noch ueberlegen, wenn jemand ne Idee hat bitte schreiben
-     */
-   // loop(sock, buffer, shm);
+/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
+   und mit dem Thinker zusammenarbeitet */
 waitforfds(sock,buffer, shm);
     free(buffer);
     free(reader);
     free(temp);
     return EXIT_SUCCESS;
 }
+
