@@ -38,53 +38,57 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm)
         while (strcmp(buffer,"+ WAIT\n") == 0);
 
 // Ueberprueft wer gewonnen hat, falls das Spiel zu ende ist!
-	if (strncmp(buffer,"+ GAMEOVER", 10) == 0)
+
+        if (strncmp(buffer,"+ GAMEOVER", 10) != 0)
         {
-            if (strcmp(buffer,"+ GAMEOVER\n") == 0)
-            {
-                printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
-            }
-            else
-            {
-                int playerNumber;
-                char playerName[BUFFR];
-                sscanf(buffer, "%*s %*s %d %s", &playerNumber, playerName);
-                printf("\nDas Spiel ist zu Ende. Der Gewinner ist: %d - %s\n", playerNumber, playerName);
-                //Return 2, fuer Spiel beendet. Looper gibt dann EXIT_SUCCESS(1) zurueck.
-            }
-            return 2;
+            err = recv(sock, buffer, BUFFR-1, 0);
+            if (err > 0) buffer[err]='\0';
+            printf("\nBuffer2: %s\n", buffer);
+
+            sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
         }
-
-
-        err = recv(sock, buffer, BUFFR-1, 0);
-        if (err > 0) buffer[err]='\0';
-        printf("\nBuffer2: %s\n", buffer);
-
-        sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
 
     }
     else
     {
         sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
     }
-
-// Ueberprueft ob der Server die Verbindung beenden will
-     if( strstr(buffer, "+ QUIT")!= NULL)
+    if (strstr(buffer, "+ GAMEOVER")!= NULL)
     {
-         printf("\nDas Spiel ist zu Ende.\n");
-         return 2;
+        if (strcmp(buffer,"+ GAMEOVER\n") == 0)
+        {
+            printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
+        }
+        else
+        {
+            int playerNumber;
+            char playerName[BUFFR];
+            sscanf(buffer, "%*s %*s %d %s", &playerNumber, playerName);
+            printf("\nDas Spiel ist zu Ende. Der Gewinner ist: %d - %s\n", playerNumber, playerName);
+            //Return 2, fuer Spiel beendet. Looper gibt dann EXIT_SUCCESS(1) zurueck.
+        }
+        return 2;
+    }
+
+// Ueberprueft ob der Server einfach nur die Verbindung beenden will
+    if( strstr(buffer, "+ QUIT")!= NULL)
+    {
+        printf("\nDas Spiel ist zu Ende.\n");
+        return 2;
     }
 
     /* BEISPIELOUTPUT SERVER START        BEISPIELOUTPUT VOM SERVER WAEHREND SPIEL   BEISPIELOUTPUT VOM SERVER SPIEL ENDE
-     + MOVE 3000                           + NEXT 5                                  + NEXT 5
-     + NEXT 8                              + FIELD 4,4                               + FIELD 4,4
-     + FIELD 4,4                           + 4 12 4 15 11                            + 4 12 4 15 11
-     + 4 12 4 15 *                         + 3 3 10 8 *                              + 3 3 10 8 *
-     + 3 3 10 * *                          + 2 9 2 * 1                               + 2 9 2 * 1
-     + 2 9 * * *                           + 1 13 * 6 14                             + 1 13 * 6 14
-     + 1 13 * * *                          + ENDFIELD                                + ENDFIELD
-     + ENDFIELD
+     + MOVE 3000                           + NEXT 5                                  + GAMEOVER 2 Player 2
+     + NEXT 8                              + FIELD 4,4                               + NEXT 5
+     + FIELD 4,4                           + 4 12 4 15 11                            + FIELD 4,4
+     + 4 12 4 15 *                         + 3 3 10 8 *                              + 4 12 4 15 11
+     + 3 3 10 * *                          + 2 9 2 * 1                               + 3 3 10 8 *
+     + 2 9 * * *                           + 1 13 * 6 14                             + 2 9 2 * 1
+     + 1 13 * * *                          + ENDFIELD                                + 1 13 * 6 14
+     + ENDFIELD                                                                      + ENDFIELD
     */
+
+
     printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
     printf("Stein %d ist zu setzen!\n\n",shm->StoneToPlace);
     printf("Unser momentanes Spielfeld. Groesse: %d x %d\n",shm->fieldX, shm->fieldY);
@@ -116,10 +120,10 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm)
     }
     printf("\nSpielfeldID3 KIND %d\n",*(shm->pf));
     readGameField(buffer,shm);
-    
+
 //Bereitet den naechsten Zug vor (sendet Signal an Vater-Thinker)
-	sendReplyFormatted(sock, "THINKING");
-    
+    sendReplyFormatted(sock, "THINKING");
+
     size = recv(sock, buffer, BUFFR - 1, 0);
     if (size > 0)   buffer[size] = '\0';
     if (strcmp(buffer, "+ OKTHINK\n") != 0) size = recv(sock, buffer, BUFFR - 1, 0);
