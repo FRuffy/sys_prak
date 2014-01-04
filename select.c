@@ -103,7 +103,7 @@ int waitforfds(int sock,char* buffer,sharedmem * shm) // nur ein Vorschlag der P
       {
 		    printf("SELECT: Socket is ready to read!\n");
         size = recv(sock, buffer, BUFFR - 1, 0); writelog(logdatei,AT);
-        printf("\nBuffer für Playtime: %s\n", buffer);
+        printf("\nBuffer fuer Playtime: %s\n", buffer);
 				if (size > 0)                        buffer[size] = '\0';
         status = checkServerReply(sock, buffer, shm);
         if (status != 0) break;
