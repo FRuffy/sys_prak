@@ -59,6 +59,19 @@ Abschließend kann ich nur sagen löscht die sharedvariables.h und benutzt
 h-files bitte richtig.
 
 
+Weiterhin: 
+Restrukturierung der Funktionen und wenn möglich Aufteilung in unabhängige Module
+Fallbehandlung ( Falls z.b. die Zeit < 500 ms ist nicht die KI rechnen lassen 
+oder bei einem größeren Feld die Formatierung übergehen) 
+Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführen und an die KI weitergeben. 
+Spart Redundanz 
+
+Die Ausgabe der Spielernummer zur Initialisierung des Spieles ist noch nicht ganz korrekt.
+
+
+
+
+
 ==========================================================================
 Bereits erledigt (einfach hier runter kopieren)
 ==========================================================================
