@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -60,7 +61,7 @@ void loop(int sock, char* buffer, sharedmem * shm) {
 	while (status == 0) {
 		moveStatus = doMove(sock, buffer, shm);
 		size = recv(sock, buffer, BUFFR - 1, 0); writelog(logdatei,AT);
-			printf("\nBuffer für Playtime: %s\n", buffer);
+			printf("\nBuffer fï¿½r Playtime: %s\n", buffer);
 
 		if (size > 0)			buffer[size] = '\0';
 		if (moveStatus != EXIT_FAILURE) {
@@ -72,3 +73,5 @@ void loop(int sock, char* buffer, sharedmem * shm) {
 	}
 }
 
+
+*/
