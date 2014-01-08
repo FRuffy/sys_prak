@@ -13,6 +13,7 @@
 #include "thinker.h"
 #include "auxiliaryFunctions.h"
 #include "errmmry.h"
+#include "quartoAI.h"
 
 
 // Anfang der KI
