@@ -1,5 +1,3 @@
-- Es haben immer noch nicht alle c Files entsprechende h files (Bitte
-endlich fixen)
 - Schreibt euch eine cleanup funktion, die bei programmende den Speicher
 frei gibt (-> spart code)
 - Groß und Kleinschreibung der Files bitte einheitlich halten
@@ -91,6 +89,12 @@ buffer(z62)
 23.12. - Flo
 auxiliaryFunctions.c 
 - Malloc Fehlerabfrage fehlt (z44)
+
+--------------------------------------------------------------------------
+
+08.01. - Flo
+- Es haben immer noch nicht alle c Files entsprechende h files (Bitte
+endlich fixen)
 
 --------------------------------------------------------------------------
 Datum - Name
