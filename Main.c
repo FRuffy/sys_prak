@@ -6,11 +6,12 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/shm.h>
+#include <signal.h>
 #include "sharedVariables.h"
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
-#include <signal.h>
 #include "thinker.h"
+#include "initConnection.h"
 
 FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeichnet und den Ort angibt
 
