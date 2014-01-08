@@ -2,7 +2,6 @@
 #define auxiliaryFunctions_h
 
 int performConnection(int sock,sharedmem * shm, config_struct* conf);
-int initConnection(int argc, char** argv,sharedmem * shm, config_struct* conf);
 void sendReplyFormatted(int sock, char* reply);
 char* antistrcat(char* dest, char* src, char* temp);
 int readGameField(char *buffer,sharedmem * shm);
