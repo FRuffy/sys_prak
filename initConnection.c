@@ -8,10 +8,7 @@
 #include "sharedVariables.h"
 #include "auxiliaryFunctions.h"
 #include "errmmry.h"
-
-
-
-
+#include "config.h"
 
 int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf)
 {
