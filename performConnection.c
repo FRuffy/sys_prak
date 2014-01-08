@@ -4,11 +4,13 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
 #include "sharedVariables.h"
 #include "errmmry.h"
 #include "auxiliaryFunctions.h"
-#include <signal.h>
 #include "select.h"
+#include "ServerInfo.h"
+#include "initConnection.h"
 #define BUFFR 512
 
 /*Formatierte Ausgabe an den Server, \n wird benoetigt um das Ende der Uebertragung zu signalisieren */
