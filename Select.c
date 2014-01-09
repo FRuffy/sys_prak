@@ -88,41 +88,41 @@ int waitforfds(int sock,char* buffer,sharedmem * shm) { // nur ein Vorschlag der
    	timeout.tv_sec = 10; // hier 10 Sekunden, kann beliebig angepasst werden!
    	timeout.tv_usec = 0;
     
-    /*
-    * Select laesst den Prozess schlafen und beobachtet fuer eine in timeout spezifizierte Zeit lang die in fds hinzugefuegten 
-    * Filedescriptoren (in unserem Falle Socket und Pipe).
-    * Falls waehrenddessen ein Filedescriptor ready to read wird, weckt select den Prozess auf und gibt die Anzahl der ready to read
-    * Filedescriptoren zurueck. Sollte  
-    */
-    rc = select(biggest+1, &fds, NULL, NULL, &timeout);
-    if (rc==-1) {
-      perror("Error, select failed! \n");
-      return EXIT_FAILURE;
-    }
+    	/*
+    	* Select laesst den Prozess schlafen und beobachtet fuer eine in timeout spezifizierte Zeit lang die in fds hinzugefuegten 
+    	* Filedescriptoren (in unserem Falle Socket und Pipe).
+    	* Falls waehrenddessen ein Filedescriptor ready to read wird, weckt select den Prozess auf und gibt die Anzahl der ready to read
+    	* Filedescriptoren zurueck. Sollte  
+    	*/
+    	rc = select(biggest+1, &fds, NULL, NULL, &timeout);
+    	if (rc==-1) {
+      		perror("Error, select failed! \n");
+      		return EXIT_FAILURE;
+    	}
 
-    if (rc > 0) {	
-      printf("SELECT: Number of FDs ready: %d \n",rc);
-      // Fall das Socket ready to read ist:
-      if (FD_ISSET(sock, &fds)) {
-	printf("SELECT: Socket is ready to read!\n");
-        size = recv(sock, buffer, BUFFR - 1, 0); 
-        writelog(logdatei,AT);
-        printf("\nBuffer fuer Playtime: %s\n", buffer);
-	if (size > 0) {
-		buffer[size] = '\0';
-	}
-        status = checkServerReply(sock, buffer, shm);
-        if (status != 0) {
-        	break;
-        }
-      } else if (FD_ISSET(pipe, &fds)) {  // Fall das Pipe ready to read ist:
-     	printf("SELECT: Pipe is ready to read!\n");
-        doMove(sock, buffer);
-      }
-      // falls select 0 returned heisst die Wartezeit ist ohne Ereigniss abgelaufen
-    } else if (rc==0) { 
-    	perror("Select timed out!. \n"); 
-    }
+    	if (rc > 0) {	
+      		printf("SELECT: Number of FDs ready: %d \n",rc);
+      		// Fall das Socket ready to read ist:
+      		if (FD_ISSET(sock, &fds)) {
+		printf("SELECT: Socket is ready to read!\n");
+        	size = recv(sock, buffer, BUFFR - 1, 0); 
+        	writelog(logdatei,AT);
+        	printf("\nBuffer fuer Playtime: %s\n", buffer);
+			if (size > 0) {
+				buffer[size] = '\0';
+			}
+        	status = checkServerReply(sock, buffer, shm);
+        		if (status != 0) {
+        			break;
+        		}
+      		} else if (FD_ISSET(pipe, &fds)) {  // Fall das Pipe ready to read ist:
+     			printf("SELECT: Pipe is ready to read!\n");
+			doMove(sock, buffer);
+      		}
+      	// falls select 0 returned heisst die Wartezeit ist ohne Ereigniss abgelaufen
+    	} else if (rc==0) { 
+    		perror("Select timed out!. \n"); 
+    	}
   } 
   
   while (rc!=0);
