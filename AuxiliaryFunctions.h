@@ -1,5 +1,5 @@
-#ifndef auxiliaryFunctions_h
-#define auxiliaryFunctions_h
+#ifndef AuxiliaryFunctions_h
+#define AuxiliaryFunctions_h
 
 void sendReplyFormatted(int sock, char* reply);
 char* antistrcat(char* dest, char* src, char* temp);
