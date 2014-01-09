@@ -1,5 +1,5 @@
-#ifndef thinker_h
-#define thinker_h
+#ifndef Thinker_h
+#define Thinker_h
 
 void think( sharedmem *shm);
 char* formatMove(int move);
