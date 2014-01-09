@@ -12,8 +12,7 @@
  * @param  Socket, Pointer auf String wo das \n dran soll
  * @return Pointer auf String mit angehaengtem \n
  */
-void sendReplyFormatted(int sock, char* reply)
-{
+void sendReplyFormatted(int sock, char* reply) {
     char * container;
     container = malloc(sizeof(char)*(strlen(reply)+2));
     strcpy(container,reply);
@@ -28,8 +27,7 @@ void sendReplyFormatted(int sock, char* reply)
  * @param  Pointer
  * @return
  */
-int antistrcat(char* dest, char* src, char* temp)
-{
+int antistrcat(char* dest, char* src, char* temp) {
     strcpy(temp,src);
     strcat(temp, dest);
     return EXIT_SUCCESS;
@@ -46,8 +44,7 @@ int antistrcat(char* dest, char* src, char* temp)
  * @param  Puffer, SHM
  * @return 0 (Eingelesenes Spielfeld in *pf)
  */
-int readGameField(char *buffer,sharedmem * shm)
-{
+int readGameField(char *buffer,sharedmem * shm) {
     char* buffer2;
     buffer2 = malloc(sizeof(char)*128);
     char *buffer2temp = buffer2; //buffer2 wird mit strtok veraendert, fuer free wird eine Kopie benoetigt
@@ -57,62 +54,55 @@ int readGameField(char *buffer,sharedmem * shm)
     buffer2 = strtok( buffer2, "\n" );
     buffer2 = strtok( NULL , "\n" );
 
-    while (strcmp(buffer2,"+ ENDFIELD") != 0)
-    {
+    while (strcmp(buffer2,"+ ENDFIELD") != 0) {
         //Folgende 4 Kommentarzeichen entfernen um zu kapieren wie die Funktion funktioniert!
-           // printf("\n%s\n", buffer2);
+        // printf("\n%s\n", buffer2);
         sscanf (buffer2,"%*s %d %[0-9* ]", &znr, buffer2);
 
-        for (i=0; i<shm->fieldX; i++)
-        {
+        for (i=0; i<shm->fieldX; i++) {
             *(shm->pf+i+(znr-1)*shm->fieldX) = -1;
-            	    	//printf("Buffer2: %s\n", buffer2);
-            if (buffer2 == strchr(buffer2, tmp))
-            {
-                	    //		printf("X=> *\n");
+            //printf("Buffer2: %s\n", buffer2);
+            if (buffer2 == strchr(buffer2, tmp)) {
+                //printf("X=> *\n");
                 sscanf(buffer2,"%*s %[0-9* ]", buffer2);
-            }
-            else
-            {
+            } else {
                 sscanf (buffer2,"%d %[0-9* ]",(shm->pf+i+(znr-1)*(shm->fieldY)), buffer2);
-                	    	//	printf(" => %d \n", *(shm->pf+i+(znr-1)*shm->fieldY));
+                //printf(" => %d \n", *(shm->pf+i+(znr-1)*shm->fieldY));
             }
         }
         buffer2 = strtok( NULL, "\n" );
     }
+    
     free(buffer2temp);
     return EXIT_SUCCESS;
 }
+
 /**
  * Konvertiert in 4-stellige Binaerdarstellung
  */
-char* byte_to_binary(int n)
-{
+char* byte_to_binary(int n) {
    int c, d, count;
    char *pointer;
-
    count = 0;
    pointer = (char*)malloc(32+1);
 
-   if ( pointer == NULL )
+   if (pointer == NULL) {
       exit(EXIT_FAILURE);
+   }
 
-   for ( c = 3 ; c >= 0 ; c-- )
-   {
+   for (c=3; c>=0 ; c--) {
       d = n >> c;
-
-      if ( d & 1 )
+      if ( d & 1 ) {
          *(pointer+count) = 1 + '0';
-      else
+      } else {
          *(pointer+count) = 0 + '0';
-
+      }
       count++;
    }
+   
    *(pointer+count) = '\0';
-
    return  pointer;
 }
-
 
 /**
  * gibt Spielfeld aus
@@ -120,58 +110,57 @@ char* byte_to_binary(int n)
  * @param  Pointer auf SHM
  * @return 0 (Spielfeld auf Konsole)
  */
-
-int printGameField(sharedmem * shm)
-{
-
-    int i,j;
-    for (i=shm->fieldY-1; i>=0; i--)
-    {
+int printGameField(sharedmem * shm) {
+    int i, j;
+    
+    for (i=shm->fieldY-1; i>=0; i--) {
         printf("\n %d: ", i+1);
-        for (j=0; j<shm->fieldX; j++)
-        {
-            if (*(shm->pf+j+i*shm->fieldY)==-1)
-            {
+        for (j=0; j<shm->fieldX; j++) {
+            if (*(shm->pf+j+i*shm->fieldY)==-1) {
                 printf(" *");
-            }
-            else
-            {
-
+            } else {
                 printf(" %d ", *(shm->pf+j+i*shm->fieldY));
             }
         }
     }
+    
     return EXIT_SUCCESS;
 }
 
 /**
  * Gibt das Spielfeld speziell für ein Quarto 4x4 Spiel aus
  */
-int printGameFieldQuarto4x4(sharedmem * shm)
-{
+int printGameFieldQuarto4x4(sharedmem * shm) {
     char* buffer = malloc(sizeof(char)*10);
     int i,j;
-
     printf("\n+");
-    for (i=shm->fieldY-1; i>=0; i--)    {        printf("-------");    }
+    
+    for (i=shm->fieldY-1; i>=0; i--) {        
+        printf("-------");    
+    }
+    
     printf("+");
 
-    for (i=shm->fieldY-1; i>=0; i--)    {
+    for (i=shm->fieldY-1; i>=0; i--) {
         printf("\n+%29c", '+');
         printf("\n+ %d:", i+1);
-                for (j=0; j<shm->fieldX; j++)        {
-            if (*(shm->pf+j+i*shm->fieldY)==-1)
-            {
+        for (j=0; j<shm->fieldX; j++) {
+            if (*(shm->pf+j+i*shm->fieldY)==-1) {
                 printf(" **** ");
-            }
-            else
-            {
+            } else {
                 strcpy(buffer,byte_to_binary(*(shm->pf+j+i*shm->fieldY)));
                 printf(" %s ", buffer);
-            }}
-                    printf(" +");   }
+            }
+        }
+        printf(" +");   
+    }
+    
     printf("\n+%29c\n+", '+');
-    for (i=shm->fieldY-1; i>=0; i--)    {        printf("-------");    }
+    
+    for (i=shm->fieldY-1; i>=0; i--) {        
+        printf("-------");    
+    }
+    
     printf("+");
     return EXIT_SUCCESS;
 }
