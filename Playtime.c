@@ -11,42 +11,82 @@
 
 #define BUFFR 512
 
-int checkServerReply(int sock, char* buffer, sharedmem * shm) {
-    int err,size;
-    // if then else, falls WAIT zurueckgegeben wird.
-    printf("\nBuffer: %s\n", buffer);
-    
-    if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
-        err = recv(sock, buffer, BUFFR - 1, 0);
+
+
+int checkBuffer(char * buffer) {
+ if (buffer[0] == '-') {
+        printf("\nFehler in der Kommunikation, der Server meldet: %s\n", buffer );
+        return EXIT_FAILURE;
+    }
+return EXIT_SUCCESS;
+
+}
+int handleRecv(int sock, char* buffer) {
+     int err;
+     err = recv(sock, buffer, BUFFR - 1, 0);
         if (err > 0) {
             buffer[err] = '\0';
         }
+ if (checkBuffer(buffer) != 0) {
+
+        return EXIT_FAILURE;
+    }
+    printf("Buffer checkServerReply: %s", buffer);
+return EXIT_SUCCESS;
+}
+
+
+
+int checkServerReply(int sock, char* buffer, sharedmem * shm) {
+    if (checkBuffer(buffer) != 0)
+        {
+            return EXIT_FAILURE;
+        }
+
+
+    // if then else, falls WAIT zurueckgegeben wird.
+    printf("\nBuffer: %s\n", buffer);
+
+    if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
+
+        if (handleRecv(sock,buffer) != 0)
+        {
+            return EXIT_FAILURE;
+        }
         sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
         printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
-    } else if(strcmp(buffer,"+ WAIT\n") == 0) {
-        do {
+    }  else if(strcmp(buffer,"+ WAIT\n") == 0)
+    {
+        do
+        {
             printf("\nWarte auf andere Spieler.\n");
             send(sock,"OKWAIT\n",strlen("OKWAIT\n"),0);
-            err = recv(sock, buffer, BUFFR-1, 0);
-            if (err > 0) {
-                buffer[err]='\0';
-            }
+            if (handleRecv(sock,buffer) != 0)
+        {
+            return EXIT_FAILURE;
+        }
+
         }
         while (strcmp(buffer,"+ WAIT\n") == 0);
-        // Ueberprueft wer gewonnen hat, falls das Spiel zu ende ist!
-        if (strncmp(buffer,"+ GAMEOVER", 10) != 0) {
-            err = recv(sock, buffer, BUFFR-1, 0);
-            if (err > 0) {
-                buffer[err]='\0'; 
-            }
+
+// Ueberprueft wer gewonnen hat, falls das Spiel zu ende ist!
+
+        if (strncmp(buffer,"+ GAMEOVER", 10) != 0)
+        {
+            if (handleRecv(sock,buffer) != 0)
+        {
+            return EXIT_FAILURE;
+        }
             printf("\nBuffer2: %s\n", buffer);
+
             sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
         }
+
     } else {
         sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
     }
-    
-    
+
+
     if (strstr(buffer, "+ GAMEOVER")!= NULL) {
         if (strcmp(buffer,"+ GAMEOVER\n") == 0) {
             printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
@@ -93,31 +133,35 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
             return EXIT_FAILURE;
         }
     }
-    
+
     // printf("\nSpielfeldID1 %d\n",*(shm->pf));
     shm->pf = shmat(shm->pfID, 0, 0);
     writelog(logdatei,AT); //pf einhaengen
     printf("\nSpielfeldID2 KIND %d\n",*(shm->pf));
-   
+
     //Im Fehlerfall pointed pf auf -1
     if (*(shm->pf) ==  -1) {
         fprintf(stderr, "Fehler, pf-shm: %s\n", strerror(errno));
         writelog(logdatei,AT);
     }
-    
+
     printf("\nSpielfeldID3 KIND %d\n",*(shm->pf));
     readGameField(buffer,shm);
 
     //Bereitet den naechsten Zug vor (sendet Signal an Vater-Thinker)
     sendReplyFormatted(sock, "THINKING");
-    size = recv(sock, buffer, BUFFR - 1, 0);
-    
-    if (size > 0) {
-        buffer[size] = '\0';
-    }
-    
+            if (handleRecv(sock,buffer) != 0)
+        {
+            return EXIT_FAILURE;
+        }
+
+
     if (strcmp(buffer, "+ OKTHINK\n") != 0) {
-        size = recv(sock, buffer, BUFFR - 1, 0);
+              if (handleRecv(sock,buffer) != 0)
+        {
+            return EXIT_FAILURE;
+        }
+
         printf("\nDoMove2: %s\n", buffer);
     }
 

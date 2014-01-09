@@ -11,15 +11,18 @@
 #include "Errmmry.h"
 #include "AuxiliaryFunctions.h"
 #include "Thinker.h"
+#include "Config.h"
 #include "InitConnection.h"
 
 FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeichnet und den Ort angibt
 
 int main (int argc, char** argv ) {
+
+
     config_struct *conf; // Die Struktur, die die Konfigurationsparameter der Datei speichert
     logdatei =fopen("log.txt","w+");
     conf = calloc(5,sizeof(config_struct));
-    
+
     /* Initialisierung der Shared Memory */
     sharedmem *shm;
     int shmID;
@@ -48,6 +51,25 @@ int main (int argc, char** argv ) {
         return EXIT_FAILURE;
     }
 
+       //überpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
+    if ( argc == 1 || (strlen (argv[1])) > 18) {
+        printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
+        return EXIT_FAILURE;
+    } else {
+        if (argc == 3)  {
+            //Falls Custom-config angegeben wurde
+            if (openConfig(argv[2],conf)!= 0) {
+                return EXIT_FAILURE;
+            }
+        } else {
+            //Sonst Standard-config
+            if (openConfig("client.conf",conf) != 0) {
+                return EXIT_FAILURE;
+            }
+        }
+        strcpy(shm->gameID,argv[1]);
+           }
+
     pid_t pid = 0;
     pid = fork();
 
@@ -61,9 +83,10 @@ int main (int argc, char** argv ) {
         fclose(logdatei);
         return EXIT_FAILURE;
     } else if (pid == 0) {
+
         //Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren)
         close(fd[1]); // schliesst input ende von der Pipe
-        initConnection(argc, argv,shm,conf);
+        initConnection(shm,conf);
         shmdt(shm->pf);
         shmdt(shm);
         free(conf);
@@ -110,7 +133,7 @@ int main (int argc, char** argv ) {
         shmctl(KEY,IPC_RMID, NULL); //zerstoere pf SHM
         free(conf);
     }
-    
+
     fclose(logdatei);
     return EXIT_SUCCESS;
 }

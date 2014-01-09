@@ -8,31 +8,10 @@
 #include "SharedVariables.h"
 #include "AuxiliaryFunctions.h"
 #include "Errmmry.h"
-#include "Config.h"
 #include "PerformConnection.h"
 
-int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf) {
-    //überpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
-    if ( argc == 1 || (strlen (argv[1])) > 18) {
-        printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
-        return EXIT_FAILURE;
-    } else {
-        if (argc == 3)  {
-            //Falls Custom-config angegeben wurde
-            if (openConfig(argv[2],conf)!= 0) {
-                return EXIT_FAILURE;
-            }
-        } else {
-            //Sonst Standard-config
-            if (openConfig("client.conf",conf) != 0) {
-                return EXIT_FAILURE;
-            }
-        }
-        strcpy(shm->gameID,argv[1]);
-        shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
-        shm->pidKid = getpid();
-    }
-    
+int initConnection(sharedmem * shm, config_struct* conf) {
+
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     writelog(logdatei,AT);
     struct sockaddr_in host;
@@ -50,13 +29,15 @@ int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf) 
         writelog(logdatei,AT);
         return EXIT_FAILURE;
     }
-    
+    /*
+ shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
+shm->pidKid = getpid(); */
     //Fuehre Prolog Protokoll aus
     if (performConnection(sock,shm, conf) != 0) {
         close(sock);
         return EXIT_FAILURE;
     }
-    
+
     close(sock);
 
     return EXIT_SUCCESS;
