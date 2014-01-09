@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include "sharedVariables.h"
-#include "errmmry.h"
+#include "SharedVariables.h"
+#include "Errmmry.h"
 
 
 char* recvServerInfo(char* buffer,sharedmem * shm)
