@@ -1,70 +1,59 @@
-- Schreibt euch eine cleanup funktion, die bei programmende den Speicher
-frei gibt (-> spart code)
-- Groß und Kleinschreibung der Files bitte einheitlich halten
-- Benutzt euren logger und entfernt alle Konsolenausgaben, die keine
-Statusmeldungen sind.
-
-Main.c
-- initConnection(argc, argv,shm,conf); Warum übergebt ihr argc? argv
-solltet ihr auf keinen Fall übergeben sondern
-den Inhalt zwischenspeichern und dann übergeben.
-- Sighandler auslagern
-
-
-Looper.c
-- Warum der vergleich mit  einem Makro "status == EXIT_SUCCESS" , dass
-hier nichts zu suchen hat. Bitte Zahlen verwenden
-wenn Rückgabewerte abgefragt werden.(Hab ich auch noch woanders
-gesehen)
-- Kommentieren :-P
-
-config.c
-- printfs entfernen bzw. durch perror, stdout etc. ersetzen (z.B z50)
-- Malloc Fehlerabfrage fehlt (z66-67)
-
+Harun:
+FILE* logdatei; auslagern
 errmmry.c
 - sieht aus wie eine Java Klasse mit gettern und settern.  
   -> countint, countchar entfernen und per reference call deren werte
 ändern
+- Schreibt euch eine cleanup funktion, die bei programmende den Speicher
+frei gibt (-> spart code)
+Clean Exit Funktionen
+- Benutzt euren logger und entfernt alle Konsolenausgaben, die keine
+Statusmeldungen sind.
 
+Fabi:
+Main.c
+Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführen und an die KI weitergeben. 
+Spart Redundanz 
+Fehlerbehandlung Checkserverreply Minuszeichen
+- initConnection(argc, argv,shm,conf); Warum übergebt ihr argc? argv
+solltet ihr auf keinen Fall übergeben sondern
+den Inhalt zwischenspeichern und dann übergeben.
 initConnection.c 
 - argv bereits in Elternprozess abfragen.
- 
+
+Flo:
+- Sighandler auslagern
+- Einlesen des Spielfeldes
 Playtime.c
-- Kommunikation sollte nicht im Code erfolgen. (für Anmerkungen sind
-z.B. Commitmessages gedacht)
 - pf(woher kommt das?) ->Bitte endlich alle globalen Variablen
 eliminieren 
 - perror statt printf (zb. z102)
+KI: Wähle Steine für Gegner
 
-Insgesamt ist der Code leider etwas uneinheitlich. Manchmal sind
-Einrückungen falsch.
-Kommentare sind leider oft nicht wirklich übersichtilich.
--> Funktionsblöcke bilden (Wie in performconnection (Teil 1 etc.)) nur
-kleiner
-z.B. 
-    struct sockaddr_in host;
-    struct hostent* ip;
-    ip = (gethostbyname(conf->hostname)); //uebersetze HOSTNAME in IP
-Adresse
-    memcpy(&(host.sin_addr),ip ->h_addr,ip ->h_length);
-    host.sin_family = AF_INET;
-    host.sin_port = htons(conf->portnumber);
+Edina:
+Looper.c
+- Warum der vergleich mit  einem Makro "status == EXIT_SUCCESS" , dass
+hier nichts zu suchen hat. Bitte Zahlen verwenden
+wenn Rückgabewerte abgefragt werden.(Hab ich auch noch woanders
+gesehen) (ist jetzt in Select.c)
+- Kommentieren :-P
+config.c
+- printfs entfernen bzw. durch perror, stdout etc. ersetzen (z.B z50)
+- Malloc Fehlerabfrage fehlt (z66-67)
 
-in initConnection.c und falls der Block nicht selbsterklärend ist
-darüber funktion kommentieren.
-Abschließend kann ich nur sagen löscht die sharedvariables.h und benutzt
-h-files bitte richtig.
 
+ALLE:
+Abschließend kann ich nur sagen löscht die sharedvariables.h
 
 Weiterhin: 
-Restrukturierung der Funktionen und wenn möglich Aufteilung in unabhängige Module
 Fallbehandlung ( Falls z.b. die Zeit < 500 ms ist nicht die KI rechnen lassen 
 oder bei einem größeren Feld die Formatierung übergehen) 
-Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführen und an die KI weitergeben. 
-Spart Redundanz 
 
 Die Ausgabe der Spielernummer zur Initialisierung des Spieles ist noch nicht ganz korrekt.
+
+
+
+
 
 
 
