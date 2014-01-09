@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-c -Wall -Werror
 LDFLAGS=
-SOURCES=Main.c performConnection.c initConnection.c config.c errmmry.c auxiliaryFunctions.c Playtime.c ServerInfo.c select.c quartoAI.c thinker.c
+SOURCES=Main.c PerformConnection.c InitConnection.c Config.c Errmmry.c AuxiliaryFunctions.c Playtime.c ServerInfo.c Select.c QuartoAI.c Thinker.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=client
 
