@@ -1,5 +1,5 @@
-#ifndef errmmry_h
-#define errmmry_h
+#ifndef Errmmry_h
+#define Errmmry_h
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
