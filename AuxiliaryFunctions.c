@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <sys/shm.h>
 #include <sys/types.h>
-#include "sharedVariables.h"
+#include "SharedVariables.h"
 
 /**
  * Haengt /n an den String fuer den Server an
