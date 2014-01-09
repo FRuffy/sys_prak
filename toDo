@@ -1,3 +1,8 @@
+
+***************************
+DEBUGGEN MIT ID NjH.NXJ0jEE
+***************************
+
 Harun:
 FILE* logdatei; auslagern
 errmmry.c
@@ -14,12 +19,9 @@ Fabi:
 Main.c
 Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführen und an die KI weitergeben. 
 Spart Redundanz 
-Fehlerbehandlung Checkserverreply Minuszeichen
-- initConnection(argc, argv,shm,conf); Warum übergebt ihr argc? argv
-solltet ihr auf keinen Fall übergeben sondern
-den Inhalt zwischenspeichern und dann übergeben.
-initConnection.c 
-- argv bereits in Elternprozess abfragen.
+select.c und thinker.c 
+Evtl timeout hinzufügen und weitere Fehlerbehandlung für die Error ID 
+
 
 Flo:
 - Sighandler auslagern
@@ -86,6 +88,18 @@ auxiliaryFunctions.c
 endlich fixen)
 
 --------------------------------------------------------------------------
+09.01 - Fabian
+
+Fehlerbehandlung Checkserverreply Minuszeichen
+- initConnection(argc, argv,shm,conf); Warum übergebt ihr argc? argv
+solltet ihr auf keinen Fall übergeben sondern
+den Inhalt zwischenspeichern und dann übergeben.
+initConnection.c 
+- argv bereits in Elternprozess abfragen.
+
+--------------------------------------------------------------------------
+
+
 Datum - Name
 
 --------------------------------------------------------------------------
