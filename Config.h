@@ -1,5 +1,5 @@
-#ifndef config_h
-#define config_h
+#ifndef Config_h
+#define Config_h
 
 int openConfig(char* name, config_struct* conf);
 int checkName(char* name, char* wert, config_struct* conf);
