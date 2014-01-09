@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include "errmmry.h"
+#include "Errmmry.h"
 #include <time.h>
 
 int countint=0; // Anzahl der zugewiesenen Speicherbereiche
@@ -14,33 +14,41 @@ int countchar=0;
  * @param  adr Der Pointer auf den Speicherbereich
  * @return Gibt 0 zurueck.
  */
-int addint(int* intadr){
-varadr_int[countint]=intadr;
-countint++;
-return EXIT_SUCCESS;        
+int addint(int* intadr) {
+        varadr_int[countint]=intadr;
+        countint++;
+        return EXIT_SUCCESS;        
 }
 
-int addchar(char* charadr){
-varadr_char[countchar]=charadr;
-countchar++;
-return EXIT_SUCCESS;        
+
+int addchar(char* charadr) {
+        varadr_char[countchar]=charadr;
+        countchar++;
+        return EXIT_SUCCESS;        
 }
+
+
 /**
  * Befreit alle in das Array bisher aufgenommenen Speicherbereiche.
  *
  * @return Gibt 0 zurueck.
  */
-int freeall(){
-int i;
-for(i=0;i<=countint;i++){
+int freeall() {
+        int i;
+        
+        for(i=0;i<=countint;i++) {
         free(varadr_int[i]);
-}
-for(i=0;i<=countchar;i++){
+        }
+
+        for(i=0;i<=countchar;i++) {
         free(varadr_char[i]);
+        }
+        
+        printf("Es wurden %d Variablen befreit \n",countint+countchar);
+        return EXIT_SUCCESS;
 }
-printf("Es wurden %d Variablen befreit \n",countint+countchar);
-return EXIT_SUCCESS;
-}
+
+
 /**
  * Schreibt eine Fehlermeldung mit Timestamp in die Datei log.txt
  * Um Zeilenzahl genau zu halten, bitte neben Syscalls aufrufen.
@@ -49,13 +57,17 @@ return EXIT_SUCCESS;
  * @param String im Format: "Dateipfad:Zeilennummer".
  * @return Gibt 0 zurueck.
  */
-int writelog(FILE *filename,const char *location){
-time_t result = time(NULL);
-char *t = ctime(&result);
-t[strlen(t)-1] = 0;
-if (errno!=0) printf("Ein Fehler wurde in der Logdatei dokumentiert. \n");
-fprintf(filename,"%s --> ",t);
-fputs(strerror(errno),filename);
-fprintf(filename," at %s \n",location);
-return EXIT_SUCCESS;
+int writelog(FILE *filename,const char *location) {
+        time_t result = time(NULL);
+        char *t = ctime(&result);
+        t[strlen(t)-1] = 0;
+        
+        if (errno!=0) {
+                printf("Ein Fehler wurde in der Logdatei dokumentiert. \n");
+        }
+        
+        fprintf(filename,"%s --> ",t);
+        fputs(strerror(errno),filename);
+        fprintf(filename," at %s \n",location);
+        return EXIT_SUCCESS;
 }
