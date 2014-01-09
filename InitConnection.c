@@ -5,35 +5,26 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include "sharedVariables.h"
-#include "auxiliaryFunctions.h"
-#include "errmmry.h"
-#include "config.h"
-#include "performConnection.h"
+#include "SharedVariables.h"
+#include "AuxiliaryFunctions.h"
+#include "Errmmry.h"
+#include "Config.h"
+#include "PerformConnection.h"
 
-int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf)
-{
-
+int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf) {
     //überpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
-    if ( argc == 1 || (strlen (argv[1])) > 18)
-    {
+    if ( argc == 1 || (strlen (argv[1])) > 18) {
         printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
         return EXIT_FAILURE;
-    }
-    else
-    {
-
-        if (argc == 3)
-        {
-            if (openConfig(argv[2],conf)!= 0) //Falls Custom-config angegeben wurde
-            {
+    } else {
+        if (argc == 3)  {
+            //Falls Custom-config angegeben wurde
+            if (openConfig(argv[2],conf)!= 0) {
                 return EXIT_FAILURE;
             }
-        }
-        else
-        {
-            if (openConfig("client.conf",conf) != 0) //Sonst Standard-config
-            {
+        } else {
+            //Sonst Standard-config
+            if (openConfig("client.conf",conf) != 0) {
                 return EXIT_FAILURE;
             }
         }
@@ -41,7 +32,7 @@ int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf)
         shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
         shm->pidKid = getpid();
     }
-
+    
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     writelog(logdatei,AT);
     struct sockaddr_in host;
@@ -51,23 +42,21 @@ int initConnection(int argc, char ** argv,sharedmem * shm, config_struct* conf)
     host.sin_family = AF_INET;
     host.sin_port = htons(conf->portnumber);
 
-    if (connect(sock,(struct sockaddr*)&host, sizeof(host)) == 0)
-    {
+    if (connect(sock,(struct sockaddr*)&host, sizeof(host)) == 0) {
         printf("\nVerbindung mit %s hergestellt!\n",conf->hostname);
         writelog(logdatei,AT);
-    }
-    else
-    {
+    } else {
         perror("\n Fehler beim Verbindungsaufbau");
         writelog(logdatei,AT);
         return EXIT_FAILURE;
     }
-    if (performConnection(sock,shm, conf) != 0)//Fuehre Prolog Protokoll aus
-    {
-
+    
+    //Fuehre Prolog Protokoll aus
+    if (performConnection(sock,shm, conf) != 0) {
         close(sock);
         return EXIT_FAILURE;
     }
+    
     close(sock);
 
     return EXIT_SUCCESS;
