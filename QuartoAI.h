@@ -1,5 +1,5 @@
-#ifndef quartoAI_h
-#define quartoAI_h
+#ifndef QuartoAI_h
+#define QuartoAI_h
 
 int calculateMove(sharedmem *shm);
 
