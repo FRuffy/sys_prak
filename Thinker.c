@@ -9,23 +9,21 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <time.h>
-#include "sharedVariables.h"
-#include "thinker.h"
-#include "auxiliaryFunctions.h"
-#include "errmmry.h"
-#include "quartoAI.h"
+#include "SharedVariables.h"
+#include "Thinker.h"
+#include "AuxiliaryFunctions.h"
+#include "Errmmry.h"
+#include "QuartoAI.h"
 
 
 // Anfang der KI
-//
 /**
  * Umsetzung SpielfeldNr => Spielfeldkoordinaten (wie von Server benoetigt)
  * UNICOLOR DÜNN ECKIG GANZ
  * @param  SpielfeldNr
  * @return Spielfeldkoordinaten(wie von Server benoetigt)
  */
-char* formatMove(int move)
-{
+char* formatMove(int move) {
     if (move == 0)  return "A1";
     if (move == 1)  return "B1";
     if (move == 2)  return "C1";
@@ -44,9 +42,9 @@ char* formatMove(int move)
     if (move == 15) return "D4";
     return NULL;
 }
+
 /* Meine temporäre Notlösung um das Problem des umgedrehten Spielfelds zu lösen */
-char* formatMove1(int move) //Input sollte eigentlich sein:
-{
+char* formatMove1(int move) { //Input sollte eigentlich sein:
     if (move == 0)  return "A4"; //12
     if (move == 1)  return "B4"; //13
     if (move == 2)  return "C4"; //14
@@ -65,26 +63,21 @@ char* formatMove1(int move) //Input sollte eigentlich sein:
     if (move == 15) return "D1"; //3
     return NULL;
 }
+
 /**
  *  Testet ob ein Stein noch verfuegbar ist
  *
  * @param  Pointer auf Spielfeld, zufaellig ausgewaehlter Stein
  * @return "setzbarer" Stein
  */
-int testStone(sharedmem * shm, int stone)
-{
-
+int testStone(sharedmem * shm, int stone) {
     int i=0;
-
-    for (i=0; i<16; i++)
-    {
-        if (stone == *(shm->pf+i) || stone == shm->StoneToPlace)
-        {
+    for (i=0; i<16; i++) {
+        if (stone == *(shm->pf+i) || stone == shm->StoneToPlace) {
             return EXIT_FAILURE;
         }
     }
     return EXIT_SUCCESS;
-
 }
 
 /**
@@ -93,17 +86,14 @@ int testStone(sharedmem * shm, int stone)
  * @param  Pointer auf Spielfeld
  * @return "setzbarer" Stein
  */
-void chooseStone(sharedmem * shm)
-{
+void chooseStone(sharedmem * shm) {
     srand(time(NULL));
     int check = 0;
     int stone;
 
-    while( check== 0)
-    {
+    while( check== 0) {
         stone = rand()%16;
-        if(testStone(shm, stone)==EXIT_SUCCESS)
-        {
+        if(testStone(shm, stone)==EXIT_SUCCESS) {
             check = 1;
         }
     }
@@ -116,36 +106,31 @@ void chooseStone(sharedmem * shm)
  * @param
  * @return berechneter Spielzug
  */
-void think(sharedmem * shm)
-{
+void think(sharedmem * shm) {
     printGameFieldQuarto4x4(shm);
-	//printGameField(shm);
-	printf("\nStarting to Think\n");
-
+    //printGameField(shm);
+    printf("\nStarting to Think\n");
     srand(time(NULL));
     int check = 0;
     int move;
 
-/* Kalkuliere naechsten Zug. Falls Sieg möglich setze dort, sonst random */
-     move = calculateMove(shm);
-     if(move != -1)  {
+    /* Kalkuliere naechsten Zug. Falls Sieg möglich setze dort, sonst random */
+    move = calculateMove(shm);
+    if(move != -1) {
         printf("\nMOVE: %d\n",move);
-   strcpy(shm->nextField, formatMove1(move/4));
- }
-    // Suche freien Platz auf Spielfeld
-  else  { while( check == 0)
-    {
-    	move = rand()%16;
-        if (*(shm->pf + move) == -1 )
-            check= 1;
-
-
-        	strcpy(shm->nextField, formatMove(move));
-    }
+        strcpy(shm->nextField, formatMove1(move/4));
+    } else { // Suche freien Platz auf Spielfeld
+    	while (check == 0) {
+    		move = rand()%16;
+        	if (*(shm->pf + move) == -1) {
+            		check= 1;
+            	}
+		strcpy(shm->nextField, formatMove(move));
+    	}
     // Wofuer ist das ? ? ? ? ? (ich kapier es nicht, drum auskommentiert) Flo - 25.12.2013
     //if (formatMove(move)==NULL) {
     //return NULL; }
-  }
+    }
     chooseStone(shm);
 }
 
