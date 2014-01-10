@@ -29,9 +29,9 @@ int initConnection(sharedmem * shm, config_struct* conf) {
         writelog(logdatei,AT);
         return EXIT_FAILURE;
     }
-    /*
+    
  shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
-shm->pidKid = getpid(); */
+shm->pidKid = getpid(); 
     //Fuehre Prolog Protokoll aus
     if (performConnection(sock,shm, conf) != 0) {
         close(sock);
