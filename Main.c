@@ -56,7 +56,7 @@ int main (int argc, char** argv ) {
         printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
         return EXIT_FAILURE;
     } else {
-        if (argc == 3)  {
+        if (argc == 3) {
             //Falls Custom-config angegeben wurde
             if (openConfig(argv[2],conf)!= 0) {
                 return EXIT_FAILURE;
@@ -90,6 +90,7 @@ int main (int argc, char** argv ) {
         shmdt(shm->pf);
         shmdt(shm);
         free(conf);
+
     } else {
         //Elternprozess - soll laut Spezifikation den Thinker implementieren
         close(fd[0]);
@@ -99,14 +100,13 @@ int main (int argc, char** argv ) {
             if (signum == SIGUSR1) {
                 shm->pf = shmat(shm->pfID, 0, 0);
                 writelog(logdatei,AT);
-                printf("\nSPIELFELDID VATER %d\n",*(shm->pf));
-                 //Sicherstellen, dass SIGUSR1 vom Kind kam
+                //Sicherstellen, dass SIGUSR1 vom Kind kam
                 if (shm->pleaseThink == 1) {
                     shm->pleaseThink = 0;
                     think(shm);
                     char* reply = malloc(sizeof(char)*15);
                     sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
-                    err = 	write (fd[1], reply, 15); //Spielzug in Pipe schreiben
+                    err =         write (fd[1], reply, 15); //Spielzug in Pipe schreiben
                     if (err <0) {
                         perror("Fehler bei Write");
                        //Fehlerbehandlung?

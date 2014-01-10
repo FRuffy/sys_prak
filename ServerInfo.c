@@ -16,8 +16,7 @@ char* recvServerInfo(char* buffer,sharedmem * shm)
     int i = 1;
 
     strcpy(buffer2,buffer);
-    // printf("\n%s\n",buffer2);
-    buffer2 = strtok( buffer2, "\n" );
+     buffer2 = strtok( buffer2, "\n" );
 
     //Verarbeite: "+ TOTAL 2" (Anzahl der Spieler)
     sscanf(buffer2, "%*s %*s %i", &(shm->playerCount));
@@ -45,7 +44,6 @@ char* recvServerInfo(char* buffer,sharedmem * shm)
         printf("%d\t\t%s\t\t%d\n", shm->player[i].playerNumber, shm->player[i].playerName, shm->player[i].playerReady);
     }
     buffer2 = strtok( NULL, "" );
-    //printf("\n%s\n",buffer2);
     strcpy(buffer, buffer2);
     free(bfrptr);
     return buffer;

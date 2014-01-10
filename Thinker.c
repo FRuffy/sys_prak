@@ -106,16 +106,29 @@ void chooseStone(sharedmem * shm) {
  * @param
  * @return berechneter Spielzug
  */
-void think(sharedmem * shm) {
-    printGameFieldQuarto4x4(shm);
-    //printGameField(shm);
-    printf("\nStarting to Think\n");
+int think(sharedmem * shm) {
+     char* field = malloc(sizeof(char)*5*16);
     srand(time(NULL));
     int check = 0;
-    int move;
+    int move = -1;
+     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX ==4) {
+      printGameFieldQuarto4x4(shm,field);
+     }
+   else {
+    printGameField(shm);
+   }
+
+    printf("\nStarting to Think\n");
 
     /* Kalkuliere naechsten Zug. Falls Sieg möglich setze dort, sonst random */
-    move = calculateMove(shm);
+   if (shm->thinkTime >500) {
+
+        move = calculateMove(shm,field);
+   }
+   else {
+    printf("\n Wir denken lieber nicht zu hart nach!\n");
+   }
+
     if(move != -1) {
         printf("\nMOVE: %d\n",move);
         strcpy(shm->nextField, formatMove1(move/4));
@@ -127,47 +140,12 @@ void think(sharedmem * shm) {
             	}
 		strcpy(shm->nextField, formatMove(move));
     	}
-    // Wofuer ist das ? ? ? ? ? (ich kapier es nicht, drum auskommentiert) Flo - 25.12.2013
-    //if (formatMove(move)==NULL) {
-    //return NULL; }
+
+    if (formatMove(move)==NULL) {
+            perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
+    return EXIT_FAILURE; }
     }
     chooseStone(shm);
+    free(field);
+    return EXIT_SUCCESS;
 }
-
-// Ende der KI
-
-/**
-* Signal Handler.
-*
-
-* Definiert, wie auf ein Signal reagiert werden soll.
-*
-* @param  Wert des Signals.
-*//*
-void signal_handler(int signum)
-	{ int err;
-	(void) signal;
-	    if (signum == SIGUSR1)
-	    {
-	    	shm->pf = shmat(shm->pfID, 0, 0);
-
-	    	//Sicherstellen, dass SIGUSR1 vom Kind kam
-	    	if (shm->pleaseThink == 1) {
-	    		shm->pleaseThink = 0;
-	    		think(shm);
-
-	    		char* reply = malloc(sizeof(char)*15);
-//	    		if (reply == NULL) perror("Fehler bei malloc");
-	    	    sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
-	    	err = 	write (fd[1], reply, 15); //Spielzug in Pipe schreiben
-	    	if (err <0)
-            {
-                perror("Fehler bei Write");
-            }
-	    		shm->thinking = 0; // Denken beendet
-	    		free(reply);
-	    	}
-	    }
-	}
-
-*/

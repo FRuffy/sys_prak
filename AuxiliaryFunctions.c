@@ -72,7 +72,7 @@ int readGameField(char *buffer,sharedmem * shm) {
         }
         buffer2 = strtok( NULL, "\n" );
     }
-    
+
     free(buffer2temp);
     return EXIT_SUCCESS;
 }
@@ -80,14 +80,14 @@ int readGameField(char *buffer,sharedmem * shm) {
 /**
  * Konvertiert in 4-stellige Binaerdarstellung
  */
-char* byte_to_binary(int n) {
+int byte_to_binary(int n, char* pointer) {
    int c, d, count;
-   char *pointer;
+   //char *pointer;
    count = 0;
-   pointer = (char*)malloc(32+1);
+   //pointer = (char*)malloc(32+1);
 
    if (pointer == NULL) {
-      exit(EXIT_FAILURE);
+     return EXIT_FAILURE;
    }
 
    for (c=3; c>=0 ; c--) {
@@ -99,9 +99,9 @@ char* byte_to_binary(int n) {
       }
       count++;
    }
-   
+
    *(pointer+count) = '\0';
-   return  pointer;
+   return  EXIT_SUCCESS;
 }
 
 /**
@@ -112,7 +112,7 @@ char* byte_to_binary(int n) {
  */
 int printGameField(sharedmem * shm) {
     int i, j;
-    
+
     for (i=shm->fieldY-1; i>=0; i--) {
         printf("\n %d: ", i+1);
         for (j=0; j<shm->fieldX; j++) {
@@ -123,22 +123,25 @@ int printGameField(sharedmem * shm) {
             }
         }
     }
-    
+
     return EXIT_SUCCESS;
 }
 
 /**
  * Gibt das Spielfeld speziell für ein Quarto 4x4 Spiel aus
  */
-int printGameFieldQuarto4x4(sharedmem * shm) {
-    char* buffer = malloc(sizeof(char)*10);
+int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
+
+    stones[0] = '\0';
+    char* stone = malloc(sizeof(char)*5);
+
     int i,j;
     printf("\n+");
-    
-    for (i=shm->fieldY-1; i>=0; i--) {        
-        printf("-------");    
+
+    for (i=shm->fieldY-1; i>=0; i--) {
+        printf("-------");
     }
-    
+
     printf("+");
 
     for (i=shm->fieldY-1; i>=0; i--) {
@@ -146,22 +149,26 @@ int printGameFieldQuarto4x4(sharedmem * shm) {
         printf("\n+ %d:", i+1);
         for (j=0; j<shm->fieldX; j++) {
             if (*(shm->pf+j+i*shm->fieldY)==-1) {
+                strcat(stones,"****");
                 printf(" **** ");
             } else {
-                strcpy(buffer,byte_to_binary(*(shm->pf+j+i*shm->fieldY)));
-                printf(" %s ", buffer);
+                //strcpy(stone,byte_to_binary(*(shm->pf+j+i*shm->fieldY)));
+               byte_to_binary(*(shm->pf+j+i*shm->fieldY),stone);
+                strcat(stones,stone);
+                printf(" %s ", stone);
             }
         }
-        printf(" +");   
+        printf(" +");
     }
-    
+
     printf("\n+%29c\n+", '+');
-    
-    for (i=shm->fieldY-1; i>=0; i--) {        
-        printf("-------");    
+
+    for (i=shm->fieldY-1; i>=0; i--) {
+        printf("-------");
     }
-    
+
     printf("+");
+    free(stone);
     return EXIT_SUCCESS;
 }
 

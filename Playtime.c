@@ -11,44 +11,36 @@
 
 #define BUFFR 512
 
-
-
-int checkBuffer(char * buffer) {
- if (buffer[0] == '-') {
-        printf("\nFehler in der Kommunikation, der Server meldet: %s\n", buffer );
-        return EXIT_FAILURE;
-    }
-return EXIT_SUCCESS;
-
-}
+/**
+* Überprüft den erhaltenen Buffer auf eventuell
+* auftretende negative Servermeldungen
+**/
 int handleRecv(int sock, char* buffer) {
      int err;
      err = recv(sock, buffer, BUFFR - 1, 0);
         if (err > 0) {
             buffer[err] = '\0';
         }
- if (checkBuffer(buffer) != 0) {
-
+  if (buffer[0] == '-') {
+        printf("\nFehler in der Kommunikation, der Server meldet: %s \n", buffer );
         return EXIT_FAILURE;
     }
-    printf("Buffer checkServerReply: %s", buffer);
+    printf("\nBuffer checkServerReply: %s\n", buffer);
 return EXIT_SUCCESS;
 }
 
 
 
 int checkServerReply(int sock, char* buffer, sharedmem * shm) {
-    if (checkBuffer(buffer) != 0)
-        {
-            return EXIT_FAILURE;
-        }
 
+     if (buffer[0] == '-') {
+        printf("\nFehler in der Kommunikation, der Server meldet: %s \n", buffer );
+        return EXIT_FAILURE;
+    }
 
-    // if then else, falls WAIT zurueckgegeben wird.
-    printf("\nBuffer: %s\n", buffer);
-
+   /* if then else, falls WAIT zurueckgegeben wird. */
     if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
-
+ sscanf(buffer,"%*s %*s %d",&(shm->thinkTime));
         if (handleRecv(sock,buffer) != 0)
         {
             return EXIT_FAILURE;
@@ -124,9 +116,7 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 
     //Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren und einhaengen (2x Groesse von fieldX wegen 4 Merkmalen pro Stein!)
     if (shm->pfID == 0) {
-        printf("check");
         shm->pfID = shmget(KEY, (sizeof(short)*(shm->fieldX)*(shm->fieldX)*(shm->fieldY)),IPC_CREAT | 0775 );
-        printf("\nSpielfeld KIND %d\n",(shm->pfID));
         if (shm->pfID < 1) {
             writelog(logdatei,AT);
             perror("KIND");
@@ -134,10 +124,10 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
         }
     }
 
-    // printf("\nSpielfeldID1 %d\n",*(shm->pf));
+
     shm->pf = shmat(shm->pfID, 0, 0);
     writelog(logdatei,AT); //pf einhaengen
-    printf("\nSpielfeldID2 KIND %d\n",*(shm->pf));
+
 
     //Im Fehlerfall pointed pf auf -1
     if (*(shm->pf) ==  -1) {
@@ -145,8 +135,7 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
         writelog(logdatei,AT);
     }
 
-    printf("\nSpielfeldID3 KIND %d\n",*(shm->pf));
-    readGameField(buffer,shm);
+        readGameField(buffer,shm);
 
     //Bereitet den naechsten Zug vor (sendet Signal an Vater-Thinker)
     sendReplyFormatted(sock, "THINKING");
@@ -162,7 +151,6 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
             return EXIT_FAILURE;
         }
 
-        printf("\nDoMove2: %s\n", buffer);
     }
 
     // Naechsten Spielzug ausdenken (ueber thinker)
