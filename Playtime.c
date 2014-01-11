@@ -12,7 +12,7 @@
 #define BUFFR 512
 
 /**
-* Überprüft den erhaltenen Buffer auf eventuell
+* ÃœberprÃ¼ft den erhaltenen Buffer auf eventuell
 * auftretende negative Servermeldungen
 **/
 int handleRecv(int sock, char* buffer) {
@@ -40,7 +40,7 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 
    /* if then else, falls WAIT zurueckgegeben wird. */
     if (strncmp(buffer,"+ MOVE", 6) == 0 && (strlen(buffer)< 15)) {
- sscanf(buffer,"%*s %*s %d",&(shm->thinkTime));
+        sscanf(buffer,"%*s %*s %d",&(shm->thinkTime));
         if (handleRecv(sock,buffer) != 0)
         {
             return EXIT_FAILURE;
