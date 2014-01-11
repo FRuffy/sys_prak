@@ -1,4 +1,3 @@
-
 ***************************
 DEBUGGEN MIT ID NjH.NXJ0jEE
 ***************************
@@ -16,9 +15,6 @@ Clean Exit Funktionen
 Statusmeldungen sind.
 
 Fabi:
-Main.c
-Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführen und an die KI weitergeben. 
-Spart Redundanz 
 select.c und thinker.c 
 Evtl timeout hinzufügen und weitere Fehlerbehandlung für die Error ID 
 
@@ -96,6 +92,9 @@ solltet ihr auf keinen Fall übergeben sondern
 den Inhalt zwischenspeichern und dann übergeben.
 initConnection.c 
 - argv bereits in Elternprozess abfragen.
+- Main.c
+Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführen und an die KI weitergeben. 
+Spart Redundanz 
 
 --------------------------------------------------------------------------
 
