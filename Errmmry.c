@@ -15,6 +15,12 @@ int countchar=0;
  * @return Gibt 0 zurueck.
  */
 int addint(int* intadr) {
+        
+        if (intadr==NULL){
+                perror("Fehler bei Malloc eines int pointers! \n");
+                return EXIT_FAILURE;
+        }
+
         varadr_int[countint]=intadr;
         countint++;
         return EXIT_SUCCESS;        
@@ -22,6 +28,12 @@ int addint(int* intadr) {
 
 
 int addchar(char* charadr) {
+        
+        if (charadr==NULL){
+                perror("Fehler bei Malloc eines char pointers! \n");
+                return EXIT_FAILURE;
+        }
+
         varadr_char[countchar]=charadr;
         countchar++;
         return EXIT_SUCCESS;        
