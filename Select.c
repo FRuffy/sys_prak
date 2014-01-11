@@ -29,7 +29,7 @@
  */
 int doMove(int sock, char* buffer) {
   int size;
-  char* reply = malloc(sizeof(char)*15);
+  char* reply = malloc(sizeof(char)*15);  addchar(reply);
   size= read(fd[0], reply, 15);
 
   if (size < 0) {
@@ -37,7 +37,6 @@ int doMove(int sock, char* buffer) {
   }
   printf("\nReplyDoMove: %s\n", reply);
   sendReplyFormatted(sock, reply);
-  free(reply);
 
   size = recv(sock, buffer, BUFFR - 1, 0);
   if (size > 0) {
