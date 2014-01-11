@@ -14,6 +14,7 @@
 #include "AuxiliaryFunctions.h"
 #include "Errmmry.h"
 #include "QuartoAI.h"
+#include "Errmmry.h"
 
 
 // Anfang der KI
@@ -107,7 +108,7 @@ void chooseStone(sharedmem * shm) {
  * @return berechneter Spielzug
  */
 int think(sharedmem * shm) {
-     char* field = malloc(sizeof(char)*5*16);
+     char* field = malloc(sizeof(char)*5*16);   addchar(field);
     srand(time(NULL));
     int check = 0;
     int move = -1;
@@ -146,6 +147,5 @@ int think(sharedmem * shm) {
     return EXIT_FAILURE; }
     }
     chooseStone(shm);
-    free(field);
     return EXIT_SUCCESS;
 }
