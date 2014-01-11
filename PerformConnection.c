@@ -17,16 +17,9 @@
 
 int performConnection(int sock, sharedmem * shm, config_struct* conf) {
     int err; //size zur Fehlerbehandlung fuer recv
-    char* reader = malloc(sizeof(char) * 20);
-    char* temp = malloc(sizeof(char) * BUFFR);
-    char* buffer = malloc(sizeof(char) * BUFFR);
-    if (reader == NULL || temp == NULL || buffer == NULL) {
-        free(reader);
-        free(temp);
-        free(buffer);
-        perror("Fehler bei malloc");
-        return EXIT_FAILURE;
-    }
+    char* reader = malloc(sizeof(char) * 20);   addchar(reader);
+    char* temp = malloc(sizeof(char) * BUFFR);  addchar(temp);
+    char* buffer = malloc(sizeof(char) * BUFFR);    addchar(buffer);
 
     /* Teil 1: Lese die Client-Version des Servers und antworte mit eigener (formatierten) Version
      Behandle die Antwort des Servers */
@@ -49,9 +42,6 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 
     if (buffer[0] == '-') {
         printf("\nDer Server akzeptiert die Version %s dieses Clients nicht!\n",conf->version);
-        free(buffer);
-        free(reader);
-        free(temp);
         return EXIT_FAILURE;
     } else {
         printf("\nDie Client-Version wurde akzeptiert, uebertrage Spiel-ID...\n");
@@ -71,15 +61,9 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 
     if (buffer[0] == '-') {
         printf("\nDie uebergebene Game-ID fehlt oder ist fehlerhaft! Beende Verbindung\n");
-        free(buffer);
-        free(reader);
-        free(temp);
         return EXIT_FAILURE;
     } else if (strcmp(reader, "Quarto") != 0) {
         printf("\nDas Spiel, das der Server spielt, ist nicht Quarto! Beende Verbindung.\n");
-        free(buffer);
-        free(reader);
-        free(temp);
         return EXIT_FAILURE;
     } else {
         printf("\nDer Server moechte %s spielen. Und wir auch!\n", reader);
@@ -113,9 +97,6 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
             printf("\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
             //ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde!
         }
-        free(buffer);
-        free(reader);
-        free(temp);
         return EXIT_FAILURE;
     } else {
         sscanf(buffer, "%*s %*s %d %s", &(shm->player[0].playerNumber),(shm->player[0].playerName));
@@ -132,26 +113,17 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 
     if (buffer[0] == '-') {
         printf("\nFehler bei Uebermittlung der Spielparameter!\n");
-        free(buffer);
-        free(reader);
-        free(temp);
         return EXIT_FAILURE;
     }
 
     //Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden
     if (recvServerInfo(buffer, shm) == NULL) {
-        free(buffer);
-        free(reader);
-        free(temp);
         return EXIT_FAILURE;
     }
 
     /* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt
    und mit dem Thinker zusammenarbeitet */
     waitforfds(sock,buffer, shm);
-    free(buffer);
-    free(reader);
-    free(temp);
     return EXIT_SUCCESS;
 }
 
