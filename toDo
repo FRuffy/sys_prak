@@ -3,16 +3,7 @@ DEBUGGEN MIT ID NjH.NXJ0jEE
 ***************************
 
 Harun:
-FILE* logdatei; auslagern
-errmmry.c
-- sieht aus wie eine Java Klasse mit gettern und settern.  
-  -> countint, countchar entfernen und per reference call deren werte
-ändern
-- Schreibt euch eine cleanup funktion, die bei programmende den Speicher
-frei gibt (-> spart code)
-Clean Exit Funktionen
-- Benutzt euren logger und entfernt alle Konsolenausgaben, die keine
-Statusmeldungen sind.
+
 
 Fabi:
 select.c und thinker.c 
@@ -60,6 +51,19 @@ Die Ausgabe der Spielernummer zur Initialisierung des Spieles ist noch nicht gan
 ==========================================================================
 Bereits erledigt (einfach hier runter kopieren)
 ==========================================================================
+
+11.02. - Harun
+FILE* logdatei; auslagern
+errmmry.c
+- sieht aus wie eine Java Klasse mit gettern und settern.  
+  -> countint, countchar entfernen und per reference call deren werte
+ändern
+- Schreibt euch eine cleanup funktion, die bei programmende den Speicher
+frei gibt (-> spart code)
+Clean Exit Funktionen
+- Benutzt euren logger und entfernt alle Konsolenausgaben, die keine
+Statusmeldungen sind.
+
 
 22.12. - Flo
 performConnection.c
