@@ -11,8 +11,8 @@ char* recvServerInfo(char* buffer,sharedmem * shm)
 {
     char* buffer2;
     char* bfrptr; //Wichtig, falls strtok zur Modifikation des Strings verwendet wird.Der Pointer ändert sich im Verlauf, die geschriebenen Daten aber nicht.
-    buffer2 = malloc(sizeof(char)*256);
-    bfrptr = buffer2;
+    buffer2 = malloc(sizeof(char)*256); addchar(buffer2);
+    bfrptr = buffer2;   addchar(bfrptr);
     int i = 1;
 
     strcpy(buffer2,buffer);
@@ -23,7 +23,7 @@ char* recvServerInfo(char* buffer,sharedmem * shm)
     if (shm->playerCount > 8)
     {
         printf("\nDiese Version des Clients unterstuetzt maximal 8 Spieler, die Anzahl ist jedoch %d Spieler!\n",shm->playerCount);
-        free(bfrptr);
+
         return NULL;
     }
 
@@ -45,6 +45,5 @@ char* recvServerInfo(char* buffer,sharedmem * shm)
     }
     buffer2 = strtok( NULL, "" );
     strcpy(buffer, buffer2);
-    free(bfrptr);
     return buffer;
 }
