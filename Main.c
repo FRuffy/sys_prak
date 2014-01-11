@@ -14,7 +14,6 @@
 #include "Config.h"
 #include "InitConnection.h"
 
-FILE *logdatei; // Die Logdatei, die Fehler bestimmter Systemfunktionen mitzeichnet und den Ort angibt
 
 int main (int argc, char** argv ) {
 
@@ -51,7 +50,7 @@ int main (int argc, char** argv ) {
         return EXIT_FAILURE;
     }
 
-       //überpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
+       //Ã¼berpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert
     if ( argc == 1 || (strlen (argv[1])) > 18) {
         printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
         return EXIT_FAILURE;
@@ -104,7 +103,7 @@ int main (int argc, char** argv ) {
                 if (shm->pleaseThink == 1) {
                     shm->pleaseThink = 0;
                     think(shm);
-                    char* reply = malloc(sizeof(char)*15);
+                    char* reply = malloc(sizeof(char)*15); addchar(reply);
                     sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
                     err =         write (fd[1], reply, 15); //Spielzug in Pipe schreiben
                     if (err <0) {
@@ -112,7 +111,6 @@ int main (int argc, char** argv ) {
                        //Fehlerbehandlung?
                     }
                     shm->thinking = 0; // Denken beendet
-                    free(reply);
                 }
             }
         }
@@ -123,15 +121,20 @@ int main (int argc, char** argv ) {
             result = waitpid(pid, &status, WNOHANG); // writelog(logdatei,AT);
             // ueberprueft ob Kind noch existiert
             if (result!=0) {
-                printf("VATER: Beende mich selbst... \n");
+                printf("VATER: Kind ist nicht mehr vorhanden... \n");
             }
         }
         while (result == 0); // warte so lange Kind existiert
+        
+        printf("VATER: Zerstoere shms... \n");
         shmdt(shm->pf);
+        if (shmctl(shm->pfID,IPC_RMID, NULL)==-1) perror("Fehler bei Zerstoerung von pf \n"); writelog(logdatei,AT);
         shmdt(shm);
-        shmctl(shmID,IPC_RMID, NULL);
-        shmctl(KEY,IPC_RMID, NULL); //zerstoere pf SHM
+        if (shmctl(shmID,IPC_RMID, NULL)==-1) perror("Fehler bei Zerstoerung von shm \n");  writelog(logdatei,AT);
+        
         free(conf);
+        freeall();
+        printf("VATER: Beende mich selbst...\n");
     }
 
     fclose(logdatei);
