@@ -125,16 +125,17 @@ int main (int argc, char** argv ) {
             }
         }
         while (result == 0); // warte so lange Kind existiert
-        
+
         printf("VATER: Zerstoere shms... \n");
         shmdt(shm->pf);
         if (shmctl(shm->pfID,IPC_RMID, NULL)==-1) perror("Fehler bei Zerstoerung von pf \n"); writelog(logdatei,AT);
         shmdt(shm);
         if (shmctl(shmID,IPC_RMID, NULL)==-1) perror("Fehler bei Zerstoerung von shm \n");  writelog(logdatei,AT);
-        
-        free(conf);
-        freeall();
+
+ free(conf);
+   freeall();
         printf("VATER: Beende mich selbst...\n");
+
     }
 
     fclose(logdatei);

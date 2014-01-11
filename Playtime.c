@@ -71,8 +71,8 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
         }
             printf("\nBuffer2: %s\n", buffer);
 
-            sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
         }
+        sscanf(buffer,"%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
 
     } else {
         sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));

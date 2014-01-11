@@ -12,5 +12,6 @@ int addint(int* intadr);
 int addchar(char* charadr);
 int freeall();
 int writelog(FILE *filename,const char *location);
+
 #endif
 

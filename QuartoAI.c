@@ -32,13 +32,13 @@ byte_to_binary(shm->StoneToPlace,stone);
                 if (((stone[j]) == (stones[((i+4)%16)+(i/16)*16+j])) && ((stone[j]) == (stones[((i+8)%16)+(i/16)*16+j])) &&((stone[j]) == (stones[((i+12)%16)+(i/16)*16+j]))) {
                     printf("\nLoesung gefunden! %d\n",i);
 
-                    free(stone);
+
                     return i;
                 }
                 if (((stone[j]) == (stones[(i+16)%64+j])) && ((stone[j]) == (stones[(i+32)%64+j])) &&((stone[j]) == (stones[(i+48)%64+j]))) {
                     printf("\nLoesung gefunden! %d\n",i);
 
-                    free(stone);
+
                     return i;
                 }
             }
