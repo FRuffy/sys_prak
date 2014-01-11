@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include "SharedVariables.h"
 #include "AuxiliaryFunctions.h"
+#include "Errmmry.h"
 
 /**
 Diese KI überprüft bei jedem freien Feld, ob bereits 3 Nachbarn mit gleicher Eigenschaft in einer Reihe legen
@@ -14,7 +15,7 @@ Falls keine solchen Steine gefunden werden, ist das Ergebnis negativ und die KI 
 **/
 int calculateMove(sharedmem *shm, char* stones ) {
 
-    char* stone = malloc(sizeof(char)*5);
+    char* stone = malloc(sizeof(char)*5); addchar(stone);
     int i, j;
 
     /* Stein, der zu setzen ist, wird separat gespeichert */
@@ -45,7 +46,6 @@ byte_to_binary(shm->StoneToPlace,stone);
     }
 
 
-    free(stone);
     return -1;
 }
 
