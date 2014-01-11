@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "SharedVariables.h"
+#include "Errmmry.h"
 
 /* Funktion, die unsere Konfigdatei ausliest und Werte der Struktur zuweist */
 
@@ -51,8 +52,8 @@ int readConfig(FILE* configFile, config_struct* conf) {
     //ToDo(Malloc Fehlerabfrage fehlt (z66-67))
     int count = 0; //Zähle die Zeilen der Datei
     int i;
-    char* pName = malloc(sizeof(char)*128*10);
-    char* pValue = malloc(sizeof(char)*128*10);
+    char* pName = malloc(sizeof(char)*128*10);  addchar(pName);
+    char* pValue = malloc(sizeof(char)*128*10); addchar(pValue);
     //while ((fscanf(configFile," %[^ =] = %s \n",&pName[count*128],&pValue[count*128])) != EOF)
     //fix:
     while ((fscanf(configFile," %[^ =] =%*[ ] %s \n",&pName[count*128],&pValue[count*128])) != EOF) {
@@ -64,8 +65,6 @@ int readConfig(FILE* configFile, config_struct* conf) {
         checkName(&pName[i*128],&pValue[i*128],conf); //Prüfe den Parameternamen und weise anschließend den korrekten Wert der Struktur zu
     }
 
-    free(pName);
-    free(pValue);
     return EXIT_SUCCESS;
 }
 
