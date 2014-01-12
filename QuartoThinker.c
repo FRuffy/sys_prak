@@ -172,17 +172,17 @@ int think(sharedmem * shm)
     return EXIT_SUCCESS;
 }
 /** Unsere "kluge" KI!
-Sie übernimmt den string stones der in der printfunktion bereits konvertiert wurde und liest diesen aus
+Sie Ã¼bernimmt den string stones der in der printfunktion bereits konvertiert wurde und liest diesen aus
 (printf("\n%s",stones); zum besseren Verstaendnis). Das Feld ist insgesamt 64 Zeichen lang und ein Stein hat
-4 Zeichen, d.h. wir vergleichen die binären Eigentschaften vertikal und horizontal.
+4 Zeichen, d.h. wir vergleichen die binÃ¤ren Eigentschaften vertikal und horizontal.
 (stones[((i+4)%16)+i+j])):
-(i+4)%16): wählt beispielswiese den Nachbarstein aus, falls i+4 >16 fangen wir einfach von vorn an
-i+j: i wäht die i/4-te Reihe und j wählt die j-te Eigenschaft aus die zu vergleichen ist.
+(i+4)%16): wÃ¤hlt beispielswiese den Nachbarstein aus, falls i+4 >16 fangen wir einfach von vorn an
+i+j: i wÃ¤ht die i/4-te Reihe und j wÃ¤hlt die j-te Eigenschaft aus die zu vergleichen ist.
 stones[(i+16)%64+j])
 funktioniert analog, arbeitet aber spaltenweise
 
 
-Hat das Programm eine Lösung gefunden gibt es eine Lösung aus, diese wird durch 4 geteilt um die korrekte Position
+Hat das Programm eine LÃ¶sung gefunden gibt es eine LÃ¶sung aus, diese wird durch 4 geteilt um die korrekte Position
 zu ermitteln und an domove weitergegeben
 
 **/
@@ -203,16 +203,16 @@ int calculateMove(sharedmem *shm, char* stones )
     /*Suche nach einem Platz der zum Sieg fuehrt */
     for (i=0; i<64; i=i+4)
     {
-        //Ist der Platz frei wird die KI ausgeführt
+        //Ist der Platz frei wird die KI ausgefÃ¼hrt
         if (stones[i] == '*')
         {
             for (j=0; j<4; j++)
 
             {
-                printf("\n%c %c %c %c",stone[j],stones[((i+4)%16)+(i/16)*16+j],stones[((i+8)%16)+(i/16)*16+j],stones[((i+12)%16)+(i/16)*16+j]);
-printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],stones[(i+48)%64+j]);
+           //     printf("\n%c %c %c %c",stone[j],stones[((i+4)%16)+(i/16)*16+j],stones[((i+8)%16)+(i/16)*16+j],stones[((i+12)%16)+(i/16)*16+j]);
+//printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],stones[(i+48)%64+j]);
                  //horizontal
-                if (((stone[j]) == (stones[((i+4)%16)+i+j])) && ((stone[j]) == (stones[((i+8)%16)+i+j])) &&((stone[j]) == (stones[((i+12)%16)+i+j])))
+                if (((stone[j]) == (stones[((i+4)%16)+(i/16)*16+j])) && ((stone[j]) == (stones[((i+8)%16)+(i/16)*16+j])) &&((stone[j]) == (stones[((i+12)%16)+(i/16)*16+j])))
                 {
                     printf("\nLoesung gefunden (%d)! ",i);
 
@@ -227,11 +227,11 @@ printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],s
 
                     return i;
                 }
-            /*     //rechts-> links diagonal
+                 //rechts-> links diagonal
                 if(i %20 == 0)
                 {
 
-                    if (((stone[j]) == (stones[(i+20)%60+j])) && ((stone[j]) == (stones[(i+40)%60+j])) &&((stone[j]) == (stones[(i+60)%60+j])))
+                    if (((stone[j]) == (stones[(i+20)%80+j])) && ((stone[j]) == (stones[(i+40)%80+j])) &&((stone[j]) == (stones[(i+60)%80+j])))
                     {
                         printf("\nDiagonale Loesung gefunden! %d\n",i);
 
@@ -243,14 +243,14 @@ printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],s
                    if((i != 0) && (i %12) == 0)
                 {
 
-                    if (((stone[j]) == (stones[(i+12)%60+i+j])) && ((stone[j]) == (stones[(i+24)%60+i+j])) &&((stone[j]) == (stones[(i+36)%60+i+j])))
+                    if (((stone[j]) == (stones[i%48+12+j])) && ((stone[j]) == (stones[(i+12)%48+12+j])) &&((stone[j]) == (stones[(i+24)%48+12+j])))
                     {
                         printf("\nDiagonale Loesung gefunden! %d\n",i);
 
 
                         return i;
                     }
-                } */
+                }
             }
         }
     }
