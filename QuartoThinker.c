@@ -111,7 +111,7 @@ int think(sharedmem * shm) {
    }
 
     if(move != -1) {
-        printf("Wir gewinnen jetzt!\n",move);
+        printf("Wir gewinnen jetzt!\n");
         strcpy(shm->nextField, formatMove(move/4));
     } else {
     	// Suche freien Platz auf Spielfeld
