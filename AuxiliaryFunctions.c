@@ -86,7 +86,7 @@ int readGameField(char *buffer,sharedmem * shm) {
 int printGameField(sharedmem * shm) {
     int i, j;
 
-    for (i=shm->fieldY-1; i>=0; i--) {
+    for (i=0; i<shm->fieldY; i++) {
         printf("\n %d: ", i+1);
         for (j=0; j<shm->fieldX; j++) {
             if (*(shm->pf+j+i*shm->fieldY)==-1) {
