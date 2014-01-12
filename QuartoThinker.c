@@ -21,7 +21,8 @@
  * @param  SpielfeldNr
  * @return Spielfeldkoordinaten(wie von Server benoetigt)
  */
-char* formatMove(int move) {
+char* formatMove(int move)
+{
     if (move == 0)  return "A4";
     if (move == 1)  return "B4";
     if (move == 2)  return "C4";
@@ -47,10 +48,13 @@ char* formatMove(int move) {
  * @param  Pointer auf Spielfeld, zufaellig ausgewaehlter Stein
  * @return "setzbarer" Stein
  */
-int testStone(sharedmem * shm, int stone) {
+int testStone(sharedmem * shm, int stone)
+{
     int i=0;
-    for (i=0; i<16; i++) {
-        if (stone == *(shm->pf+i) || stone == shm->StoneToPlace) {
+    for (i=0; i<16; i++)
+    {
+        if (stone == *(shm->pf+i) || stone == shm->StoneToPlace)
+        {
             return EXIT_FAILURE;
         }
     }
@@ -63,14 +67,17 @@ int testStone(sharedmem * shm, int stone) {
  * @param  Pointer auf Spielfeld
  * @return "setzbarer" Stein
  */
-void chooseStone(sharedmem * shm) {
+void chooseStone(sharedmem * shm)
+{
     srand(time(NULL));
     int check = 0;
     int stone;
 
-    while( check== 0) {
+    while( check== 0)
+    {
         stone = rand()%16;
-        if(testStone(shm, stone)==EXIT_SUCCESS) {
+        if(testStone(shm, stone)==EXIT_SUCCESS)
+        {
             check = 1;
         }
     }
@@ -83,97 +90,167 @@ void chooseStone(sharedmem * shm) {
  * @param
  * @return berechneter Spielzug
  */
-int think(sharedmem * shm) {
-	if (shm->fieldX != shm->fieldY) {
-		printf("Bei Quarto muss die Spielfeldhoehe gleich der -breite sein!");
-		return EXIT_FAILURE;
-	}
-    char* field = malloc(sizeof(char)*5*16);   addchar(field);
+int think(sharedmem * shm)
+{
+    if (shm->fieldX != shm->fieldY)
+    {
+        printf("Bei Quarto muss die Spielfeldhoehe gleich der -breite sein!");
+        return EXIT_FAILURE;
+    }
+    char* field = malloc(sizeof(char)*5*16);
+    addchar(field);
     srand(time(NULL));
     int check = 0;
     int move = -1;
-     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 4) {
-      printGameFieldQuarto4x4(shm,field);
-     }
-   else {
-	   // Trivial-KI (weil Spielfeld nicht 4x4 ist)
-	   printGameField(shm);
-	   if (*(shm->pf) == -1) {
-		   strcpy(shm->nextField, formatMove(0));
-	   }
-	   else {
-		   strcpy(shm->nextField, formatMove(1));
-	   }
+    if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 4)
+    {
+        printGameFieldQuarto4x4(shm,field);
+    }
+    else
+    {
+        // Trivial-KI (weil Spielfeld nicht 4x4 ist)
+        printGameField(shm);
+        if (*(shm->pf) == -1)
+        {
+            strcpy(shm->nextField, formatMove(0));
+        }
+        else
+        {
+            strcpy(shm->nextField, formatMove(1));
+        }
 
-	   if (shm->StoneToPlace == 0) {
-		   shm->nextStone = 1;
-	   }
-	   else {
-		   shm->nextStone = 0;
-	   }
-	   return EXIT_SUCCESS;
-   }
+        if (shm->StoneToPlace == 0)
+        {
+            shm->nextStone = 1;
+        }
+        else
+        {
+            shm->nextStone = 0;
+        }
+        return EXIT_SUCCESS;
+    }
 
     printf("\nStarting to Think\n");
 
     /* Kalkuliere naechsten Zug. Falls Sieg moeglich setze dort, sonst random */
-   if (shm->thinkTime > 500) {
+    if (shm->thinkTime > 500 || shm->thinkTime ==0)
+    {
 
         move = calculateMove(shm,field);
-   }
-   else {
-    printf("\n Wir denken lieber nicht zu hart nach!\n");
-   }
+    }
+    else
+    {
+        printf("\n Wir denken lieber nicht zu hart nach!\n");
+    }
 
-    if(move != -1) {
+    if(move != -1)
+    {
         printf("Wir gewinnen jetzt!\n");
         strcpy(shm->nextField, formatMove(move/4));
-    } else {
-    	// Suche freien Platz auf Spielfeld
-    	while (check == 0) {
-    		move = rand()%16;
-        	if (*(shm->pf + move) == -1) {
-            		check= 1;
-            	}
+    }
+    else
+    {
+        // Suche freien Platz auf Spielfeld
+        while (check == 0)
+        {
+            move = rand()%16;
+            if (*(shm->pf + move) == -1)
+            {
+                check= 1;
+            }
 
-		strcpy(shm->nextField, formatMove(move));
-    	}
+            strcpy(shm->nextField, formatMove(move));
+        }
 
-    if (formatMove(move)==NULL) {
-    	perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
-    return EXIT_FAILURE; }
+        if (formatMove(move)==NULL)
+        {
+            perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
+            return EXIT_FAILURE;
+        }
     }
     chooseStone(shm);
     return EXIT_SUCCESS;
 }
+/** Unsere "kluge" KI!
+Sie übernimmt den string stones der in der printfunktion bereits konvertiert wurde und liest diesen aus
+(printf("\n%s",stones); zum besseren Verstaendnis). Das Feld ist insgesamt 64 Zeichen lang und ein Stein hat
+4 Zeichen, d.h. wir vergleichen die binären Eigentschaften vertikal und horizontal.
+(stones[((i+4)%16)+i+j])):
+(i+4)%16): wählt beispielswiese den Nachbarstein aus, falls i+4 >16 fangen wir einfach von vorn an
+i+j: i wäht die i/4-te Reihe und j wählt die j-te Eigenschaft aus die zu vergleichen ist.
+stones[(i+16)%64+j])
+funktioniert analog, arbeitet aber spaltenweise
 
-int calculateMove(sharedmem *shm, char* stones ) {
 
-    char* stone = malloc(sizeof(char)*5); addchar(stone);
+Hat das Programm eine Lösung gefunden gibt es eine Lösung aus, diese wird durch 4 geteilt um die korrekte Position
+zu ermitteln und an domove weitergegeben
+
+**/
+int calculateMove(sharedmem *shm, char* stones )
+{
+
+    char* stone = malloc(sizeof(char)*5);
+    addchar(stone);
     int i, j;
 
     /* Stein, der zu setzen ist, wird separat gespeichert */
-    // strcpy(stone,byte_to_binary(shm->StoneToPlace));
     byte_to_binary(shm->StoneToPlace,stone);
+
+
     //printf("\n%s",stones);
     //printf("\n%s",stone);
 
-   /*Suche nach einem Platz der zum Sieg fuehrt */
-    for (i=0; i<64; i=i+4) {
-        if (stones[i] == '*') {
-            for (j=0; j<4; j++) {
-                if (((stone[j]) == (stones[((i+4)%16)+(i/16)*16+j])) && ((stone[j]) == (stones[((i+8)%16)+(i/16)*16+j])) &&((stone[j]) == (stones[((i+12)%16)+(i/16)*16+j]))) {
+    /*Suche nach einem Platz der zum Sieg fuehrt */
+    for (i=0; i<64; i=i+4)
+    {
+        //Ist der Platz frei wird die KI ausgeführt
+        if (stones[i] == '*')
+        {
+            for (j=0; j<4; j++)
+
+            {
+                printf("\n%c %c %c %c",stone[j],stones[((i+4)%16)+(i/16)*16+j],stones[((i+8)%16)+(i/16)*16+j],stones[((i+12)%16)+(i/16)*16+j]);
+printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],stones[(i+48)%64+j]);
+                 //horizontal
+                if (((stone[j]) == (stones[((i+4)%16)+i+j])) && ((stone[j]) == (stones[((i+8)%16)+i+j])) &&((stone[j]) == (stones[((i+12)%16)+i+j])))
+                {
                     printf("\nLoesung gefunden (%d)! ",i);
 
 
                     return i;
                 }
-                if (((stone[j]) == (stones[(i+16)%64+j])) && ((stone[j]) == (stones[(i+32)%64+j])) &&((stone[j]) == (stones[(i+48)%64+j]))) {
+                //vertikal
+                if (((stone[j]) == (stones[(i+16)%64+j])) && ((stone[j]) == (stones[(i+32)%64+j])) &&((stone[j]) == (stones[(i+48)%64+j])))
+                {
                     printf("\nLoesung gefunden! %d\n",i);
 
 
                     return i;
                 }
+            /*     //rechts-> links diagonal
+                if(i %20 == 0)
+                {
+
+                    if (((stone[j]) == (stones[(i+20)%60+j])) && ((stone[j]) == (stones[(i+40)%60+j])) &&((stone[j]) == (stones[(i+60)%60+j])))
+                    {
+                        printf("\nDiagonale Loesung gefunden! %d\n",i);
+
+
+                        return i;
+                    }
+                }
+                 //links-> links diagonal
+                   if((i != 0) && (i %12) == 0)
+                {
+
+                    if (((stone[j]) == (stones[(i+12)%60+i+j])) && ((stone[j]) == (stones[(i+24)%60+i+j])) &&((stone[j]) == (stones[(i+36)%60+i+j])))
+                    {
+                        printf("\nDiagonale Loesung gefunden! %d\n",i);
+
+
+                        return i;
+                    }
+                } */
             }
         }
     }
@@ -182,13 +259,13 @@ int calculateMove(sharedmem *shm, char* stones ) {
     return -1;
 }
 
-//printf("\n%c %c %c %c",stone[j],stones[((i+4)%16)+(i/16)*16+j],stones[((i+8)%16)+(i/16)*16+j],stones[((i+12)%16)+(i/16)*16+j]);
-//printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],stones[(i+48)%64+j]);
+
 
 /**
  * Gibt das Spielfeld speziell fuer ein Quarto 4x4 Spiel aus
  */
-int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
+int printGameFieldQuarto4x4(sharedmem * shm, char* stones)
+{
 
     stones[0] = '\0';
     char* stone = malloc(sizeof(char)*5);
@@ -196,22 +273,28 @@ int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
     int i,j;
     printf("\n+");
 
-    for (i=shm->fieldY-1; i>=0; i--) {
+    for (i=shm->fieldY-1; i>=0; i--)
+    {
         printf("-------");
     }
 
     printf("+");
 
-    for (i=0; i<shm->fieldY; i++) {
+    for (i=0; i<shm->fieldY; i++)
+    {
         printf("\n+%29c", '+');
         printf("\n+ %d:", i+1);
-        for (j=0; j<shm->fieldX; j++) {
-            if (*(shm->pf+j+i*shm->fieldY)==-1) {
+        for (j=0; j<shm->fieldX; j++)
+        {
+            if (*(shm->pf+j+i*shm->fieldY)==-1)
+            {
                 strcat(stones,"****");
                 printf(" **** ");
-            } else {
+            }
+            else
+            {
                 //strcpy(stone,byte_to_binary(*(shm->pf+j+i*shm->fieldY)));
-               byte_to_binary(*(shm->pf+j+i*shm->fieldY),stone);
+                byte_to_binary(*(shm->pf+j+i*shm->fieldY),stone);
                 strcat(stones,stone);
                 printf(" %s ", stone);
             }
@@ -221,7 +304,8 @@ int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
 
     printf("\n+%29c\n+", '+');
 
-    for (i=shm->fieldY-1; i>=0; i--) {
+    for (i=shm->fieldY-1; i>=0; i--)
+    {
         printf("-------");
     }
 
@@ -233,26 +317,29 @@ int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
 /**
  * Konvertiert in 4-stellige Binaerdarstellung
  */
-int byte_to_binary(int n, char* pointer) {
-   int c, d, count;
-   //char *pointer;
-   count = 0;
-   //pointer = (char*)malloc(32+1);
+int byte_to_binary(int n, char* pointer)
+{
+    int c, d, count;
+    count = 0;
+    if (pointer == NULL)
+    {
+        return EXIT_FAILURE;
+    }
 
-   if (pointer == NULL) {
-     return EXIT_FAILURE;
-   }
+    for (c=3; c>=0 ; c--)
+    {
+        d = n >> c;
+        if ( d & 1 )
+        {
+            *(pointer+count) = 1 + '0';
+        }
+        else
+        {
+            *(pointer+count) = 0 + '0';
+        }
+        count++;
+    }
 
-   for (c=3; c>=0 ; c--) {
-      d = n >> c;
-      if ( d & 1 ) {
-         *(pointer+count) = 1 + '0';
-      } else {
-         *(pointer+count) = 0 + '0';
-      }
-      count++;
-   }
-
-   *(pointer+count) = '\0';
-   return  EXIT_SUCCESS;
+    *(pointer+count) = '\0';
+    return  EXIT_SUCCESS;
 }

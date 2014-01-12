@@ -43,7 +43,7 @@ FILE* openFile(char* name) {
         perror("Konfigurationsdatei konnte nicht geoeffnet werden oder existiert nicht!");
         return file;
     }
-    
+
     return file;
 }
 
@@ -54,8 +54,6 @@ int readConfig(FILE* configFile, config_struct* conf) {
     int i;
     char* pName = malloc(sizeof(char)*128*10);  addchar(pName);
     char* pValue = malloc(sizeof(char)*128*10); addchar(pValue);
-    //while ((fscanf(configFile," %[^ =] = %s \n",&pName[count*128],&pValue[count*128])) != EOF)
-    //fix:
     while ((fscanf(configFile," %[^ =] =%*[ ] %s \n",&pName[count*128],&pValue[count*128])) != EOF) {
         count++;
     }

@@ -28,8 +28,6 @@ int addint(int* intadr) {
 
         varadr_int[countint]=intadr;
         countint++;
-                printf("\n INTVariable %d alloziert!\n",countint);
-
         return EXIT_SUCCESS;
 }
 
@@ -43,7 +41,6 @@ int addchar(char* charadr) {
 
         varadr_char[countchar]=charadr;
        countchar++;
-        printf("\n CHARVariable %d alloziert!\n",countchar);
         return EXIT_SUCCESS;
 }
 
@@ -61,7 +58,6 @@ int freeall() {
         }
 
         for(i=0;i<=countchar;i++) {
-                printf("\nICHB BEFREIFEEEEE\n");
         free(varadr_char[i]);
         }
 
