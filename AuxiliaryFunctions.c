@@ -78,33 +78,6 @@ int readGameField(char *buffer,sharedmem * shm) {
 }
 
 /**
- * Konvertiert in 4-stellige Binaerdarstellung
- */
-int byte_to_binary(int n, char* pointer) {
-   int c, d, count;
-   //char *pointer;
-   count = 0;
-   //pointer = (char*)malloc(32+1);
-
-   if (pointer == NULL) {
-     return EXIT_FAILURE;
-   }
-
-   for (c=3; c>=0 ; c--) {
-      d = n >> c;
-      if ( d & 1 ) {
-         *(pointer+count) = 1 + '0';
-      } else {
-         *(pointer+count) = 0 + '0';
-      }
-      count++;
-   }
-
-   *(pointer+count) = '\0';
-   return  EXIT_SUCCESS;
-}
-
-/**
  * gibt Spielfeld aus
  *
  * @param  Pointer auf SHM
@@ -127,48 +100,5 @@ int printGameField(sharedmem * shm) {
     return EXIT_SUCCESS;
 }
 
-/**
- * Gibt das Spielfeld speziell f��r ein Quarto 4x4 Spiel aus
- */
-int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
 
-    stones[0] = '\0';
-    char* stone = malloc(sizeof(char)*5);
-
-    int i,j;
-    printf("\n+");
-
-    for (i=shm->fieldY-1; i>=0; i--) {
-        printf("-------");
-    }
-
-    printf("+");
-
-    for (i=0; i<shm->fieldY; i++) {
-        printf("\n+%29c", '+');
-        printf("\n+ %d:", i+1);
-        for (j=0; j<shm->fieldX; j++) {
-            if (*(shm->pf+j+i*shm->fieldY)==-1) {
-                strcat(stones,"****");
-                printf(" **** ");
-            } else {
-                //strcpy(stone,byte_to_binary(*(shm->pf+j+i*shm->fieldY)));
-               byte_to_binary(*(shm->pf+j+i*shm->fieldY),stone);
-                strcat(stones,stone);
-                printf(" %s ", stone);
-            }
-        }
-        printf(" +");
-    }
-
-    printf("\n+%29c\n+", '+');
-
-    for (i=shm->fieldY-1; i>=0; i--) {
-        printf("-------");
-    }
-
-    printf("+");
-    free(stone);
-    return EXIT_SUCCESS;
-}
 
