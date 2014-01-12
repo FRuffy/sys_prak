@@ -60,13 +60,13 @@ int readGameField(char *buffer,sharedmem * shm) {
         sscanf (buffer2,"%*s %d %[0-9* ]", &znr, buffer2);
 
         for (i=0; i<shm->fieldX; i++) {
-            *(shm->pf+i+(znr-1)*shm->fieldX) = -1;
+            *(shm->pf+i+((znr-4)*(-1))*shm->fieldX) = -1;
             //printf("Buffer2: %s\n", buffer2);
             if (buffer2 == strchr(buffer2, tmp)) {
                 //printf("X=> *\n");
                 sscanf(buffer2,"%*s %[0-9* ]", buffer2);
             } else {
-                sscanf (buffer2,"%d %[0-9* ]",(shm->pf+i+(znr-1)*(shm->fieldY)), buffer2);
+                sscanf (buffer2,"%d %[0-9* ]",(shm->pf+i+((znr-4)*(-1))*(shm->fieldY)), buffer2);
                 //printf(" => %d \n", *(shm->pf+i+(znr-1)*shm->fieldY));
             }
         }
@@ -128,7 +128,7 @@ int printGameField(sharedmem * shm) {
 }
 
 /**
- * Gibt das Spielfeld speziell für ein Quarto 4x4 Spiel aus
+ * Gibt das Spielfeld speziell f��r ein Quarto 4x4 Spiel aus
  */
 int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
 
@@ -144,7 +144,7 @@ int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
 
     printf("+");
 
-    for (i=shm->fieldY-1; i>=0; i--) {
+    for (i=0; i<shm->fieldY; i++) {
         printf("\n+%29c", '+');
         printf("\n+ %d:", i+1);
         for (j=0; j<shm->fieldX; j++) {
@@ -171,5 +171,4 @@ int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
     free(stone);
     return EXIT_SUCCESS;
 }
-
 
