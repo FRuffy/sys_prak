@@ -108,8 +108,6 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
      + ENDFIELD                                                                      + ENDFIELD
     */
 
-
-    printf("\nFuer deinen Zug hast du %d ms und ",shm->thinkTime);
     printf("Stein %d ist zu setzen!\n\n",shm->StoneToPlace);
     printf("Unser momentanes Spielfeld. Groesse: %d x %d\n",shm->fieldX, shm->fieldY);
 
