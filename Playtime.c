@@ -12,7 +12,7 @@
 #define BUFFR 512
 
 /**
-* Überprüft den erhaltenen Buffer auf eventuell
+* Ueberprueft den erhaltenen Buffer auf eventuell
 * auftretende negative Servermeldungen
 **/
 int handleRecv(int sock, char* buffer) {
@@ -25,8 +25,7 @@ int handleRecv(int sock, char* buffer) {
         printf("\nFehler in der Kommunikation, der Server meldet: %s \n", buffer );
         return EXIT_FAILURE;
     }
-    printf("\nBuffer checkServerReply: %s\n", buffer);
-return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 
 
