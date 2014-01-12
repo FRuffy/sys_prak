@@ -92,11 +92,26 @@ int think(sharedmem * shm) {
     srand(time(NULL));
     int check = 0;
     int move = -1;
-     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX ==4) {
+     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 3) {
       printGameFieldQuarto4x4(shm,field);
      }
    else {
-    printGameField(shm);
+	   // Trivial-KI (weil Spielfeld nicht 4x4 ist)
+	   printGameField(shm);
+	   if (*(shm->pf) == -1) {
+		   strcpy(shm->nextField, formatMove(0));
+	   }
+	   else {
+		   strcpy(shm->nextField, formatMove(1));
+	   }
+
+	   if (shm->StoneToPlace == 0) {
+		   shm->nextStone = 1;
+	   }
+	   else {
+		   shm->nextStone = 0;
+	   }
+	   return EXIT_SUCCESS;
    }
 
     printf("\nStarting to Think\n");
