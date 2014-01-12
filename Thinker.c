@@ -13,55 +13,32 @@
 #include "Thinker.h"
 #include "AuxiliaryFunctions.h"
 #include "Errmmry.h"
-#include "QuartoAI.h"
-#include "Errmmry.h"
 
 
 // Anfang der KI
 /**
  * Umsetzung SpielfeldNr => Spielfeldkoordinaten (wie von Server benoetigt)
- * UNICOLOR DÜNN ECKIG GANZ
+ * UNICOLOR DUENN ECKIG GANZ
  * @param  SpielfeldNr
  * @return Spielfeldkoordinaten(wie von Server benoetigt)
  */
 char* formatMove(int move) {
-    if (move == 0)  return "A1";
-    if (move == 1)  return "B1";
-    if (move == 2)  return "C1";
-    if (move == 3)  return "D1";
-    if (move == 4)  return "A2";
-    if (move == 5)  return "B2";
-    if (move == 6)  return "C2";
-    if (move == 7)  return "D2";
-    if (move == 8)  return "A3";
-    if (move == 9)  return "B3";
-    if (move == 10) return "C3";
-    if (move == 11) return "D3";
-    if (move == 12) return "A4";
-    if (move == 13) return "B4";
-    if (move == 14) return "C4";
-    if (move == 15) return "D4";
-    return NULL;
-}
-
-/* Meine temporäre Notlösung um das Problem des umgedrehten Spielfelds zu lösen */
-char* formatMove1(int move) { //Input sollte eigentlich sein:
-    if (move == 0)  return "A4"; //12
-    if (move == 1)  return "B4"; //13
-    if (move == 2)  return "C4"; //14
-    if (move == 3)  return "D4"; //15
-    if (move == 4)  return "A3"; //8
-    if (move == 5)  return "B3"; //9
-    if (move == 6)  return "C3"; //10
-    if (move == 7)  return "D3"; //11
-    if (move == 8)  return "A2"; //4
-    if (move == 9)  return "B2"; //5
-    if (move == 10) return "C2"; //6
-    if (move == 11) return "D2"; //7
-    if (move == 12) return "A1"; //0
-    if (move == 13) return "B1"; //1
-    if (move == 14) return "C1"; //2
-    if (move == 15) return "D1"; //3
+    if (move == 0)  return "A4";
+    if (move == 1)  return "B4";
+    if (move == 2)  return "C4";
+    if (move == 3)  return "D4";
+    if (move == 4)  return "A3";
+    if (move == 5)  return "B3";
+    if (move == 6)  return "C3";
+    if (move == 7)  return "D3";
+    if (move == 8)  return "A2";
+    if (move == 9)  return "B2";
+    if (move == 10) return "C2";
+    if (move == 11) return "D2";
+    if (move == 12) return "A1";
+    if (move == 13) return "B1";
+    if (move == 14) return "C1";
+    if (move == 15) return "D1";
     return NULL;
 }
 
@@ -108,7 +85,11 @@ void chooseStone(sharedmem * shm) {
  * @return berechneter Spielzug
  */
 int think(sharedmem * shm) {
-     char* field = malloc(sizeof(char)*5*16);   addchar(field);
+	if (shm->fieldX != shm->fieldY) {
+		printf("Bei Quarto muss die Spielfeldhoehe gleich der -breite sein!");
+		return EXIT_FAILURE;
+	}
+    char* field = malloc(sizeof(char)*5*16);   addchar(field);
     srand(time(NULL));
     int check = 0;
     int move = -1;
@@ -121,8 +102,8 @@ int think(sharedmem * shm) {
 
     printf("\nStarting to Think\n");
 
-    /* Kalkuliere naechsten Zug. Falls Sieg möglich setze dort, sonst random */
-   if (shm->thinkTime >500) {
+    /* Kalkuliere naechsten Zug. Falls Sieg moeglich setze dort, sonst random */
+   if (shm->thinkTime > 500) {
 
         move = calculateMove(shm,field);
    }
@@ -132,20 +113,61 @@ int think(sharedmem * shm) {
 
     if(move != -1) {
         printf("\nMOVE: %d\n",move);
-        strcpy(shm->nextField, formatMove1(move/4));
-    } else { // Suche freien Platz auf Spielfeld
+        strcpy(shm->nextField, formatMove(move/4));
+    } else {
+    	// Suche freien Platz auf Spielfeld
     	while (check == 0) {
     		move = rand()%16;
         	if (*(shm->pf + move) == -1) {
             		check= 1;
             	}
+
 		strcpy(shm->nextField, formatMove(move));
     	}
 
     if (formatMove(move)==NULL) {
-            perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
+    	perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
     return EXIT_FAILURE; }
     }
     chooseStone(shm);
     return EXIT_SUCCESS;
 }
+
+int calculateMove(sharedmem *shm, char* stones ) {
+
+    char* stone = malloc(sizeof(char)*5); addchar(stone);
+    int i, j;
+
+    /* Stein, der zu setzen ist, wird separat gespeichert */
+    // strcpy(stone,byte_to_binary(shm->StoneToPlace));
+    byte_to_binary(shm->StoneToPlace,stone);
+    //printf("\n%s",stones);
+    //printf("\n%s",stone);
+
+   /*Suche nach einem Platz der zum Sieg fuehrt */
+    for (i=0; i<64; i=i+4) {
+        if (stones[i] == '*') {
+            for (j=0; j<4; j++) {
+                if (((stone[j]) == (stones[((i+4)%16)+(i/16)*16+j])) && ((stone[j]) == (stones[((i+8)%16)+(i/16)*16+j])) &&((stone[j]) == (stones[((i+12)%16)+(i/16)*16+j]))) {
+                    printf("\nLoesung gefunden! %d\n",i);
+
+
+                    return i;
+                }
+                if (((stone[j]) == (stones[(i+16)%64+j])) && ((stone[j]) == (stones[(i+32)%64+j])) &&((stone[j]) == (stones[(i+48)%64+j]))) {
+                    printf("\nLoesung gefunden! %d\n",i);
+
+
+                    return i;
+                }
+            }
+        }
+    }
+
+
+    return -1;
+}
+
+//printf("\n%c %c %c %c",stone[j],stones[((i+4)%16)+(i/16)*16+j],stones[((i+8)%16)+(i/16)*16+j],stones[((i+12)%16)+(i/16)*16+j]);
+//printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],stones[(i+48)%64+j]);
+
