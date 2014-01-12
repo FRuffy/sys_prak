@@ -10,10 +10,9 @@
 #include <signal.h>
 #include <time.h>
 #include "SharedVariables.h"
-#include "Thinker.h"
+#include "QuartoThinker.h"
 #include "AuxiliaryFunctions.h"
 #include "Errmmry.h"
-
 
 // Anfang der KI
 /**
@@ -112,7 +111,7 @@ int think(sharedmem * shm) {
    }
 
     if(move != -1) {
-        printf("\nMOVE: %d\n",move);
+        printf("Wir gewinnen jetzt!\n",move);
         strcpy(shm->nextField, formatMove(move/4));
     } else {
     	// Suche freien Platz auf Spielfeld
@@ -149,7 +148,7 @@ int calculateMove(sharedmem *shm, char* stones ) {
         if (stones[i] == '*') {
             for (j=0; j<4; j++) {
                 if (((stone[j]) == (stones[((i+4)%16)+(i/16)*16+j])) && ((stone[j]) == (stones[((i+8)%16)+(i/16)*16+j])) &&((stone[j]) == (stones[((i+12)%16)+(i/16)*16+j]))) {
-                    printf("\nLoesung gefunden! %d\n",i);
+                    printf("\nLoesung gefunden (%d)! ",i);
 
 
                     return i;
@@ -171,3 +170,74 @@ int calculateMove(sharedmem *shm, char* stones ) {
 //printf("\n%c %c %c %c",stone[j],stones[((i+4)%16)+(i/16)*16+j],stones[((i+8)%16)+(i/16)*16+j],stones[((i+12)%16)+(i/16)*16+j]);
 //printf(" Part 2: %c %c %c %c",stone[j],stones[(i+16)%64+j],stones[(i+32)%64+j],stones[(i+48)%64+j]);
 
+/**
+ * Gibt das Spielfeld speziell fuer ein Quarto 4x4 Spiel aus
+ */
+int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
+
+    stones[0] = '\0';
+    char* stone = malloc(sizeof(char)*5);
+
+    int i,j;
+    printf("\n+");
+
+    for (i=shm->fieldY-1; i>=0; i--) {
+        printf("-------");
+    }
+
+    printf("+");
+
+    for (i=0; i<shm->fieldY; i++) {
+        printf("\n+%29c", '+');
+        printf("\n+ %d:", i+1);
+        for (j=0; j<shm->fieldX; j++) {
+            if (*(shm->pf+j+i*shm->fieldY)==-1) {
+                strcat(stones,"****");
+                printf(" **** ");
+            } else {
+                //strcpy(stone,byte_to_binary(*(shm->pf+j+i*shm->fieldY)));
+               byte_to_binary(*(shm->pf+j+i*shm->fieldY),stone);
+                strcat(stones,stone);
+                printf(" %s ", stone);
+            }
+        }
+        printf(" +");
+    }
+
+    printf("\n+%29c\n+", '+');
+
+    for (i=shm->fieldY-1; i>=0; i--) {
+        printf("-------");
+    }
+
+    printf("+");
+    free(stone);
+    return EXIT_SUCCESS;
+}
+
+/**
+ * Konvertiert in 4-stellige Binaerdarstellung
+ */
+int byte_to_binary(int n, char* pointer) {
+   int c, d, count;
+   //char *pointer;
+   count = 0;
+   //pointer = (char*)malloc(32+1);
+
+   if (pointer == NULL) {
+     return EXIT_FAILURE;
+   }
+
+   for (c=3; c>=0 ; c--) {
+      d = n >> c;
+      if ( d & 1 ) {
+         *(pointer+count) = 1 + '0';
+      } else {
+         *(pointer+count) = 0 + '0';
+      }
+      count++;
+   }
+
+   *(pointer+count) = '\0';
+   return  EXIT_SUCCESS;
+}
