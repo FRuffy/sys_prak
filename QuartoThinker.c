@@ -92,7 +92,7 @@ int think(sharedmem * shm) {
     srand(time(NULL));
     int check = 0;
     int move = -1;
-     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 3) {
+     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 4) {
       printGameFieldQuarto4x4(shm,field);
      }
    else {
