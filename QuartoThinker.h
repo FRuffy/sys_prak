@@ -5,7 +5,7 @@ int think( sharedmem *shm);
 char* formatMove(int move);
 char* formatMove1(int move);
 int testStone(sharedmem * shm, int stone);
-void chooseStone(sharedmem * shm, char* field);
+int chooseStone(sharedmem * shm, char* field);
 int calculateMove(sharedmem *shm, char* stones, int silent);
 int printGameFieldQuarto4x4( char* stones);
 int convertGameFieldQuarto4x4(sharedmem * shm,char* stones);

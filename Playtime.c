@@ -108,8 +108,8 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
      + ENDFIELD                                                                      + ENDFIELD
     */
 
-    printf("Stein %d ist zu setzen!\n\n",shm->StoneToPlace);
-    printf("Unser momentanes Spielfeld. Groesse: %d x %d\n",shm->fieldX, shm->fieldY);
+    printf("Stein %d ist zu setzen!\n",shm->StoneToPlace);
+    printf("\nUnser momentanes Spielfeld mit Groesse %d x %d:\n",shm->fieldX, shm->fieldY);
 
     //Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren und einhaengen (2x Groesse von fieldX wegen 4 Merkmalen pro Stein!)
     if (shm->pfID == 0) {
@@ -120,11 +120,8 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
             return EXIT_FAILURE;
         }
     }
-
-
+//pf einhaengen
     shm->pf = shmat(shm->pfID, 0, 0);
-    writelog(logdatei,AT); //pf einhaengen
-
 
     //Im Fehlerfall pointed pf auf -1
     if (*(shm->pf) ==  -1) {

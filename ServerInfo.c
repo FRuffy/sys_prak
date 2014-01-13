@@ -8,6 +8,8 @@
 
 char* recvServerInfo(char* buffer,sharedmem * shm)
 {
+       // printf("\nrecServerInfo Buffer: %s",buffer);
+
     char* buffer2;
     char* bfrptr; //Wichtig, falls strtok zur Modifikation des Strings verwendet wird.Der Pointer ändert sich im Verlauf, die geschriebenen Daten aber nicht.
     buffer2 = malloc(sizeof(char)*256);
@@ -31,16 +33,24 @@ char* recvServerInfo(char* buffer,sharedmem * shm)
     while (strcmp(buffer2,"+ ENDPLAYERS") != 0)
     {
         sscanf(buffer2, "%*s %d %s %i", &shm->player[i].playerNumber, shm->player[i].playerName, &shm->player[i].playerReady);
-        buffer2 = strtok( NULL, "\n" );
+
+       buffer2 = strtok( NULL, "\n" );
         i++;
     }
-    printf("\nEs spielen diese %i Spieler:\n", shm->playerCount);
-    printf("\nSpielernummer\tSpielername\tBereit\n");
 
-    for (i=0; i<shm->playerCount; i++)
+    printf("\nWir sind Spieler: %s\n",shm->player[0].playerName);
+    printf("\nInsgesamt spielen diese %i Spieler:\n", shm->playerCount);
+    printf("\n%-15s %-25s %-2s\n","Spielernummer","Spielername","Bereit");
+    //Wir selbst sind natürlich immer bereit.
+ printf("%-15d %-25s %-2d\n",shm->player[0].playerNumber, shm->player[0].playerName, 1);
+    for (i=1; i<shm->playerCount; i++)
     {
-        printf("%d\t\t%s\t\t%d\n", shm->player[i].playerNumber, shm->player[i].playerName, shm->player[i].playerReady);
+       //Funktioniert eigentlich aber Server hat hier anscheinend einen Bug und sendet falsche Spielernummer.
+
+        printf("%-15d %-25s %-2d\n",shm->player[i].playerNumber, shm->player[i].playerName, shm->player[i].playerReady);
+
     }
+ printf("\n");
     buffer2 = strtok( NULL, "" );
     strcpy(buffer, buffer2);
     return buffer;

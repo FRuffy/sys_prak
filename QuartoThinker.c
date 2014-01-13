@@ -70,33 +70,34 @@ int testStone(sharedmem * shm, int stone)
 int chooseStone(sharedmem * shm, char* field)
 {
     srand(time(NULL));
-   int check = 0;
+    int check = 0;
     int stone;
-int i;
-    for ( i=0;i<16;i++)
+    int i;
+    for ( i=0; i<16; i++)
     {
         stone = i;
         if(testStone(shm, stone)==EXIT_SUCCESS)
         {
-            if(calculateMove(shm,field, 1) == -1) {
-              shm->nextStone = stone;
-              return EXIT_SUCCESS;
+            if(calculateMove(shm,field, 1) == -1)
+            {
+                shm->nextStone = stone;
+                return EXIT_SUCCESS;
             }
 
         }
     }
-printf("Wir scheitern!");
+    printf("Wir scheitern!");
     while(check == 0)
     {
         stone = rand()%16;
         if(testStone(shm, stone)==EXIT_SUCCESS)
         {
             check =1;
-             shm->nextStone = stone;
-return EXIT_SUCCESS;
+            shm->nextStone = stone;
+            return EXIT_SUCCESS;
         }
     }
- printf("\nKeinen Stein zum setzen gefunden!\n");
+    printf("\nKeinen Stein zum setzen gefunden!\n");
     return EXIT_FAILURE;
 }
 
@@ -113,9 +114,9 @@ int think(sharedmem * shm)
         printf("Bei Quarto muss die Spielfeldhoehe gleich der -breite sein!");
         return EXIT_FAILURE;
     }
-	//int i;
-	int check = 0;
-	int move = -1;
+    //int i;
+    int check = 0;
+    int move = -1;
 //	int backupStone = 0;
     char* field = malloc(sizeof(char)*5*16);
     addchar(field);
@@ -125,7 +126,7 @@ int think(sharedmem * shm)
 
     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 4)
     {
-    	convertGameFieldQuarto4x4(shm,field);
+        convertGameFieldQuarto4x4(shm,field);
         printGameFieldQuarto4x4(field);
     }
     else
@@ -152,75 +153,75 @@ int think(sharedmem * shm)
         return EXIT_SUCCESS;
     }
 
-	printf("\nStarting to Think\n");
-	move = calculateMove(shm, field, 0);
-	if(move != -1)
-	{
-		printf("Wir gewinnen jetzt!\n");
-		strcpy(shm->nextField, formatMove(move/4));
-	}
-	else
-	{
-		// In max. 50 Versuchen einen zufaelligen Zug suchen,
-		// der dem Gegner nicht den Sieg ermoeglicht
-		// Tests ergaben: Bei bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest
-	//	for (i=0; i<50; i++) {
-									printf("\nFELD: %s\n",field);
-
-			check = 0;
-			move = -1;
-			// Suche freien Platz auf Spielfeld
-			while (check == 0)
-			{
-				move = rand()%16;
-				if (*(shm->pf + move) == -1)
-				{
-					check= 1;
-					*(shm->pf + move) = shm->StoneToPlace;
-				}
-
-				strcpy(shm->nextField, formatMove(move));
-			}
-
-			if (formatMove(move)==NULL)
-			{
-				perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
-				return EXIT_FAILURE;
-			}
-								convertGameFieldQuarto4x4(shm, field);
-								printf("\nFELD: %s\n",field);
-
-/*
-			// Zum Ueberpruefen, ob der Gegner mit unserer Auswahl gewinnen kann,
-			// fuehren wir unseren Zug aus und rufen calculateMove erneut aus
-			// vorher machen wir ein Backup und stellen dieses nachher wieder her
-			backupStone = shm->StoneToPlace;
-			*(shm->pf + move) = shm->StoneToPlace;
-			printf(" %d " ,*(shm->pf + move));
-			convertGameFieldQuarto4x4(shm,field);
-			//printGameFieldQuarto4x4(shm,field);
-
-			if (calculateMove(shm,field, 1) == -1) {
-				// Das machen wir, der Gegner kann mit unserem letzten Zug und
-				// dem fuer Ihn ausgewaehlten Stein nicht gewinnen
-				shm->StoneToPlace = backupStone;
-				*(shm->pf + move) = -1;
-				convertGameFieldQuarto4x4(shm, field);
-				break;
-			}
-			else
-			{
-				// Das machen wir nicht! So wuerden wir verlieren (bei intelligentem Gegner)
-				shm->StoneToPlace = backupStone;
-				*(shm->pf + move) = -1;
-				convertGameFieldQuarto4x4(shm,field);
-			}
-		}
+    printf("\nStarting to Think\n");
+    move = calculateMove(shm, field, 0);
+    if(move != -1)
+    {
+        printf("Wir gewinnen jetzt!\n");
+        strcpy(shm->nextField, formatMove(move/4));
     }
-    */
+    else
+    {
+        // In max. 50 Versuchen einen zufaelligen Zug suchen,
+        // der dem Gegner nicht den Sieg ermoeglicht
+        // Tests ergaben: Bei bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest
+        //	for (i=0; i<50; i++) {
+        printf("\nFELD: %s\n",field);
 
-}
-chooseStone(shm,field);
+        check = 0;
+        move = -1;
+        // Suche freien Platz auf Spielfeld
+        while (check == 0)
+        {
+            move = rand()%16;
+            if (*(shm->pf + move) == -1)
+            {
+                check= 1;
+                *(shm->pf + move) = shm->StoneToPlace;
+            }
+
+            strcpy(shm->nextField, formatMove(move));
+        }
+
+        if (formatMove(move)==NULL)
+        {
+            perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
+            return EXIT_FAILURE;
+        }
+        convertGameFieldQuarto4x4(shm, field);
+        printf("\nFELD: %s\n",field);
+
+        /*
+        			// Zum Ueberpruefen, ob der Gegner mit unserer Auswahl gewinnen kann,
+        			// fuehren wir unseren Zug aus und rufen calculateMove erneut aus
+        			// vorher machen wir ein Backup und stellen dieses nachher wieder her
+        			backupStone = shm->StoneToPlace;
+        			*(shm->pf + move) = shm->StoneToPlace;
+        			printf(" %d " ,*(shm->pf + move));
+        			convertGameFieldQuarto4x4(shm,field);
+        			//printGameFieldQuarto4x4(shm,field);
+
+        			if (calculateMove(shm,field, 1) == -1) {
+        				// Das machen wir, der Gegner kann mit unserem letzten Zug und
+        				// dem fuer Ihn ausgewaehlten Stein nicht gewinnen
+        				shm->StoneToPlace = backupStone;
+        				*(shm->pf + move) = -1;
+        				convertGameFieldQuarto4x4(shm, field);
+        				break;
+        			}
+        			else
+        			{
+        				// Das machen wir nicht! So wuerden wir verlieren (bei intelligentem Gegner)
+        				shm->StoneToPlace = backupStone;
+        				*(shm->pf + move) = -1;
+        				convertGameFieldQuarto4x4(shm,field);
+        			}
+        		}
+            }
+            */
+
+    }
+    chooseStone(shm,field);
     return EXIT_SUCCESS;
 
 }
@@ -254,7 +255,7 @@ int calculateMove(sharedmem *shm, char* stones, int silent)
 
     /* Stein, der zu setzen ist, wird separat gespeichert */
     byte_to_binary(shm->StoneToPlace,stone);
-printf("\nStein zu setzen: %s\n",stone);
+    printf("\nStein zu setzen: %s\n",stone);
     /*Suche nach einem Platz der zum Sieg fuehrt */
     for (i=0; i<64; i=i+4)
     {
@@ -264,41 +265,45 @@ printf("\nStein zu setzen: %s\n",stone);
             for (j=0; j<4; j++)
 
             {
-                 //horizontal
+                //horizontal
                 if (((stone[j]) == (stones[((i+4)%16)+(i/16)*16+j])) && ((stone[j]) == (stones[((i+8)%16)+(i/16)*16+j])) &&((stone[j]) == (stones[((i+12)%16)+(i/16)*16+j])))
                 {
-                	if (silent != 1) {
+                    if (silent != 1)
+                    {
                         printf("\nHorizontale Loesung gefunden (%s)! ",formatMove(i/4));
-                	}
+                    }
                     return i;
                 }
                 //vertikal
                 if (((stone[j]) == (stones[(i+16)%64+j])) && ((stone[j]) == (stones[(i+32)%64+j])) &&((stone[j]) == (stones[(i+48)%64+j])))
                 {
-                	if (silent != 1) {
+                    if (silent != 1)
+                    {
                         printf("\nVertikale Loesung gefunden (%s)! ",formatMove(i/4));
-                	}
+                    }
                     return i;
                 }
-                 //rechts-> links diagonal
+                //rechts-> links diagonal
                 if(i %20 == 0)
                 {
                     if (((stone[j]) == (stones[(i+20)%80+j])) && ((stone[j]) == (stones[(i+40)%80+j])) &&((stone[j]) == (stones[(i+60)%80+j])))
                     {
-                    	if (silent != 1) {
-                    		printf("\nDiagonale Loesung gefunden! %s\n",formatMove(i/4));
-                    	}
+                        if (silent != 1)
+                        {
+                            printf("\nDiagonale Loesung gefunden! %s\n",formatMove(i/4));
+                        }
                         return i;
                     }
                 }
-                 //links-> links diagonal
-                   if((i != 0) && (i %12) == 0)
+                //links-> links diagonal
+                if((i != 0) && (i %12) == 0)
                 {
                     if (((stone[j]) == (stones[i%48+12+j])) && ((stone[j]) == (stones[(i+12)%48+12+j])) &&((stone[j]) == (stones[(i+24)%48+12+j])))
                     {
-                    	if (silent != 1) {
-                    		printf("\nDiagonale Loesung gefunden! %s\n",formatMove(i/4));
-                    	}
+                        if (silent != 1)
+                        {
+                            printf("\nDiagonale Loesung gefunden! %s\n",formatMove(i/4));
+                        }
                         return i;
                     }
                 }
@@ -357,18 +362,36 @@ int convertGameFieldQuarto4x4(sharedmem * shm, char* stones)
  */
 int printGameFieldQuarto4x4(char* stones)
 {
-	int i, j;
-	printf("\n");
+    int i, j;
+    printf("\n+");
+    for (i=3; i>=0; i--)
+    {
+        printf("-------");
+    }
+    printf("+");
     for (i=0; i<4; i++)
     {
-		for (j=0; j<4; j++)
-		{
-			printf("%c%c%c%c ",stones[i*16+j*4], stones[i*16+j*4+1], stones[i*16+j*4+2], stones[i*16+j*4+3]);
-		}
-		printf("\n");
+        printf("\n+%29c", '+');
+        printf("\n+ %d:", i+1);
+        for (j=0; j<4; j++)
+        {
+            printf(" %c%c%c%c ",stones[i*16+j*4], stones[i*16+j*4+1], stones[i*16+j*4+2], stones[i*16+j*4+3]);
+        }
+        printf(" +");
+
     }
+    printf("\n+%29c\n+", '+');
+    for (i=3; i>=0; i--)
+    {
+        printf("-------");
+    }
+    printf("+");
     return EXIT_SUCCESS;
 }
+
+
+
+
 
 /**
  * Konvertiert in 4-stellige Binaerdarstellung

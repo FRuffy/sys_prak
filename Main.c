@@ -107,7 +107,6 @@ int main (int argc, char** argv )
         shmdt(shm);
         freeall();
 
-
     }
     else
     {

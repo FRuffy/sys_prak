@@ -99,12 +99,18 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
         }
         return EXIT_FAILURE;
     } else {
+
+        // printf("\nPerformConnection Buffer: %s",buffer);
         sscanf(buffer, "%*s %*s %d %s", &(shm->player[0].playerNumber),(shm->player[0].playerName));
+
+
     }
 
     /* Teil 3.2: Hier wird der Uebergang in die Spielverlaufsphase eingeleitet.
      Der Server sendet uns die Namen unseres Gegenspielers und des Spielernummer, wobei ueberprueft wird ob ein Spieler bereits verbunden ist.
      */
+
+
     err = recv(sock, buffer, BUFFR - 1, 0);
     writelog(logdatei,AT);
     if (err > 0) {

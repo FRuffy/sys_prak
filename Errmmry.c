@@ -61,7 +61,7 @@ int freeall() {
         free(varadr_char[i]);
         }
 
-        printf("Es wurden %d Variablen befreit \n",countint+countchar);
+       // printf("Es wurden %d Variablen befreit \n",countint+countchar);
         return EXIT_SUCCESS;
 }
 
