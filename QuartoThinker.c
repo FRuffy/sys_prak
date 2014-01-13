@@ -88,7 +88,8 @@ int think(sharedmem * shm) {
 		printf("Bei Quarto muss die Spielfeldhoehe gleich der -breite sein!");
 		return EXIT_FAILURE;
 	}
-	int i, check = 0;
+	int i;
+	//check = 0;
 	int move = -1;
 	int backupStone = 0;
 	char* field = malloc(sizeof(char) * 5 * 16);
@@ -128,7 +129,7 @@ int think(sharedmem * shm) {
 		// In max. 50 Versuchen einen zufaelligen Zug suchen,
 		// der dem Gegner nicht den Sieg ermoeglicht
 		// Tests ergaben: Bei bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest
-		for (i = 0; i <= 50; ++i) {
+	/*	for (i = 0; i <= 50; ++i) {
 			check = 0;
 			move = -1;
 			// Suche freien Platz auf Spielfeld
@@ -139,7 +140,12 @@ int think(sharedmem * shm) {
 				}
 
 				strcpy(shm->nextField, formatMove(move));
-			}
+			} */
+for (i = 0; i<16;i++) {
+    move = i;
+    if (*(shm->pf + move) == -1) {
+			strcpy(shm->nextField, formatMove(move));
+
 
 			if (formatMove(move) == NULL ) {
 				perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
@@ -162,7 +168,7 @@ int think(sharedmem * shm) {
 			convertGameFieldQuarto4x4(shm, field);
 			chooseStone(shm);
 			shm->StoneToPlace = shm->nextStone;
-			printGameFieldQuarto4x4(field);
+			//printGameFieldQuarto4x4(field);
 
 			if (calculateMove(shm, field, 1) == -1) {
 				// Das machen wir, der Gegner kann mit unserem letzten Zug und
@@ -172,7 +178,7 @@ int think(sharedmem * shm) {
 				convertGameFieldQuarto4x4(shm, field);
 				printf("\nMit %d kann der Gegner nicht gewinnen!",
 						shm->nextStone);
-				break;
+				return EXIT_SUCCESS;
 			} else {
 				// Das machen wir nicht! So wuerden wir verlieren (bei intelligentem Gegner)
 				shm->StoneToPlace = backupStone;
@@ -183,7 +189,9 @@ int think(sharedmem * shm) {
 						i, shm->nextStone, shm->nextStone);
 			}
 		}
-		if (i == 51) {
+
+	}
+
 			printf(
 					"\n#============================================================#");
 			printf(
@@ -191,11 +199,10 @@ int think(sharedmem * shm) {
 			printf(
 					"\n#============================================================#");
 			fflush(stdout);
-		}
-	}
 
-	return EXIT_SUCCESS;
-}
+	}
+	return EXIT_SUCCESS;}
+
 /** Unsere "kluge" KI!
  Sie übernimmt den string stones der in der printfunktion bereits konvertiert wurde und liest diesen aus
  (printf("\n%s",stones); zum besseren Verstaendnis). Das Feld ist insgesamt 64 Zeichen lang und ein Stein hat
