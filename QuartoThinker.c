@@ -149,6 +149,14 @@ int think(sharedmem * shm) {
 			// Zum Ueberpruefen, ob der Gegner mit unserer Auswahl gewinnen kann,
 			// fuehren wir unseren Zug aus und rufen calculateMove erneut aus
 			// vorher machen wir ein Backup und stellen dieses nachher wieder her
+			// Genauer:
+			// Unser berechneter Zug wird jetzt ins Spielfeld eingetragen und ein
+			// zufaelliger naechster Stein ausgewaehlt. Dann wird das Spielfeld
+			// ins Binaerformat konvertiert "StoneToPlace" war urspruenglich der
+			// Stein, den wir vom Gegner bekommen haben, wir ueberschreiben diesen
+			// mit unserem zufaellig ausgewaehlen Stein und pruefen ob so ein Sieg
+			// moeglich ist, falls ja wird ein neuer Stein und ein neues Feld
+			// ausgewaehlt und von neuem begonnen
 			backupStone = shm->StoneToPlace;
 			*(shm->pf + move) = shm->StoneToPlace;
 			convertGameFieldQuarto4x4(shm, field);
