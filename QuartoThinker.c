@@ -98,7 +98,7 @@ int think(sharedmem * shm) {
 
 	if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 4) {
 		convertGameFieldQuarto4x4(shm, field);
-		printGameFieldQuarto4x4(shm, field);
+		printGameFieldQuarto4x4(field);
 	} else {
 		// Trivial-KI (weil Spielfeld nicht 4x4 ist)
 		printGameField(shm);
@@ -162,7 +162,7 @@ int think(sharedmem * shm) {
 			convertGameFieldQuarto4x4(shm, field);
 			chooseStone(shm);
 			shm->StoneToPlace = shm->nextStone;
-			printGameFieldQuarto4x4(shm, field);
+			printGameFieldQuarto4x4(field);
 
 			if (calculateMove(shm, field, 1) == -1) {
 				// Das machen wir, der Gegner kann mit unserem letzten Zug und
