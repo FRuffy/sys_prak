@@ -321,19 +321,36 @@ int convertGameFieldQuarto4x4(sharedmem * shm, char* stones) {
  * @param shm und Pointer auf Speicher mit komvertiertem Spielfeld
  * @return - (nur Ausgabe auf Bildschirm)
  */
-int printGameFieldQuarto4x4(sharedmem * shm, char* stones) {
-	int i, j;
-	printf("\n");
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++) {
-			printf("%c%c%c%c ", stones[i * 16 + j * 4],
-					stones[i * 16 + j * 4 + 1], stones[i * 16 + j * 4 + 2],
-					stones[i * 16 + j * 4 + 3]);
-		}
-		printf("\n");
-	}
-	return EXIT_SUCCESS;
+
+int printGameFieldQuarto4x4(char* stones)
+{
+    int i, j;
+    printf("\n+");
+    for (i=3; i>=0; i--)
+    {
+        printf("-------");
+    }
+    printf("+");
+    for (i=0; i<4; i++)
+    {
+        printf("\n+%29c", '+');
+        printf("\n+ %d:", i+1);
+        for (j=0; j<4; j++)
+        {
+            printf(" %c%c%c%c ",stones[i*16+j*4], stones[i*16+j*4+1], stones[i*16+j*4+2], stones[i*16+j*4+3]);
+        }
+        printf(" +");
+
+    }
+    printf("\n+%29c\n+", '+');
+    for (i=3; i>=0; i--)
+    {
+        printf("-------");
+    }
+    printf("+");
+    return EXIT_SUCCESS;
 }
+
 
 /**
  * Konvertiert in 4-stellige Binaerdarstellung
