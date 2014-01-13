@@ -67,34 +67,37 @@ int testStone(sharedmem * shm, int stone)
  * @param  Pointer auf Spielfeld
  * @return "setzbarer" Stein
  */
-void chooseStone(sharedmem * shm, char* field)
+int chooseStone(sharedmem * shm, char* field)
 {
     srand(time(NULL));
    int check = 0;
     int stone;
 int i;
-    for ( i=0;i<=50;i++)
+    for ( i=0;i<16;i++)
     {
-        stone = rand()%16;
+        stone = i;
         if(testStone(shm, stone)==EXIT_SUCCESS)
         {
             if(calculateMove(shm,field, 1) == -1) {
-               i = 51;
+              shm->nextStone = stone;
+              return EXIT_SUCCESS;
             }
 
         }
     }
-
+printf("Wir scheitern!");
     while(check == 0)
     {
         stone = rand()%16;
         if(testStone(shm, stone)==EXIT_SUCCESS)
         {
             check =1;
-
+             shm->nextStone = stone;
+return EXIT_SUCCESS;
         }
     }
-    shm->nextStone = stone;
+ printf("\nKeinen Stein zum setzen gefunden!\n");
+    return EXIT_FAILURE;
 }
 
 /**
@@ -110,9 +113,10 @@ int think(sharedmem * shm)
         printf("Bei Quarto muss die Spielfeldhoehe gleich der -breite sein!");
         return EXIT_FAILURE;
     }
-	int i, check = 0;
+	//int i;
+	int check = 0;
 	int move = -1;
-	int backupStone = 0;
+//	int backupStone = 0;
     char* field = malloc(sizeof(char)*5*16);
     addchar(field);
     char* backupField = malloc(sizeof(char)*4);
@@ -160,7 +164,9 @@ int think(sharedmem * shm)
 		// In max. 50 Versuchen einen zufaelligen Zug suchen,
 		// der dem Gegner nicht den Sieg ermoeglicht
 		// Tests ergaben: Bei bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest
-		for (i=0; i<50; i++) {
+	//	for (i=0; i<50; i++) {
+									printf("\nFELD: %s\n",field);
+
 			check = 0;
 			move = -1;
 			// Suche freien Platz auf Spielfeld
@@ -170,6 +176,7 @@ int think(sharedmem * shm)
 				if (*(shm->pf + move) == -1)
 				{
 					check= 1;
+					*(shm->pf + move) = shm->StoneToPlace;
 				}
 
 				strcpy(shm->nextField, formatMove(move));
@@ -180,7 +187,10 @@ int think(sharedmem * shm)
 				perror("\nFehler bei der Konvertierung eines Spielzuges!\n");
 				return EXIT_FAILURE;
 			}
+								convertGameFieldQuarto4x4(shm, field);
+								printf("\nFELD: %s\n",field);
 
+/*
 			// Zum Ueberpruefen, ob der Gegner mit unserer Auswahl gewinnen kann,
 			// fuehren wir unseren Zug aus und rufen calculateMove erneut aus
 			// vorher machen wir ein Backup und stellen dieses nachher wieder her
@@ -207,8 +217,12 @@ int think(sharedmem * shm)
 			}
 		}
     }
-    chooseStone(shm,field);
+    */
+
+}
+chooseStone(shm,field);
     return EXIT_SUCCESS;
+
 }
 /** Unsere "kluge" KI!
 Sie übernimmt den string stones der in der printfunktion bereits konvertiert wurde und liest diesen aus
@@ -240,7 +254,7 @@ int calculateMove(sharedmem *shm, char* stones, int silent)
 
     /* Stein, der zu setzen ist, wird separat gespeichert */
     byte_to_binary(shm->StoneToPlace,stone);
-
+printf("\nStein zu setzen: %s\n",stone);
     /*Suche nach einem Platz der zum Sieg fuehrt */
     for (i=0; i<64; i=i+4)
     {
