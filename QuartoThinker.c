@@ -67,18 +67,31 @@ int testStone(sharedmem * shm, int stone)
  * @param  Pointer auf Spielfeld
  * @return "setzbarer" Stein
  */
-void chooseStone(sharedmem * shm)
+void chooseStone(sharedmem * shm, char* field)
 {
     srand(time(NULL));
-    int check = 0;
+   int check = 0;
     int stone;
-
-    while( check== 0)
+int i;
+    for ( i=0;i<=50;i++)
     {
         stone = rand()%16;
         if(testStone(shm, stone)==EXIT_SUCCESS)
         {
-            check = 1;
+            if(calculateMove(shm,field, 1) == -1) {
+               i = 51;
+            }
+
+        }
+    }
+
+    while(check == 0)
+    {
+        stone = rand()%16;
+        if(testStone(shm, stone)==EXIT_SUCCESS)
+        {
+            check =1;
+
         }
     }
     shm->nextStone = stone;
@@ -109,7 +122,7 @@ int think(sharedmem * shm)
     if (strcasecmp(shm->gameName, "Quarto") && shm->fieldX == 4)
     {
     	convertGameFieldQuarto4x4(shm,field);
-        printGameFieldQuarto4x4(shm,field);
+        printGameFieldQuarto4x4(field);
     }
     else
     {
@@ -136,7 +149,7 @@ int think(sharedmem * shm)
     }
 
 	printf("\nStarting to Think\n");
-	move = calculateMove(shm, field, 1);
+	move = calculateMove(shm, field, 0);
 	if(move != -1)
 	{
 		printf("Wir gewinnen jetzt!\n");
@@ -173,6 +186,7 @@ int think(sharedmem * shm)
 			// vorher machen wir ein Backup und stellen dieses nachher wieder her
 			backupStone = shm->StoneToPlace;
 			*(shm->pf + move) = shm->StoneToPlace;
+			printf(" %d " ,*(shm->pf + move));
 			convertGameFieldQuarto4x4(shm,field);
 			//printGameFieldQuarto4x4(shm,field);
 
@@ -193,7 +207,7 @@ int think(sharedmem * shm)
 			}
 		}
     }
-    chooseStone(shm);
+    chooseStone(shm,field);
     return EXIT_SUCCESS;
 }
 /** Unsere "kluge" KI!
@@ -203,6 +217,8 @@ Sie übernimmt den string stones der in der printfunktion bereits konvertiert wu
 Horizontal: stones[((i+4)%16)+(i/16)*16+j]);
 (i+4)%16): wählt beispielswiese den Nachbarstein aus, falls i+4 >16 fangen wir einfach von vorn an
 (i/16)*16+j: i wäht die i-te Reihe und j wählt die j-te Eigenschaft aus die zu vergleichen ist.
+(i/16) errechnet den floor für die Zeile.
+
  Vertikal: stones[(i+16)%64+j])
 (i+16)%64: wählt die Zeile die zu vergleichen ist ( Ein Zeilensprung ist +16)
 rechts-links diagonal: stones[(i+20)%80+j])
@@ -325,7 +341,7 @@ int convertGameFieldQuarto4x4(sharedmem * shm, char* stones)
  * @param shm und Pointer auf Speicher mit komvertiertem Spielfeld
  * @return - (nur Ausgabe auf Bildschirm)
  */
-int printGameFieldQuarto4x4(sharedmem * shm, char* stones)
+int printGameFieldQuarto4x4(char* stones)
 {
 	int i, j;
 	printf("\n");
