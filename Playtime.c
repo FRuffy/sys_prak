@@ -76,14 +76,32 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
     } else {
         sscanf(buffer,"%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",&(shm->thinkTime), &(shm->StoneToPlace),&(shm->fieldX), &(shm->fieldY));
     }
-
+    /*
++ GAMEOVER
++ NEXT
++ FIELD 4,4
++ 4 0 13 11 3
++ 3 9 10 6 2
++ 2 8 12 7 4
++ 1 14 5 1 15
++ ENDFIELD
++ QUIT
+*/
 
     if (strstr(buffer, "+ GAMEOVER")!= NULL) {
-        if (strcmp(buffer,"+ GAMEOVER\n") == 0) {
-            printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
-        } else {
             int playerNumber;
             char playerName[BUFFR];
+            printf("\nBuffer3: %s\n", buffer);
+        if (strncmp(buffer,"+ MOVEOK", 8) == 0) {
+             sscanf(buffer, "%*[^\n]\n%*s %*s %d %s", &playerNumber, playerName);
+                    printf("\nDas Spiel ist zu Ende. Der Gewinner ist: %d - %s\n", playerNumber, playerName);
+
+        }
+        else  if (strcmp(buffer,"+ GAMEOVER\n") == 0 ||strncmp(buffer,"+ GAMEOVER\n+",12) == 0 ) {
+
+            printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
+        } else {
+
             sscanf(buffer, "%*s %*s %d %s", &playerNumber, playerName);
             printf("\nDas Spiel ist zu Ende. Der Gewinner ist: %d - %s\n", playerNumber, playerName);
             //Return 2, fuer Spiel beendet. Looper gibt dann EXIT_SUCCESS(1) zurueck.
