@@ -20,7 +20,13 @@ int reactToSig(sharedmem* shm){
 	        shm->pleaseThink = 0;
 	        think(shm);
 	        char* reply = malloc(sizeof(char)*15); addchar(reply);
+	        if (shm->nextStone == -1)
+            {
+                sprintf(reply,"PLAY %s",shm->nextField);
+            }
+            else {
 	        sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
+            }
 	        err = write (fd[1], reply, 15); //Spielzug in Pipe schreiben
 	        if (err <0) {
 	            perror("Fehler bei Write");

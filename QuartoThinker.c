@@ -76,6 +76,27 @@ void chooseStone(sharedmem * shm) {
 	shm->nextStone = stone;
 }
 
+
+
+int checkField(char * field) {
+
+int i;
+int occupied=0;
+for (i=0;i<64;i=i+4)
+{
+
+    if(field[i] != '*')
+     occupied++;
+}
+
+if (occupied ==15) {
+    return EXIT_FAILURE;
+}
+    else
+    {return EXIT_SUCCESS;
+    }
+
+}
 /**
  * Berechnet naechsten Spielzug
  *
@@ -89,7 +110,7 @@ int think(sharedmem * shm) {
 		return EXIT_FAILURE;
 	}
 	int i;
-	//check = 0;
+
 	int move = -1;
 	int backupStone = 0;
 	char* field = malloc(sizeof(char) * 5 * 16);
@@ -118,6 +139,24 @@ int think(sharedmem * shm) {
 	}
 
 	printf("\nStarting to Think\n");
+	if (checkField(field) != 0) {
+
+
+			// Suche freien Platz auf Spielfeld
+		for (i = 0; i<16;i++) {
+    move = i;
+    if (*(shm->pf + move) == -1) {
+			strcpy(shm->nextField, formatMove(move));
+			shm->nextStone = -1;
+return EXIT_SUCCESS;
+
+    }
+		}
+		printf("\nDas Spielfeld ist bereits voll, das ist aber komisch!\n");
+return EXIT_FAILURE;
+
+	}
+
 	move = calculateMove(shm, field, 1);
 	if (move != -1) {
 		printf("#=====================#\n");
@@ -126,21 +165,10 @@ int think(sharedmem * shm) {
 		strcpy(shm->nextField, formatMove(move / 4));
 		chooseStone(shm);
 	} else {
-		// In max. 50 Versuchen einen zufaelligen Zug suchen,
-		// der dem Gegner nicht den Sieg ermoeglicht
+		// Das Feld durchlaufen und eine Position finden,
+		// die dem Gegner nicht den Sieg ermoeglicht
 		// Tests ergaben: Bei bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest
-	/*	for (i = 0; i <= 50; ++i) {
-			check = 0;
-			move = -1;
-			// Suche freien Platz auf Spielfeld
-			while (check == 0) {
-				move = rand() % 16;
-				if (*(shm->pf + move) == -1) {
-					check = 1;
-				}
 
-				strcpy(shm->nextField, formatMove(move));
-			} */
 for (i = 0; i<16;i++) {
     move = i;
     if (*(shm->pf + move) == -1) {
