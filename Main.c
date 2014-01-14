@@ -13,6 +13,7 @@
 #include "QuartoThinker.h"
 #include "Config.h"
 #include "InitConnection.h"
+#include "ReactToSig.h"
 
 
 int main (int argc, char** argv )
@@ -110,35 +111,23 @@ int main (int argc, char** argv )
     }
     else
     {
-        //Elternprozess - soll laut Spezifikation den Thinker implementieren
+/*  Elternprozess - soll laut Spezifikation den Thinker implementieren  */
+        
+        //Lese-Seite der Pipe wird geschlossen
         close(fd[0]);
-        void signal_handler(int signum)
-        {
-            int err;
-            (void) signal;
-            if (signum == SIGUSR1)
-            {
-                shm->pf = shmat(shm->pfID, 0, 0);
-                writelog(logdatei,AT);
-                //Sicherstellen, dass SIGUSR1 vom Kind kam
-                if (shm->pleaseThink == 1)
-                {
-                    shm->pleaseThink = 0;
-                    think(shm);
-                    char* reply = malloc(sizeof(char)*15);
-                    addchar(reply);
-                    sprintf(reply,"PLAY %s,%d",shm->nextField,shm->nextStone);
-                    err =         write (fd[1], reply, 15); //Spielzug in Pipe schreiben
-                    if (err <0)
-                    {
-                        perror("Fehler bei Write");
-                        //Fehlerbehandlung?
-                    }
-                    shm->thinking = 0; // Denken beendet
-                }
+        
+        //SignalHandler
+        void signal_handler(int signum) {
+            if (signum == SIGUSR1) {
+            reactToSig(shm);
             }
         }
-        signal(SIGUSR1, signal_handler);
+
+        if( signal(SIGUSR1,signal_handler) == SIG_ERR){
+            perror("Fehler beim aufsetzen des Signal Handlers!\n");
+            return EXIT_FAILURE;
+        }
+
         int status;
         pid_t result;
         do
