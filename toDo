@@ -12,12 +12,7 @@ Evtl timeout hinzufügen und weitere Fehlerbehandlung für die Error ID
 
 Flo:
 - Sighandler auslagern
-- Einlesen des Spielfeldes
-Playtime.c
-- pf(woher kommt das?) ->Bitte endlich alle globalen Variablen
-eliminieren 
 - perror statt printf (zb. z102)
-KI: Wähle Steine für Gegner
 
 Edina:
 Looper.c
@@ -27,6 +22,7 @@ wenn Rückgabewerte abgefragt werden.(Hab ich auch noch woanders
 gesehen) (ist jetzt in Select.c)
 - Kommentieren :-P
 config.c
+-includes aufraeumen
 - printfs entfernen bzw. durch perror, stdout etc. ersetzen (z.B z50)
 - Malloc Fehlerabfrage fehlt (z66-67)
 
@@ -35,10 +31,6 @@ ALLE:
 Abschließend kann ich nur sagen löscht die sharedvariables.h
 
 Weiterhin: 
-Fallbehandlung ( Falls z.b. die Zeit < 500 ms ist nicht die KI rechnen lassen 
-oder bei einem größeren Feld die Formatierung übergehen) 
-
-Die Ausgabe der Spielernummer zur Initialisierung des Spieles ist noch nicht ganz korrekt.
 
 
 
@@ -101,8 +93,23 @@ Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführe
 Spart Redundanz 
 
 --------------------------------------------------------------------------
+13.01 - Fabian 
 
+Fallbehandlung ( Falls z.b. die Zeit < 500 ms ist nicht die KI rechnen lassen 
+oder bei einem größeren Feld die Formatierung übergehen) 
 
+Die Ausgabe der Spielernummer zur Initialisierung des Spieles ist noch nicht ganz korrekt.
+
+--------------------------------------------------------------------------
+13.01 - Flo
+
+- Einlesen des Spielfeldes
+Playtime.c
+- pf(woher kommt das?) ->Bitte endlich alle globalen Variablen
+eliminieren 
+KI: Wähle Steine für Gegner
+
+--------------------------------------------------------------------------
 Datum - Name
 
 --------------------------------------------------------------------------
