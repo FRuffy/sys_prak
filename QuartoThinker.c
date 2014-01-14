@@ -169,8 +169,9 @@ return EXIT_FAILURE;
 		// die dem Gegner nicht den Sieg ermoeglicht
 		// Tests ergaben: Bei bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest
 
-for (i = 0; i<16;i++) {
-    move = i;
+for (i = 0; i<100;i++) {
+  //  move = i;
+  move = rand()%16;
     if (*(shm->pf + move) == -1) {
 			strcpy(shm->nextField, formatMove(move));
 
