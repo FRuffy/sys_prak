@@ -10,35 +10,43 @@
 #include "Errmmry.h"
 #include "PerformConnection.h"
 
+/**
+ * Herstellung der Verbindung zum Server
+ *
+ * @param Pointer auf SHM, Struktur
+ * @return 0 falls Verbindung hergestellt und performConnection ausfuehrbar
+ */
 int initConnection(sharedmem * shm, config_struct* conf) {
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
+	writelog(logdatei, AT);
+	struct sockaddr_in host;
+	struct hostent* ip;
 
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    writelog(logdatei,AT);
-    struct sockaddr_in host;
-    struct hostent* ip;
-    ip = (gethostbyname(conf->hostname)); //uebersetze HOSTNAME in IP Adresse
-    memcpy(&(host.sin_addr),ip ->h_addr,ip ->h_length);
-    host.sin_family = AF_INET;
-    host.sin_port = htons(conf->portnumber);
+	/* Uebersetzt Hostname in IP Adresse */
+	ip = (gethostbyname(conf->hostname));
 
-    if (connect(sock,(struct sockaddr*)&host, sizeof(host)) == 0) {
-        printf("\nVerbindung mit %s hergestellt!\n",conf->hostname);
-        writelog(logdatei,AT);
-    } else {
-        perror("\n Fehler beim Verbindungsaufbau");
-        return EXIT_FAILURE;
-    }
+	memcpy(&(host.sin_addr), ip->h_addr,ip ->h_length);
+	host.sin_family = AF_INET;
+	host.sin_port = htons(conf->portnumber);
 
-    shm->pidDad = getppid(); //PID vom Vater und Eigene in SHM schreiben
-    shm->pidKid = getpid();
+	if (connect(sock, (struct sockaddr*) &host, sizeof(host)) == 0) {
+		printf("\nVerbindung mit %s hergestellt!\n", conf->hostname);
+		writelog(logdatei, AT);
+	} else {
+		perror("\n Fehler beim Verbindungsaufbau");
+		return EXIT_FAILURE;
+	}
 
-    //Fuehre Prolog Protokoll aus
-    if (performConnection(sock,shm, conf) != 0) {
-        close(sock);
-        return EXIT_FAILURE;
-    }
+	/* PID in SHM schrieben */
+	shm->pidDad = getppid();
+	shm->pidKid = getpid();
 
-    close(sock);
+	/*Fuehre Prolog Protokoll aus */
+	if (performConnection(sock, shm, conf) != 0) {
+		close(sock);
+		return EXIT_FAILURE;
+	}
 
-    return EXIT_SUCCESS;
+	close(sock);
+	return EXIT_SUCCESS;
 }
