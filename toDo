@@ -3,16 +3,20 @@ DEBUGGEN MIT ID NjH.NXJ0jEE
 ***************************
 
 Harun:
+Vater beendet Kind falls Fehler im Vater auftritt
 
 
 Fabi:
-select.c und thinker.c 
-Evtl timeout hinzufügen und weitere Fehlerbehandlung für die Error ID 
+Dateien im Ordner sortieren, Modularisieren 
+z.B. src, build,  
+makefile überarbeiten. 
+Eventuell Code nach Standards überarbeiten 
 
 
 Flo:
-- Sighandler auslagern
+
 - perror statt printf (zb. z102)
+
 
 Edina:
 Looper.c
@@ -20,23 +24,16 @@ Looper.c
 hier nichts zu suchen hat. Bitte Zahlen verwenden
 wenn Rückgabewerte abgefragt werden.(Hab ich auch noch woanders
 gesehen) (ist jetzt in Select.c)
+
 - Kommentieren :-P
-config.c
 -includes aufraeumen
 - printfs entfernen bzw. durch perror, stdout etc. ersetzen (z.B z50)
 - Malloc Fehlerabfrage fehlt (z66-67)
-
+- clean exit funktion sowohl Vater als auch Kind
+-
 
 ALLE:
 Abschließend kann ich nur sagen löscht die sharedvariables.h
-
-Weiterhin: 
-
-
-
-
-
-
 
 
 
@@ -110,9 +107,18 @@ eliminieren
 KI: Wähle Steine für Gegner
 
 --------------------------------------------------------------------------
-Datum - Name
+14.01 - Fabian 
+
+select.c und thinker.c 
+Evtl timeout hinzufügen und weitere Fehlerbehandlung für die Error ID 
+
+--------------------------------------------------------------------------
+14.01 - Harun
+
+- Sighandler auslagern
 
 --------------------------------------------------------------------------
 
 
+Datum - Name
 --------------------------------------------------------------------------
