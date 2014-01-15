@@ -11,7 +11,7 @@ char *varadr_char[50];
 int addint(int* intadr);
 int addchar(char* charadr);
 int freeall();
-int writelog(FILE *filename,const char *location);
+int writelog(FILE *filename, const char *location);
 
 #endif
 
