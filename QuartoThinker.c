@@ -280,12 +280,10 @@ int calculateMove(sharedmem *shm, char* stones, int silent) {
 				
 				/* horizontal */
 				if (((stone[j]) == (stones[((i + 4) % 16) + (i / 16) * 16 + j]))
-						&& ((stone[j])
-								== (stones[((i + 8) % 16) + (i / 16) * 16 + j]))
-						&& ((stone[j])
-								== (stones[((i + 12) % 16) + (i / 16) * 16 + j]))) {
+						&& ((stone[j]) == (stones[((i + 8) % 16) + (i / 16) * 16 + j]))
+						&& ((stone[j]) == (stones[((i + 12) % 16) + (i / 16) * 16 + j]))) {
 					if (silent != 1) {
-						printf("\nHorizontale Loesung gefunden (%s)! ",	formatMove(i / 4));
+						printf("\nHorizontale Loesung gefunden (%s)! ", formatMove(i / 4));
 					}
 					return i;
 				}
