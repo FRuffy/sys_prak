@@ -11,11 +11,14 @@ Dateien im Ordner sortieren, Modularisieren
 z.B. src, build,  
 makefile überarbeiten. 
 Eventuell Code nach Standards überarbeiten 
+- shm Speicherfehler
 
 
 Flo:
 
 - perror statt printf (zb. z102)
+- STRG + C   => richtig beenden
+- Auxilary Funktions auflösen
 
 
 Edina:
@@ -26,99 +29,17 @@ wenn Rückgabewerte abgefragt werden.(Hab ich auch noch woanders
 gesehen) (ist jetzt in Select.c)
 
 - Kommentieren :-P
--includes aufraeumen
 - printfs entfernen bzw. durch perror, stdout etc. ersetzen (z.B z50)
-- Malloc Fehlerabfrage fehlt (z66-67)
 - clean exit funktion sowohl Vater als auch Kind
--
+
+- sharedVariables.h auflösen => Inhalt in andere Files sinnvoll aufteilen
+- Suchen wo .h-Files überflüssigerweise includet werden
+
+- sowas wie:
+fprintf(stderr, "Fehler, shm: %s\n", strerror(errno));
+duch perror ersetzen
 
 ALLE:
-Abschließend kann ich nur sagen löscht die sharedvariables.h
 
+KOMMENTARE ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! 
 
-
-==========================================================================
-Bereits erledigt (einfach hier runter kopieren)
-==========================================================================
-
-11.02. - Harun
-FILE* logdatei; auslagern
-errmmry.c
-- sieht aus wie eine Java Klasse mit gettern und settern.  
-  -> countint, countchar entfernen und per reference call deren werte
-ändern
-- Schreibt euch eine cleanup funktion, die bei programmende den Speicher
-frei gibt (-> spart code)
-Clean Exit Funktionen
-- Benutzt euren logger und entfernt alle Konsolenausgaben, die keine
-Statusmeldungen sind.
-
-
-22.12. - Flo
-performConnection.c
-- Nicht benötigte Zeilen löschen
-- Fehlerabfrage für malloc fehlt(z25)
-- Also mich wundert, dass ihr gar keine Probleme damit hattet. Ihr
-schreibt nach einem free(z.B. z42) wieder in den tmp
-buffer(z62)
-  -> Ersetzt das free() durch eine Funktion, die den Buffer mit "\0"
-überschreibt.
-
---------------------------------------------------------------------------
-
-23.12. - Flo
-auxiliaryFunctions.c 
-- Malloc Fehlerabfrage fehlt (z44)
-
---------------------------------------------------------------------------
-
-08.01. - Flo
-- Es haben immer noch nicht alle c Files entsprechende h files (Bitte
-endlich fixen)
-
---------------------------------------------------------------------------
-09.01 - Fabian
-
-Fehlerbehandlung Checkserverreply Minuszeichen
-- initConnection(argc, argv,shm,conf); Warum übergebt ihr argc? argv
-solltet ihr auf keinen Fall übergeben sondern
-den Inhalt zwischenspeichern und dann übergeben.
-initConnection.c 
-- argv bereits in Elternprozess abfragen.
-- Main.c
-Die Convertierung des Spielfeldes bereits in printSpielfeldQuarto4x4 durchführen und an die KI weitergeben. 
-Spart Redundanz 
-
---------------------------------------------------------------------------
-13.01 - Fabian 
-
-Fallbehandlung ( Falls z.b. die Zeit < 500 ms ist nicht die KI rechnen lassen 
-oder bei einem größeren Feld die Formatierung übergehen) 
-
-Die Ausgabe der Spielernummer zur Initialisierung des Spieles ist noch nicht ganz korrekt.
-
---------------------------------------------------------------------------
-13.01 - Flo
-
-- Einlesen des Spielfeldes
-Playtime.c
-- pf(woher kommt das?) ->Bitte endlich alle globalen Variablen
-eliminieren 
-KI: Wähle Steine für Gegner
-
---------------------------------------------------------------------------
-14.01 - Fabian 
-
-select.c und thinker.c 
-Evtl timeout hinzufügen und weitere Fehlerbehandlung für die Error ID 
-
---------------------------------------------------------------------------
-14.01 - Harun
-
-- Sighandler auslagern
-
---------------------------------------------------------------------------
-
-
-Datum - Name
---------------------------------------------------------------------------
