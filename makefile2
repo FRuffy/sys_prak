@@ -4,6 +4,7 @@ builddir = .
 srcdir = $(topdir)/src
 errdir = $(topdir)/src/errhandler
 
+
 CC=gcc
 CFLAGS=-I$(srcdir) -c -Wall -Werror
 LDFLAGS=
