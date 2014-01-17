@@ -1,0 +1,23 @@
+topdir = ..
+bindir = $(topdir)/bin
+builddir = .
+srcdir = $(topdir)/src
+errdir = $(topdir)/src/errhandler
+
+CC=gcc
+CFLAGS=-I$(srcdir) -c -Wall -Werror
+LDFLAGS=
+SOURCES= $(srcdir)/Main.c $(srcdir)/PerformConnection.c $(srcdir)/InitConnection.c $(srcdir)/Config.c $(errdir)/Errmmry.c $(srcdir)/AuxiliaryFunctions.c $(srcdir)/Playtime.c $(srcdir)/ServerInfo.c $(srcdir)/Select.c $(srcdir)/QuartoThinker.c $(srcdir)/ReactToSig.c
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=client
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+        $(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.c.o:
+        $(CC) $(CFLAGS) $< -o $@
+
+clean:
+        rm $(EXECUTABLE) $(OBJECTS) log.txt
