@@ -25,6 +25,7 @@ int main(int argc, char** argv) {
 	/* Initialisierung der Shared Memory */
 	sharedmem *shm;
 	int shmID;
+
 	int shmSize = sizeof(struct sharedmem);
 
 	shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | IPC_EXCL | 0775);
@@ -45,6 +46,7 @@ int main(int argc, char** argv) {
 		writelog(logdatei, AT);
 		return EXIT_FAILURE;
 	}
+shm->pfID = 0;
 
 	if (pipe(fd) < 0) {
 		perror("Fehler beim Einrichten der Pipe.");
@@ -87,8 +89,7 @@ int main(int argc, char** argv) {
 			strcpy(shm->gameID, argv[1]);
 		}
 		initConnection(shm, conf);
-		shmdt(shm->pf);
-		shmdt(shm);
+
 		freeall();
 
 	} else {
@@ -99,6 +100,7 @@ int main(int argc, char** argv) {
 		/* SignalHandler */
 		void signal_handler(int signum) {
 			if (signum == SIGUSR1) {
+
 				reactToSig(shm);
 			}
 		}
@@ -108,6 +110,8 @@ int main(int argc, char** argv) {
 		}
 		int status;
 		pid_t result;
+
+
 		do {
 			result = waitpid(pid, &status, WNOHANG);
 			/* Ueberprueft ob Kind noch existiert */
@@ -117,14 +121,23 @@ int main(int argc, char** argv) {
 		} while (result == 0);
 
 		printf("VATER: Zerstoere shm... \n");
-		shmdt(shm->pf);
-		shmdt(shm);
-		if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
-			perror("Fehler bei Zerstoerung von shm \n");
+
+		if  (shm->pfID != 0) {
+                shmdt(shm->pf);
+		if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
+			perror("\nVATER: Fehler bei Zerstoerung von pf \n");
 		}
+		}
+		shmdt(shm);
+			if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
+			perror("\nVATER: Fehler bei Zerstoerung von shm \n");
+		}
+
+
 		freeall();
 		printf("VATER: Beende mich selbst...\n");
 	}
+
 
 	free(conf);
 	fclose(logdatei);
