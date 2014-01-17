@@ -82,9 +82,11 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 		printf("\nBuffer3: %s\n", buffer);
 
 		if (strncmp(buffer, "+ MOVEOK", 8) == 0) {
-			sscanf(buffer, "%*[^\n]\n%*s %*s %d %s", &playerNumber, playerName);
-			printf("\nDas Spiel ist zu Ende. Der Gewinner ist: %d - %s\n", playerNumber, playerName);
-		} else if (strcmp(buffer, "+ GAMEOVER\n") == 0 || strncmp(buffer, "+ GAMEOVER\n+", 12) == 0) {
+
+			buffer = strtok(buffer,"\n");
+			buffer = strtok(NULL,"\n");		}
+
+       if (strcmp(buffer, "+ GAMEOVER\n") == 0 || strncmp(buffer, "+ GAMEOVER\n+", 12) == 0) {
 			printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
 		} else {
 			sscanf(buffer, "%*s %*s %d %s", &playerNumber, playerName);
