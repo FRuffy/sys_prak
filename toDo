@@ -7,11 +7,9 @@ Vater beendet Kind falls Fehler im Vater auftritt
 
 
 Fabi:
-Dateien im Ordner sortieren, Modularisieren 
-z.B. src, build,  
-makefile überarbeiten. 
+makefile
 Eventuell Code nach Standards überarbeiten 
-- shm Speicherfehler
+
 
 
 Flo:
