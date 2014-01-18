@@ -1,0 +1,28 @@
+builddir = .
+bindir = $(builddir)/bin
+srcdir = $(builddir)/src
+errdir = $(srcdir)/errhandler
+objdir = $(builddir)/obj
+
+DEPS = $(srcdir)/AuxiliaryFunctions.h $(srcdir)/Config.h $(srcdir)/PerformConnection.h $(srcdir)/InitConnection.h $(srcdir)/Playtime.h $(srcdir)/QuartoThinker.h $(srcdir)/ $(srcdir)/ReactToSig.h $(srcdir)/Select.h $(srcdir)/SharedVariables.h $(srcdir)/ServerInfo.h $(errdir)/Errmmry.h
+
+CC=gcc
+CFLAGS=-I$(errdir) -c -Wall -Werror
+LDFLAGS=
+
+#!!!!!DO NOT EDIT ANYTHING UNDER THIS LINE!!!!!
+Objects=$(Sources:.cpp=.o)
+CSources=$(addprefix $(srcDir),$(Sources))
+CObjects=$(addprefix $(ObjectDir),$(Objects))
+CExecutable=$(addprefix $(BinDir),$(Executable))
+
+all: $(CSources) $(CExecutable)
+
+$(CExecutable): $(CObjects)
+	$(CC) $(LDFlags) $(CObjects) -o $@
+
+$(ObjectDir)%.o: $(SourceDir)%.cpp
+	$(CC) $(CFlags) $< -o $@
+
+clean:
+	$(RM) $(CObjects)

@@ -3,6 +3,8 @@
 #include <string.h>
 #include "SharedVariables.h"
 #include "Errmmry.h"
+#include "AuxiliaryFunctions.h"
+
 
 /* Funktion, die unsere Konfigdatei ausliest und Werte der Struktur zuweist */
 
@@ -41,6 +43,7 @@ int checkName(char* name, char* wert, config_struct* conf) {
  * @return Datei
  */
 FILE* openFile(char* name) {
+
 	FILE* file = NULL;
 
 	if (name == NULL ) {
@@ -90,8 +93,11 @@ int readConfig(FILE* configFile, config_struct* conf) {
  * @return 0 falls Datei existiert
  */
 int openConfig(char* name, config_struct* conf) {
-	FILE* file;
-	file = openFile(name);
+	
+char* temp = malloc(sizeof(char)*256) addchar(temp);
+        antistrcat(name,"../",temp);
+        FILE* file;
+	file = openFile(temp);
 
 	if (file == NULL ) {
 		return EXIT_FAILURE;

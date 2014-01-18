@@ -6,12 +6,8 @@
 #include "SharedVariables.h"
 #include "Errmmry.h"
 
-/**
- * Informationen ueber Spieler
- *
- * @param Pointer auf Buffer, SHM
- * @return Info ueber Spielernummer, Spielername, Bereit
- */
+
+
 char* recvServerInfo(char* buffer, sharedmem * shm) {
 
 	char* buffer2;
@@ -50,3 +46,4 @@ char* recvServerInfo(char* buffer, sharedmem * shm) {
 	strcpy(buffer, buffer2);
 	return buffer;
 }
+

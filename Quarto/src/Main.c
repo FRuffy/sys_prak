@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 	shmID = shmget(IPC_PRIVATE, shmSize, IPC_CREAT | IPC_EXCL | 0775);
 
 	if (shmID < 1) {
-		printf("Error: No SHM");
+		perror("\nNo SHM\n");
 		free(conf);
 		fclose(logdatei);
 		return EXIT_FAILURE;
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 shm->pfID = 0;
 
 	if (pipe(fd) < 0) {
-		perror("Fehler beim Einrichten der Pipe.");
+		perror("\nFehler beim Einrichten der Pipe.\n");
 		return EXIT_FAILURE;
 	}
 
@@ -59,7 +59,7 @@ shm->pfID = 0;
 	/* Ab hier wird in 2 Prozesse, dem Thinker und dem Connector, aufgespalten */
 
 	if ((pid) < 0) {
-		fprintf(stderr, "Fehler bei fork(): %s\n", strerror(errno));
+		fprintf(stderr, "\nFehler bei fork(): %s\n", strerror(errno));
 		writelog(logdatei, AT);
 		shmdt(shm);
 		shmctl(shmID, IPC_RMID, NULL );
@@ -72,7 +72,7 @@ shm->pfID = 0;
 
 		/* Ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert */
 		if (argc == 1 || (strlen(argv[1])) > 18) {
-			printf("Fehler: Der uebergebene Parameter hat nicht die korrekte Laenge");
+			perror("\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
 			return EXIT_FAILURE;
 		} else {
 			if (argc == 3) {
@@ -105,7 +105,7 @@ shm->pfID = 0;
 			}
 		}
 		if (signal(SIGUSR1, signal_handler) == SIG_ERR ) {
-			perror("Fehler beim aufsetzen des Signal Handlers!\n");
+			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
 			return EXIT_FAILURE;
 		}
 		int status;
@@ -116,11 +116,11 @@ shm->pfID = 0;
 			result = waitpid(pid, &status, WNOHANG);
 			/* Ueberprueft ob Kind noch existiert */
 			if (result != 0) {
-				printf("VATER: Kind ist nicht mehr vorhanden... \n");
+				printf("\nVATER: Kind ist nicht mehr vorhanden... \n");
 			}
 		} while (result == 0);
 
-		printf("VATER: Zerstoere shm... \n");
+		printf("\nVATER: Zerstoere shm... \n");
 
 		if  (shm->pfID != 0) {
                 shmdt(shm->pf);
@@ -135,7 +135,7 @@ shm->pfID = 0;
 
 
 		freeall();
-		printf("VATER: Beende mich selbst...\n");
+		printf("\nVATER: Beende mich selbst...\n");
 	}
 
 
