@@ -1,24 +1,24 @@
-topdir = ..
-bindir = $(topdir)/bin
 builddir = .
-srcdir = $(topdir)/src
-errdir = $(topdir)/src/errhandler
+bindir = $(builddir)/bin
+srcdir = $(builddir)/src
+errdir = $(srcdir)/errhandler
 
+DEPS = $(srcdir)/AuxiliaryFunctions.h $(srcdir)/Config.h $(srcdir)/PerformConnection.h $(srcdir)/InitConnection.h $(srcdir)/Playtime.h $(srcdir)/QuartoThinker.h $(srcdir)/ $(srcdir)/ReactToSig.h $(srcdir)/Select.h $(srcdir)/SharedVariables.h $(srcdir)/ServerInfo.h $(errdir)/Errmmry.h
 
 CC=gcc
-CFLAGS=-I$(srcdir) -c -Wall -Werror
+CFLAGS=-I$(errdir) -c -Wall -Werror
 LDFLAGS=
 SOURCES= $(srcdir)/Main.c $(srcdir)/PerformConnection.c $(srcdir)/InitConnection.c $(srcdir)/Config.c $(errdir)/Errmmry.c $(srcdir)/AuxiliaryFunctions.c $(srcdir)/Playtime.c $(srcdir)/ServerInfo.c $(srcdir)/Select.c $(srcdir)/QuartoThinker.c $(srcdir)/ReactToSig.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=client
+EXECUTABLE=$(bindir)/client
 
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-        $(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .c.o:
-        $(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-        rm $(EXECUTABLE) $(OBJECTS) log.txt
+	rm $(EXECUTABLE) $(OBJECTS) $(bindir)/log.txt
