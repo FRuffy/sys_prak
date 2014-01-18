@@ -17,11 +17,12 @@ objects := $(patsubst %.$(srcExt),$(objDir)/%.o,$(sources))
 
 all: $(binDir)/$(app)
 
-$(binDir)/$(app): buildrepo $(objects)
+$(binDir)/$(app):  buildrepo  $(objects) 
 	@mkdir -p `dirname $@`
 	@$(CC) $(objects) $(LDFlags) -o $@
 
 $(objDir)/%.o: %.$(srcExt)
+	@echo "Building $@ ... "
 	@$(CC) $(CFlags) $< -o $@
 
 clean:
@@ -40,7 +41,6 @@ define make-repo
 	mkdir -p $(objDir)/$$dir; \
    done
 endef
-
 
 
 
