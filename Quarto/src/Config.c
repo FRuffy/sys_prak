@@ -5,11 +5,10 @@
 #include "Errmmry.h"
 #include "AuxiliaryFunctions.h"
 
-
 /* Funktion, die unsere Konfigdatei ausliest und Werte der Struktur zuweist */
 
 /**
- * Prüfe Parametername
+ * Pruefe Parametername
  *
  * @param Pointer auf Name, Wert, Struktur
  * @return 0 falls Konfigurationsdaten korrekt
@@ -31,7 +30,8 @@ int checkName(char* name, char* wert, config_struct* conf) {
 		memcpy(conf->playernumber, wert, strlen(wert));
 		return EXIT_SUCCESS;
 	} else {
-		printf("Parameter nicht gefunden! Bitte pruefen ob die Namen korrekt geschrieben oder die Konfigurationsdatei sauber ist!\n");
+		printf(
+				"Parameter nicht gefunden! Bitte pruefen ob die Namen korrekt geschrieben oder die Konfigurationsdatei sauber ist!\n");
 		return EXIT_FAILURE;
 	}
 }
@@ -53,21 +53,23 @@ FILE* openFile(char* name) {
 
 	if ((file = fopen(name, "r")) == NULL ) {
 
-        char* temp = malloc(sizeof(char)*256); addchar(temp);
-        antistrcat(name,"../",temp);
+		char* temp = malloc(sizeof(char) * 256);
+		addchar(temp);
+		antistrcat(name, "../", temp);
 
-        if ((file = fopen(temp, "r")) == NULL ) {
-		  perror("Konfigurationsdatei konnte nicht geoeffnet werden oder existiert nicht!");
-		  return file;
-         }
+		if ((file = fopen(temp, "r")) == NULL ) {
+			perror(
+					"Konfigurationsdatei konnte nicht geoeffnet werden oder existiert nicht!");
+			return file;
+		}
 	}
 
 	return file;
 }
 
 /**
- * Liest die Datei aus, prüft den Parameternamen und weist den korrekten Wert der Struktur zu
- * count zählt die Zeilen der Datei
+ * Liest die Datei aus, prueft den Parameternamen und weist den korrekten Wert der Struktur zu
+ * count zaehlt die Zeilen der Datei
  *
  * @param config Datei, Struktur
  * @return 0 wenn korrekter Wert zugewiesen
@@ -80,15 +82,16 @@ int readConfig(FILE* configFile, config_struct* conf) {
 	addchar(pName);
 	char* pValue = malloc(sizeof(char) * 128 * 10);
 	addchar(pValue);
-    char* buffer = malloc(sizeof(char) * 256);
-	while ((fgets(buffer, 127, configFile)) != NULL) {
+	char* buffer = malloc(sizeof(char) * 256);
+	addchar(buffer);
+	while ((fgets(buffer, 127, configFile)) != NULL ) {
 
-         if (buffer[0] != '\n' && buffer[0] != '#')
-        {
-        sscanf(buffer, " %[^ =] =%*[ ] %s \n", &pName[count * 128],	&pValue[count * 128]);
-        checkName(&pName[count * 128], &pValue[count * 128], conf);
-		count++;
-        }
+		if (buffer[0] != '\n' && buffer[0] != '#') {
+			sscanf(buffer, " %[^ =] =%*[ ] %s \n", &pName[count * 128],
+					&pValue[count * 128]);
+			checkName(&pName[count * 128], &pValue[count * 128], conf);
+			count++;
+		}
 	}
 
 	return EXIT_SUCCESS;
@@ -102,7 +105,7 @@ int readConfig(FILE* configFile, config_struct* conf) {
  */
 int openConfig(char* name, config_struct* conf) {
 
-        FILE* file;
+	FILE* file;
 	file = openFile(name);
 
 	if (file == NULL ) {
