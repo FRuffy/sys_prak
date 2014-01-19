@@ -114,12 +114,9 @@ int main(int argc, char** argv) {
 			if (signum == SIGUSR1) {
 				reactToSig(shm, 0, conf);
 			}
-			/* SignalHandler */
-
 			// Abfangen von CTRL + C mit Signal "SIGINT"
-			if (signum == SIGINT) {
+			else if (signum == SIGINT) {
 				reactToSig(shm, 1, conf);
-
 			}
 		}
 		if (signal(SIGINT, signal_handler) == SIG_ERR || signal(SIGUSR1, signal_handler) == SIG_ERR ) {
