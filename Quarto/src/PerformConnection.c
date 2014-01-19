@@ -7,11 +7,37 @@
 #include <signal.h>
 #include "SharedVariables.h"
 #include "Errmmry.h"
-#include "AuxiliaryFunctions.h"
 #include "Select.h"
 #include "ServerInfo.h"
 #include "InitConnection.h"
 #define BUFFR 512
+
+/**
+ * Haengt \n an den String fuer den Server an
+ *
+ * @param Socket, Pointer auf String wo das \n dran soll
+ * @return Pointer auf String mit angehaengtem \n
+ */
+void sendReplyFormatted(int sock, char* reply) {
+	char * container;
+	container = malloc(sizeof(char) * (strlen(reply) + 2));
+	strcpy(container, reply);
+	strcat(container, "\n");
+	send(sock, container, strlen(container), 0);
+	free(container);
+}
+
+/**
+ * Umgedrehte strcat Funktion um custom strings zu uebergeben, die fuer die korrekte uebertragung noetig sind
+ *
+ * @param Pointer
+ * @return 0
+ */
+int antistrcat(char* dest, char* src, char* temp) {
+	strcpy(temp, src);
+	strcat(temp, dest);
+	return EXIT_SUCCESS;
+}
 
 /**
  * Formatierte Ausgabe an den Server (\n wird benoetigt um das Ende der Uebertragung zu signalisieren)
@@ -47,10 +73,12 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 	}
 
 	if (buffer[0] == '-') {
-		printf("\nDer Server akzeptiert die Version %s dieses Clients nicht!\n", conf->version);
+		printf("\nDer Server akzeptiert die Version %s dieses Clients nicht!\n",
+				conf->version);
 		return EXIT_FAILURE;
 	} else {
-		printf("\nDie Client-Version wurde akzeptiert, uebertrage Spiel-ID...\n");
+		printf(
+				"\nDie Client-Version wurde akzeptiert, uebertrage Spiel-ID...\n");
 	}
 
 	/* Teil 2: Der Server erwartet Game-ID, schicke diese und behandle Antwort.
@@ -65,10 +93,12 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 	sscanf(buffer, "%*s%*s%s", reader);
 
 	if (buffer[0] == '-') {
-		printf("\nDie uebergebene Game-ID fehlt oder ist fehlerhaft! Beende Verbindung\n");
+		printf(
+				"\nDie uebergebene Game-ID fehlt oder ist fehlerhaft! Beende Verbindung\n");
 		return EXIT_FAILURE;
 	} else if (strcmp(reader, "Quarto") != 0) {
-		printf("\nDas Spiel, das der Server spielt, ist nicht Quarto! Beende Verbindung.\n");
+		printf(
+				"\nDas Spiel, das der Server spielt, ist nicht Quarto! Beende Verbindung.\n");
 		return EXIT_FAILURE;
 	} else {
 		printf("\nDer Server moechte %s spielen. Und wir auch!\n", reader);
@@ -94,14 +124,17 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 
 	if (buffer[0] == '-') {
 		if (buffer[2] == '-') {
-			printf("\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
+			printf(
+					"\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
 		} else {
-			printf("\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
+			printf(
+					"\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
 			//ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde!
 		}
 		return EXIT_FAILURE;
 	} else {
-		sscanf(buffer, "%*s %*s %d %s", &(shm->player[0].playerNumber),	(shm->player[0].playerName));
+		sscanf(buffer, "%*s %*s %d %s", &(shm->player[0].playerNumber),
+				(shm->player[0].playerName));
 	}
 
 	/* Teil 3.2: Hier wird der Uebergang in die Spielverlaufsphase eingeleitet.
@@ -117,7 +150,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 	}
 
 	/* Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden */
-	if (recvServerInfo(buffer, shm) == NULL ) {
+	if (recvServerInfo(buffer, shm) == NULL) {
 		return EXIT_FAILURE;
 	}
 
