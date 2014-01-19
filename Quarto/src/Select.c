@@ -11,6 +11,7 @@
 #include "SharedVariables.h"
 #include "Errmmry.h"
 #include "Playtime.h"
+#include "PerformConnection.h"
 
 #define BUFFR 512
 
