@@ -14,6 +14,9 @@
 #include "InitConnection.h"
 #include "ReactToSig.h"
 
+// Pipe golabl deklariert
+int fd[2];
+
 int main(int argc, char** argv) {
 	// Die Struktur, die die Konfigurationsparameter der Datei speichert
 	config_struct *conf;
@@ -73,7 +76,7 @@ int main(int argc, char** argv) {
 		void signal_handler(int signum) {
 			// Abfangen von CTRL + C mit Signal "SIGINT"
 			if (signum == SIGINT) {
-				reactToSig(shm, 1, conf);
+				reactToSig(shm, 1, conf, fd);
 			}
 		}
 		if (signal(SIGINT, signal_handler) == SIG_ERR ) {
@@ -100,7 +103,7 @@ int main(int argc, char** argv) {
 			}
 			strcpy(shm->gameID, argv[1]);
 		}
-		initConnection(shm, conf);
+		initConnection(shm, conf,fd);
 
 		freeall();
 
@@ -112,11 +115,11 @@ int main(int argc, char** argv) {
 		/* SignalHandler */
 		void signal_handler(int signum) {
 			if (signum == SIGUSR1) {
-				reactToSig(shm, 0, conf);
+				reactToSig(shm, 0, conf, fd);
 			}
 			// Abfangen von CTRL + C mit Signal "SIGINT"
 			else if (signum == SIGINT) {
-				reactToSig(shm, 1, conf);
+				reactToSig(shm, 1, conf, fd);
 			}
 		}
 		if (signal(SIGINT, signal_handler) == SIG_ERR || signal(SIGUSR1, signal_handler) == SIG_ERR ) {
