@@ -12,6 +12,7 @@
 #include "SharedVariables.h"
 #include "QuartoThinker.h"
 #include "Errmmry.h"
+#include "Playtime.h"
 
 /**
  * Umsetzung SpielfeldNr => Spielfeldkoordinaten (wie von Server benoetigt)
