@@ -9,7 +9,6 @@
 #include <signal.h>
 #include "SharedVariables.h"
 #include "Errmmry.h"
-#include "AuxiliaryFunctions.h"
 #include "QuartoThinker.h"
 #include "Config.h"
 #include "InitConnection.h"
