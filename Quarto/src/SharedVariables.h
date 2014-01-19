@@ -29,6 +29,5 @@ typedef struct sharedmem {
 	} player[8];
 } sharedmem;
 
-int fd[2]; // fuer Pipe
 //sharedmem *shm; // shm MUSS global sein (wegen Signal)
 #endif
