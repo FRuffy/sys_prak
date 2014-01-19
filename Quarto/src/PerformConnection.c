@@ -46,7 +46,7 @@ int antistrcat(char* dest, char* src, char* temp) {
  * @param Socket, Struktur, SHM
  * @return 0
  */
-int performConnection(int sock, sharedmem * shm, config_struct* conf) {
+int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) {
 	int err; //size zur Fehlerbehandlung fuer recv
 	char* reader = malloc(sizeof(char) * 20);
 	addchar(reader);
@@ -155,6 +155,6 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf) {
 	}
 
 	/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt und mit dem Thinker zusammenarbeitet */
-	waitforfds(sock, buffer, shm);
+	waitforfds(sock, buffer, shm, fd);
 	return EXIT_SUCCESS;
 }
