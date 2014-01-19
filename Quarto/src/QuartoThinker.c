@@ -11,7 +11,6 @@
 #include <time.h>
 #include "SharedVariables.h"
 #include "QuartoThinker.h"
-#include "AuxiliaryFunctions.h"
 #include "Errmmry.h"
 
 /**
