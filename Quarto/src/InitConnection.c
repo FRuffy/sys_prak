@@ -6,7 +6,6 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include "SharedVariables.h"
-#include "AuxiliaryFunctions.h"
 #include "Errmmry.h"
 #include "PerformConnection.h"
 
