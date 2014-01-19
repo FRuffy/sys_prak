@@ -24,12 +24,11 @@ int initConnection(sharedmem * shm, config_struct* conf) {
 
 	/* Uebersetzt Hostname in IP Adresse */
 	ip = (gethostbyname(conf->hostname));
-
-if  (ip== NULL) {
-    perror("\nFehler beim Anfordern der IP");
-    writelog(logdatei, AT);
-
-}
+        if  (ip== NULL) {
+             perror("\nFehler beim Anfordern der IP");
+             writelog(logdatei, AT);
+        }
+             
 	memcpy(&(host.sin_addr), ip->h_addr,ip ->h_length);
 	host.sin_family = AF_INET;
 	host.sin_port = htons(conf->portnumber);
