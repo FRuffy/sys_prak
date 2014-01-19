@@ -7,6 +7,7 @@
 #include <signal.h>
 #include "SharedVariables.h"
 #include "Errmmry.h"
+#include "PerformConnection.h"
 
 #define BUFFR 512
 
