@@ -15,7 +15,7 @@
  * @param SHM, signal (0 = Zug soll berechnet werden | 1 = CTRL + C wurde gedrueckt), config_struct für free-Befehl
  * @return 0 falls SIGUSR vom Kind
  */
-int reactToSig(sharedmem* shm, int signal, config_struct *conf) {
+int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[]) {
 	//Zug soll berechnet werden
 	if (signal == 0) {
 		int err;
