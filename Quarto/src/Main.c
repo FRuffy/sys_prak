@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 		writelog(logdatei, AT);
 		return EXIT_FAILURE;
 	}
-shm->pfID = 0;
+	shm->pfID = 0;
 
 	if (pipe(fd) < 0) {
 		perror("\nFehler beim Einrichten der Pipe.\n");
@@ -70,9 +70,22 @@ shm->pfID = 0;
 		 * Schliesst input ende von der Pipe */
 		close(fd[1]);
 
+		/* SignalHandler */
+		void signal_handler(int signum) {
+			// Abfangen von CTRL + C mit Signal "SIGINT"
+			if (signum == SIGINT) {
+				reactToSig(shm, 1, conf);
+			}
+		}
+		if (signal(SIGINT, signal_handler) == SIG_ERR ) {
+			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
+			return EXIT_FAILURE;
+		}
+
 		/* Ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert */
 		if (argc == 1 || (strlen(argv[1])) > 18) {
-			perror("\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
+			perror(
+					"\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
 			return EXIT_FAILURE;
 		} else {
 			if (argc == 3) {
@@ -100,17 +113,28 @@ shm->pfID = 0;
 		/* SignalHandler */
 		void signal_handler(int signum) {
 			if (signum == SIGUSR1) {
+				reactToSig(shm, 0, conf);
+			}
+			/* SignalHandler */
 
-				reactToSig(shm);
+			// Abfangen von CTRL + C mit Signal "SIGINT"
+			if (signum == SIGINT) {
+				reactToSig(shm, 1, conf);
+
 			}
 		}
+		if (signal(SIGINT, signal_handler) == SIG_ERR ) {
+			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
+			return EXIT_FAILURE;
+		}
+
 		if (signal(SIGUSR1, signal_handler) == SIG_ERR ) {
 			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
 			return EXIT_FAILURE;
 		}
+
 		int status;
 		pid_t result;
-
 
 		do {
 			result = waitpid(pid, &status, WNOHANG);
@@ -122,22 +146,20 @@ shm->pfID = 0;
 
 		printf("\nVATER: Zerstoere shm... \n");
 
-		if  (shm->pfID != 0) {
-                shmdt(shm->pf);
-		if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
-			perror("\nVATER: Fehler bei Zerstoerung von pf \n");
-		}
+		if (shm->pfID != 0) {
+			shmdt(shm->pf);
+			if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
+				perror("\nVATER: Fehler bei Zerstoerung von pf \n");
+			}
 		}
 		shmdt(shm);
-			if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
+		if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
 			perror("\nVATER: Fehler bei Zerstoerung von shm \n");
 		}
-
 
 		freeall();
 		printf("\nVATER: Beende mich selbst...\n");
 	}
-
 
 	free(conf);
 	fclose(logdatei);
