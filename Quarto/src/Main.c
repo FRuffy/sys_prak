@@ -122,12 +122,7 @@ int main(int argc, char** argv) {
 
 			}
 		}
-		if (signal(SIGINT, signal_handler) == SIG_ERR ) {
-			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
-			return EXIT_FAILURE;
-		}
-
-		if (signal(SIGUSR1, signal_handler) == SIG_ERR ) {
+		if (signal(SIGINT, signal_handler) == SIG_ERR || signal(SIGUSR1, signal_handler) == SIG_ERR ) {
 			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
 			return EXIT_FAILURE;
 		}
