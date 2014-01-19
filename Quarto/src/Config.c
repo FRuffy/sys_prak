@@ -3,7 +3,6 @@
 #include <string.h>
 #include "SharedVariables.h"
 #include "Errmmry.h"
-#include "AuxiliaryFunctions.h"
 
 /* Funktion, die unsere Konfigdatei ausliest und Werte der Struktur zuweist */
 
