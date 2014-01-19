@@ -21,7 +21,7 @@
  * @param Socket, Buffer
  * @return 0 falls move ok
  */
-int doMove(int sock, char* buffer) {
+int doMove(int sock, char* buffer, int fd[]) {
 	int size;
 	char* reply = malloc(sizeof(char) * 15);
 	addchar(reply);
@@ -55,7 +55,7 @@ int doMove(int sock, char* buffer) {
  * @param Socket fuer Kommunikation mit Server, Buffer fuer auslesen der Antwort, SHM
  * @return 0
  */
-int waitforfds(int sock, char* buffer, sharedmem * shm) {
+int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 	int rc, size, status, biggest;
 	int pipe = fd[0];
 	fd_set fds;
@@ -108,7 +108,7 @@ int waitforfds(int sock, char* buffer, sharedmem * shm) {
 
 			/* Fall das Pipe ready to read ist */
 			} else if (FD_ISSET(pipe, &fds)) {
-				doMove(sock, buffer);
+				doMove(sock, buffer, fd);
 			}
 
 		/* Falls select 0 returned heisst die Wartezeit ist ohne Ereigniss abgelaufen */
