@@ -31,7 +31,7 @@ int checkName(char* name, char* wert, config_struct* conf) {
 		memcpy(conf->playernumber, wert, strlen(wert));
 		return EXIT_SUCCESS;
 	} else {
-		printf("Parameter nicht gefunden, bitte pruefen ob die Konfigurationsdatei korrekt ist!\n");
+		printf("Parameter nicht gefunden! Bitte pruefen ob die Namen korrekt geschrieben oder die Konfigurationsdatei sauber ist!\n");
 		return EXIT_FAILURE;
 	}
 }
@@ -52,8 +52,14 @@ FILE* openFile(char* name) {
 	}
 
 	if ((file = fopen(name, "r")) == NULL ) {
-		perror("Konfigurationsdatei konnte nicht geoeffnet werden oder existiert nicht!");
-		return file;
+
+        char* temp = malloc(sizeof(char)*256); addchar(temp);
+        antistrcat(name,"../",temp);
+
+        if ((file = fopen(temp, "r")) == NULL ) {
+		  perror("Konfigurationsdatei konnte nicht geoeffnet werden oder existiert nicht!");
+		  return file;
+         }
 	}
 
 	return file;
@@ -67,20 +73,22 @@ FILE* openFile(char* name) {
  * @return 0 wenn korrekter Wert zugewiesen
  */
 int readConfig(FILE* configFile, config_struct* conf) {
-	//ToDo(Malloc Fehlerabfrage fehlt (z66-67))
+
 	int count = 0;
-	int i;
+
 	char* pName = malloc(sizeof(char) * 128 * 10);
 	addchar(pName);
 	char* pValue = malloc(sizeof(char) * 128 * 10);
 	addchar(pValue);
+    char* buffer = malloc(sizeof(char) * 256);
+	while ((fgets(buffer, 255, configFile)) != NULL) {
 
-	while ((fscanf(configFile, " %[^ =] =%*[ ] %s \n", &pName[count * 128],	&pValue[count * 128])) != EOF) {
+         if (buffer[0] != '\n' && buffer[0] != '#')
+        {
+        sscanf(buffer, " %[^ =] =%*[ ] %s \n", &pName[count * 128],	&pValue[count * 128]);
+        checkName(&pName[count * 128], &pValue[count * 128], conf);
 		count++;
-	}
-
-	for (i = 0; i < count; i++) {
-		checkName(&pName[i * 128], &pValue[i * 128], conf);
+        }
 	}
 
 	return EXIT_SUCCESS;
@@ -93,11 +101,9 @@ int readConfig(FILE* configFile, config_struct* conf) {
  * @return 0 falls Datei existiert
  */
 int openConfig(char* name, config_struct* conf) {
-	
-char* temp = malloc(sizeof(char)*256); addchar(temp);
-        antistrcat(name,"../",temp);
+
         FILE* file;
-	file = openFile(temp);
+	file = openFile(name);
 
 	if (file == NULL ) {
 		return EXIT_FAILURE;
@@ -107,3 +113,4 @@ char* temp = malloc(sizeof(char)*256); addchar(temp);
 	fclose(file);
 	return EXIT_SUCCESS;
 }
+
