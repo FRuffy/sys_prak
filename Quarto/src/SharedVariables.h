@@ -18,7 +18,7 @@ typedef struct sharedmem {
 	pid_t pidDad;
 	pid_t pidKid;
 	char gameID[MAXGAMEID], gameName[MAXGAMENAME], nextField[3];
-	int playerCount, thinkTime, thinking, pleaseThink, fieldX, fieldY,
+	int sock, playerCount, thinkTime, thinking, pleaseThink, fieldX, fieldY,
 			StoneToPlace, nextStone, pfID;
 	int *pf;
 	struct spieler {
