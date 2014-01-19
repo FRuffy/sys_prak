@@ -81,7 +81,7 @@ int readConfig(FILE* configFile, config_struct* conf) {
 	char* pValue = malloc(sizeof(char) * 128 * 10);
 	addchar(pValue);
     char* buffer = malloc(sizeof(char) * 256);
-	while ((fgets(buffer, 255, configFile)) != NULL) {
+	while ((fgets(buffer, 127, configFile)) != NULL) {
 
          if (buffer[0] != '\n' && buffer[0] != '#')
         {
