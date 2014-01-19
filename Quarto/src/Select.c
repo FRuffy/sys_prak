@@ -10,7 +10,6 @@
 #include <sys/shm.h>
 #include "SharedVariables.h"
 #include "Errmmry.h"
-#include "AuxiliaryFunctions.h"
 #include "Playtime.h"
 
 #define BUFFR 512
