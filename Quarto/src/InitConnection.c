@@ -15,7 +15,7 @@
 * @param Pointer auf SHM, Struktur
 * @return 0 falls Verbindung hergestellt und performConnection ausfuehrbar
 */
-int initConnection(sharedmem * shm, config_struct* conf) {
+int initConnection(sharedmem * shm, config_struct* conf, int fd[]) {
         shm->sock = socket(AF_INET, SOCK_STREAM, 0);
         writelog(logdatei, AT);
         struct sockaddr_in host;
@@ -45,7 +45,7 @@ int initConnection(sharedmem * shm, config_struct* conf) {
         shm->pidKid = getpid();
 
         /*Fuehre Prolog Protokoll aus */
-        if (performConnection(shm->sock, shm, conf) != 0) {
+        if (performConnection(shm->sock, shm, conf, fd) != 0) {
                 close(shm->sock);
                 return EXIT_FAILURE;
         }
