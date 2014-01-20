@@ -20,7 +20,8 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[]) {
 	if (signal == 0) {
 		int err;
 		(void) signal;
-		shm->pf = shmat(shm->pfID, 0, 0);		
+		shm->pf = shmat(shm->pfID, 0, 0);
+		writelog(logdatei, AT);
 
 		/* Sicherstellen, dass SIGUSR1 vom Kind kam */
 		if (shm->pleaseThink == 1) {

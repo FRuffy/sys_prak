@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
 		pid_t result;
 
 		/* Ueberprueft ob Kind-Prozess noch existiert */
-		do {    usleep(50000);
+		do {    usleep(100000);
 			result = waitpid(pid, &status, WNOHANG);
                        
 		} while (result == 0);
