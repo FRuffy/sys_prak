@@ -16,9 +16,10 @@
 #define BUFFR 512
 
 /**
- * Ueberprueft ob Zug ok und fuerht aus
+ * Liest den Zug, den der Thinker berechnet hat aus der Pipe aus
+ * und sendet diesen an den Server
  *
- * @param Socket, Buffer
+ * @param Socket, Buffer,pipe
  * @return 0 falls move ok
  */
 int doMove(int sock, char* buffer, int fd[]) {
@@ -26,21 +27,19 @@ int doMove(int sock, char* buffer, int fd[]) {
 	char* reply = malloc(sizeof(char) * 15);
 	addchar(reply);
 	size = read(fd[0], reply, 15);
-
 	if (size < 0) {
-		perror("Fehler bei read");
+		perror("Fehler beim Lesen der Pipe");
+		return EXIT_FAILURE;
 	}
 
-	printf("\nReplyDoMove: %s\n", reply);
 	sendReplyFormatted(sock, reply);
 	size = recv(sock, buffer, BUFFR - 1, 0);
-
 	if (size > 0) {
 		buffer[size] = '\0';
 	}
 
 	if (strcmp(buffer, "+ MOVEOK\n") == 0) {
-		printf("Zug wurde akzeptiert!\n");
+		printf("\nZug wurde akzeptiert!\n");
 	} else {
 		return EXIT_FAILURE;
 	}
@@ -67,11 +66,10 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 		biggest = sock;
 	}
 
-	/* checkServerReply muss leider einmal ausserhalb der Schleife ausgefuehrt werden, da die Antwort des Servers schon frueher im Code
-	 * vom Socket gelesen wurde und hier im buffer uebergeben wurde;
-	 * Solange es zu keinem Timeout kommt, soll die Kommunikation in der Schleife weiterlaufen
-	 */
-	checkServerReply(sock, buffer, shm);
+	status = checkServerReply(sock, buffer, shm);
+    if (status != 0) {
+        return EXIT_FAILURE;
+    }
 
 	do {
 		/* Unsere 2 Filedescriptoren werden hinzugefuegt. (Socket und Pipe) */
@@ -94,7 +92,7 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 		}
 
 		if (rc > 0) {
-			/* Fall das Socket ready to read ist */
+			/* Fall der Socket ready to read ist */
 			if (FD_ISSET(sock, &fds)) {
 				size = recv(sock, buffer, BUFFR - 1, 0);
 				writelog(logdatei, AT);
@@ -106,12 +104,15 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 					return EXIT_FAILURE;
 				}
 
-			/* Fall das Pipe ready to read ist */
+			/* Fall die Pipe ready to read ist */
 			} else if (FD_ISSET(pipe, &fds)) {
-				doMove(sock, buffer, fd);
+				if (doMove(sock, buffer, fd) != 0)
+                {
+                    return EXIT_FAILURE;
+                }
 			}
 
-		/* Falls select 0 returned heisst die Wartezeit ist ohne Ereigniss abgelaufen */
+		/* Falls select 0 returned bedeutet dies, dass die Wartezeit ohne Ereignis abgelaufen ist.*/
 		} else if (rc == 0) {
 			perror("Select timed out!. \n");
 		}

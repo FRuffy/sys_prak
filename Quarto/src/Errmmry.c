@@ -17,7 +17,8 @@ int countchar = 0;
  */
 int addint(int* intadr) {
 	if (intadr == NULL ) {
-		perror("Fehler bei Malloc eines int pointers! \n");
+		perror("\nFehler bei Malloc eines int pointers! \n");
+		freeall();
 		exit(EXIT_FAILURE);
 	}
 
@@ -28,7 +29,8 @@ int addint(int* intadr) {
 
 int addchar(char* charadr) {
 	if (charadr == NULL ) {
-		perror("Fehler bei Malloc eines char pointers! \n");
+		perror("\nFehler bei Malloc eines char pointers! \n");
+		freeall();
 		exit(EXIT_FAILURE);
 	}
 

@@ -10,7 +10,7 @@
 #include "QuartoThinker.h"
 
 /**
- *
+ * Signal Handler des Parent Prozesses. Ruft den thinker auf, wenn das signal gesendet wurde.
  *
  * @param SHM, signal (0 = Zug soll berechnet werden | 1 = CTRL + C wurde gedrueckt), config_struct für free-Befehl
  * @return 0 falls SIGUSR vom Kind
@@ -26,10 +26,12 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[]) {
 		/* Sicherstellen, dass SIGUSR1 vom Kind kam */
 		if (shm->pleaseThink == 1) {
 			shm->pleaseThink = 0;
-			think(shm);
+		if 	(think(shm) !=0) {
+            return EXIT_FAILURE;
+		    }
+
 			char* reply = malloc(sizeof(char) * 15);
 			addchar(reply);
-
 			if (shm->nextStone == -1) {
 				sprintf(reply, "PLAY %s", shm->nextField);
 			} else {
@@ -40,7 +42,7 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[]) {
 			err = write(fd[1], reply, 15);
 
 			if (err < 0) {
-				perror("Fehler bei Write");
+				perror("\nFehler beim Schreiben in die Pipe\n");
 				return EXIT_FAILURE;
 			}
 
@@ -53,8 +55,8 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[]) {
 		close(shm->sock);
 		free(conf);
 		freeall();
-
 		printf("\nProgramm wurde durch Tasenkombination CTRL + C beendet\n");
+		fflush(stdout);
 		exit(EXIT_FAILURE);
 	}
 

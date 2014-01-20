@@ -77,7 +77,7 @@ int testStone(sharedmem * shm, int stone) {
 }
 
 /**
- * Waehlt zufaelligen Stein aus, testet (mittels testStone) dessen verfuegbarkeit
+ * Waehlt einen zufaelligen Stein aus, testet (mittels testStone) dessen Verfuegbarkeit
  *
  * @param Pointer auf Spielfeld
  * @return "setzbarer" Stein
@@ -98,8 +98,8 @@ void chooseStone(sharedmem * shm) {
 
 /**
  * Ueberprueft ob ein Feld besetzt ist
- * 
- * @param Pointer auf pruefendes Feld
+ *
+ * @param Pointer auf zu pruefendes (string) Feld
  * @return 0 falls ok, sonst 1
  */
 int checkField(char * field) {
@@ -127,7 +127,7 @@ int checkField(char * field) {
  * @return berechneter Spielzug
  */
 int think(sharedmem * shm) {
-	srand(time(NULL ));
+	srand(time(NULL));
 
 	if (strcasecmp(shm->gameName, "Quarto") && (shm->fieldX != shm->fieldY)) {
 		printf("Bei Quarto muss die Spielfeldhoehe gleich der -breite sein!");
@@ -163,7 +163,7 @@ int think(sharedmem * shm) {
 		return EXIT_SUCCESS;
 	}
 
-	printf("\nStarting to Think\n");
+	printf("\nWir denken...\n");
 
 	if (checkField(field) != 0) {
 		/* Suche freien Platz auf Spielfeld */
@@ -191,7 +191,7 @@ int think(sharedmem * shm) {
 		chooseStone(shm);
 	} else {
 		/* Das Feld durchlaufen und eine Position finden, die dem Gegner nicht den Sieg ermoeglicht
-		 * Tests ergaben: Bei  350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest */
+		 * Tests ergaben: Bei  350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest. 100 sind relativ sicher.  */
 		for (i = 0; i < 100; i++) {
 			move = rand() % 16;
 
@@ -226,14 +226,13 @@ int think(sharedmem * shm) {
 					shm->StoneToPlace = backupStone;
 					*(shm->pf + move) = -1;
 					convertGameFieldQuarto4x4(shm, field);
-					printf("\nMit %d kann der Gegner nicht gewinnen!", shm->nextStone);
+					printf("\nMit %d kann der Gegner nicht gewinnen!\n", shm->nextStone);
 					return EXIT_SUCCESS;
 				} else {
 					/* Das machen wir nicht! So wuerden wir verlieren (bei intelligentem Gegner) */
 					shm->StoneToPlace = backupStone;
 					*(shm->pf + move) = -1;
 					convertGameFieldQuarto4x4(shm, field);
-					printf("\n%d:Mit %d wuerde der Gegner gewinnen - Stein %d bekommt er nicht!", i, shm->nextStone, shm->nextStone);
 				}
 			}
 
@@ -277,7 +276,7 @@ int calculateMove(sharedmem *shm, char* stones, int silent) {
 		/* Ist der Platz frei wird die KI ausgeführt */
 		if (stones[i] == '*') {
 			for (j = 0; j < 4; j++) {
-				
+
 				/* horizontal */
 				if (((stone[j]) == (stones[((i + 4) % 16) + (i / 16) * 16 + j]))
 						&& ((stone[j]) == (stones[((i + 8) % 16) + (i / 16) * 16 + j]))
@@ -331,7 +330,7 @@ int calculateMove(sharedmem *shm, char* stones, int silent) {
 
 /**
  * Konvertiert mittels Funktion byte_to_binary das Spielfeld
- * (Darstellung der Steine nicht als int, sondern binaer)
+ * (Darstellung der Steine nicht decimal, sondern binaer)
  *
  * @param SHM, Pointer auf Steine
  * @return berechneter Spielzug

@@ -14,11 +14,11 @@
 #include "InitConnection.h"
 #include "ReactToSig.h"
 
-// Pipe golabl deklariert
+/* Pipe global deklariert */
 int fd[2];
 
 int main(int argc, char** argv) {
-	// Die Struktur, die die Konfigurationsparameter der Datei speichert
+	/* Die Struktur, die die Konfigurationsparameter der Datei speichert */
 	config_struct *conf;
 
 	logdatei = fopen("log.txt", "w+");
@@ -48,6 +48,7 @@ int main(int argc, char** argv) {
 		writelog(logdatei, AT);
 		return EXIT_FAILURE;
 	}
+	/* Setze die ID auf 0 für ggf. auftretende Fehler vor Initialisation */
 	shm->pfID = 0;
 
 	if (pipe(fd) < 0) {
@@ -68,13 +69,15 @@ int main(int argc, char** argv) {
 		fclose(logdatei);
 		return EXIT_FAILURE;
 	} else if (pid == 0) {
-		/* Kind - soll laut Spezifikation die Verbindung herstellen (performConnection() ausfuehren);
-		 * Schliesst input ende von der Pipe */
+		/* Kind-Prozess soll laut Spezifikation die Verbindung herstellen (init/performConnection() ausfuehren) */
+
+        /* Schliesst input ende von der Pipe */
 		close(fd[1]);
 
 		/* SignalHandler */
 		void signal_handler(int signum) {
-			// Abfangen von CTRL + C mit Signal "SIGINT"
+
+			/* Abfangen von CTRL + C mit Signal "SIGINT" */
 			if (signum == SIGINT) {
 				reactToSig(shm, 1, conf, fd);
 			}
@@ -86,8 +89,7 @@ int main(int argc, char** argv) {
 
 		/* Ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert */
 		if (argc == 1 || (strlen(argv[1])) > 18) {
-			perror(
-					"\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
+			printf("\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
 			return EXIT_FAILURE;
 		} else {
 			if (argc == 3) {
@@ -103,7 +105,7 @@ int main(int argc, char** argv) {
 			}
 			strcpy(shm->gameID, argv[1]);
 		}
-		initConnection(shm, conf,fd);
+		initConnection(shm,conf,fd);
 
 		freeall();
 
@@ -117,42 +119,39 @@ int main(int argc, char** argv) {
 			if (signum == SIGUSR1) {
 				reactToSig(shm, 0, conf, fd);
 			}
-			// Abfangen von CTRL + C mit Signal "SIGINT"
+			/* Abfangen von CTRL + C mit Signal "SIGINT" */
 			else if (signum == SIGINT) {
 				reactToSig(shm, 1, conf, fd);
 			}
 		}
 		if (signal(SIGINT, signal_handler) == SIG_ERR || signal(SIGUSR1, signal_handler) == SIG_ERR ) {
-			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
+			perror("\nFehler beim Aufsetzen des Signal Handlers\n");
 			return EXIT_FAILURE;
 		}
 
 		int status;
 		pid_t result;
 
+        /* Ueberprueft ob Kind-Prozess noch existiert */
 		do {
 			result = waitpid(pid, &status, WNOHANG);
-			/* Ueberprueft ob Kind noch existiert */
-			if (result != 0) {
-				printf("\nVATER: Kind ist nicht mehr vorhanden... \n");
-			}
+
+
 		} while (result == 0);
 
-		printf("\nVATER: Zerstoere shm... \n");
-
+        /*Detache und vernichte die beiden Shared Memory Segmente */
 		if (shm->pfID != 0) {
 			shmdt(shm->pf);
 			if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
-				perror("\nVATER: Fehler bei Zerstoerung von pf \n");
+				perror("\nParent: Fehler bei Zerstoerung von pf \n");
 			}
 		}
 		shmdt(shm);
 		if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
-			perror("\nVATER: Fehler bei Zerstoerung von shm \n");
+			perror("\nParent: Fehler bei Zerstoerung von shm \n");
 		}
 
 		freeall();
-		printf("\nVATER: Beende mich selbst...\n");
 	}
 
 	free(conf);

@@ -43,11 +43,12 @@ int antistrcat(char* dest, char* src, char* temp) {
  * Formatierte Ausgabe an den Server (\n wird benoetigt um das Ende der Uebertragung zu signalisieren)
  * Ueberpruefung und Uebertragung der Client Version, Game-ID, Spielernummer
  *
- * @param Socket, Struktur, SHM
+ * @param Socket, Struktur, SHM, pipe
  * @return 0
  */
 int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) {
-	int err; //size zur Fehlerbehandlung fuer recv
+
+	int err;
 	char* reader = malloc(sizeof(char) * 20);
 	addchar(reader);
 	char* temp = malloc(sizeof(char) * BUFFR);
@@ -93,12 +94,10 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	sscanf(buffer, "%*s%*s%s", reader);
 
 	if (buffer[0] == '-') {
-		printf(
-				"\nDie uebergebene Game-ID fehlt oder ist fehlerhaft! Beende Verbindung\n");
+		printf("\nDie uebergebene Game-ID fehlt oder ist fehlerhaft! Beende Verbindung\n");
 		return EXIT_FAILURE;
 	} else if (strcmp(reader, "Quarto") != 0) {
-		printf(
-				"\nDas Spiel, das der Server spielt, ist nicht Quarto! Beende Verbindung.\n");
+		printf("\nDas Spiel, das der Server spielt, ist nicht Quarto! Beende Verbindung.\n");
 		return EXIT_FAILURE;
 	} else {
 		printf("\nDer Server moechte %s spielen. Und wir auch!\n", reader);
@@ -124,11 +123,9 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 
 	if (buffer[0] == '-') {
 		if (buffer[2] == '-') {
-			printf(
-					"\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
+			printf("\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
 		} else {
-			printf(
-					"\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
+		    	printf("\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
 			//ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde!
 		}
 		return EXIT_FAILURE;
@@ -155,6 +152,9 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	}
 
 	/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt und mit dem Thinker zusammenarbeitet */
-	waitforfds(sock, buffer, shm, fd);
+	if (waitforfds(sock, buffer, shm, fd) !=0) {
+		return EXIT_FAILURE;
+	}
+
 	return EXIT_SUCCESS;
 }

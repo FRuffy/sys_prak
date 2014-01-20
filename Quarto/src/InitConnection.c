@@ -12,10 +12,11 @@
 /**
 * Herstellung der Verbindung zum Server
 *
-* @param Pointer auf SHM, Struktur
+* @param Pointer auf SHM, Struktur und pipe
 * @return 0 falls Verbindung hergestellt und performConnection ausfuehrbar
 */
 int initConnection(sharedmem * shm, config_struct* conf, int fd[]) {
+
         shm->sock = socket(AF_INET, SOCK_STREAM, 0);
         writelog(logdatei, AT);
         struct sockaddr_in host;
@@ -40,7 +41,7 @@ int initConnection(sharedmem * shm, config_struct* conf, int fd[]) {
                 return EXIT_FAILURE;
         }
 
-        /* PID in SHM schrieben */
+        /* PID in SHM schreiben */
         shm->pidDad = getppid();
         shm->pidKid = getpid();
 

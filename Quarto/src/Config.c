@@ -5,13 +5,12 @@
 #include "Errmmry.h"
 #include "PerformConnection.h"
 
-/* Funktion, die unsere Konfigdatei ausliest und Werte der Struktur zuweist */
 
 /**
- * Pruefe Parametername
+ *  Funktion, die unsere Konfigurationsdatei ausliest und Werte der Struktur zuweist
  *
  * @param Pointer auf Name, Wert, Struktur
- * @return 0 falls Konfigurationsdaten korrekt
+ * @return 0 falls Konfigurationsdaten korrekt, 1 falls der Parameter nicht gefunden wurde
  */
 int checkName(char* name, char* wert, config_struct* conf) {
 	if (strcasecmp(name, "Hostname") == 0) {
@@ -50,7 +49,7 @@ FILE* openFile(char* name) {
 		perror("\nVon nichts kommt nichts.\n");
 		return file;
 	}
-
+/* Falls die config nicht im selben Order ist, soll im Parent Folder gesucht werden */
 	if ((file = fopen(name, "r")) == NULL ) {
 
 		char* temp = malloc(sizeof(char) * 256);
@@ -59,7 +58,7 @@ FILE* openFile(char* name) {
 
 		if ((file = fopen(temp, "r")) == NULL ) {
 			perror(
-					"Konfigurationsdatei konnte nicht geoeffnet werden oder existiert nicht!");
+					"\nEs ist ein Problem mit der Konfigurationsdatei aufgetreten");
 			return file;
 		}
 	}
@@ -77,18 +76,17 @@ FILE* openFile(char* name) {
 int readConfig(FILE* configFile, config_struct* conf) {
 
 	int count = 0;
-
 	char* pName = malloc(sizeof(char) * 128 * 10);
 	addchar(pName);
 	char* pValue = malloc(sizeof(char) * 128 * 10);
 	addchar(pValue);
 	char* buffer = malloc(sizeof(char) * 256);
 	addchar(buffer);
+
 	while ((fgets(buffer, 127, configFile)) != NULL ) {
 
 		if (buffer[0] != '\n' && buffer[0] != '#') {
-			sscanf(buffer, " %[^ =] =%*[ ] %s \n", &pName[count * 128],
-					&pValue[count * 128]);
+			sscanf(buffer, " %[^ =] =%*[ ] %s \n", &pName[count * 128],&pValue[count * 128]);
 			checkName(&pName[count * 128], &pValue[count * 128], conf);
 			count++;
 		}
