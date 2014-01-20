@@ -39,6 +39,7 @@ int doMove(int sock, char* buffer, int fd[]) {
 	}
 	if (strcmp(buffer, "+ MOVEOK\n") == 0) {
 		printf("\nZug wurde akzeptiert!\n");
+		printf("\n**********************************\n");
 	} else {
 		return EXIT_FAILURE;
 	}
@@ -66,9 +67,9 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 	}
 
 	status = checkServerReply(sock, buffer, shm);
-    if (status != 0) {
-        return EXIT_FAILURE;
-    }
+	if (status != 0) {
+		return EXIT_FAILURE;
+	}
 
 	do {
 		/* Unsere 2 Filedescriptoren werden hinzugefuegt. (Socket und Pipe) */
@@ -113,9 +114,7 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 		} else if (rc == 0) {
 			perror("Select timed out!. \n");
 		}
-	}
-	while (rc != 0);
+	} while (rc != 0);
 
 	return EXIT_SUCCESS;
 }
-
