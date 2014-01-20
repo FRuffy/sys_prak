@@ -47,7 +47,6 @@ int antistrcat(char* dest, char* src, char* temp) {
  * @return 0
  */
 int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) {
-
 	int err;
 	char* reader = malloc(sizeof(char) * 20);
 	addchar(reader);
@@ -74,12 +73,10 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	}
 
 	if (buffer[0] == '-') {
-		printf("\nDer Server akzeptiert die Version %s dieses Clients nicht!\n",
-				conf->version);
+		printf("\nDer Server akzeptiert die Version %s dieses Clients nicht!\n", conf->version);
 		return EXIT_FAILURE;
 	} else {
-		printf(
-				"\nDie Client-Version wurde akzeptiert, uebertrage Spiel-ID...\n");
+		printf("\nDie Client-Version wurde akzeptiert, uebertrage Spiel-ID...\n");
 	}
 
 	/* Teil 2: Der Server erwartet Game-ID, schicke diese und behandle Antwort.
@@ -124,12 +121,12 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 		if (buffer[2] == '-') {
 			printf("\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
 		} else {
-		    	printf("\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
+			printf("\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
 			//ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde!
 		}
 		return EXIT_FAILURE;
 	} else {
-	    sscanf(buffer, "%*s %*s %d %[^\n]\n", &(shm->player[0].playerNumber),(shm->player[0].playerName));
+		sscanf(buffer, "%*s %*s %d %[^\n]\n", &(shm->player[0].playerNumber), (shm->player[0].playerName));
 	}
 
 	/* Teil 3.2: Hier wird der Uebergang in die Spielverlaufsphase eingeleitet.
@@ -145,12 +142,12 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	}
 
 	/* Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden */
-	if (recvServerInfo(buffer, shm) == NULL) {
+	if (recvServerInfo(buffer, shm) == NULL ) {
 		return EXIT_FAILURE;
 	}
 
 	/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt und mit dem Thinker zusammenarbeitet */
-	if (waitforfds(sock, buffer, shm, fd) !=0) {
+	if (waitforfds(sock, buffer, shm, fd) != 0) {
 		return EXIT_FAILURE;
 	}
 
