@@ -23,7 +23,6 @@
  * @return 0 (Nachdem das Spielfeld in *pf eingelesen wurde)
  */
 int readGameField(char *buffer, sharedmem * shm) {
-
 	char* buffer2;
 	buffer2 = malloc(sizeof(char) * 128);
 	addchar(buffer2);
@@ -41,9 +40,7 @@ int readGameField(char *buffer, sharedmem * shm) {
 			if (buffer2 == strchr(buffer2, tmp)) {
 				sscanf(buffer2, "%*s %[0-9* ]", buffer2);
 			} else {
-				sscanf(buffer2, "%d %[0-9* ]",
-						(shm->pf + i + ((znr - 4) * (-1)) * (shm->fieldY)),
-						buffer2);
+				sscanf(buffer2, "%d %[0-9* ]", (shm->pf + i + ((znr - 4) * (-1)) * (shm->fieldY)), buffer2);
 			}
 		}
 		buffer2 = strtok(NULL, "\n");
@@ -90,8 +87,7 @@ int handleRecv(int sock, char* buffer) {
 	}
 
 	if (buffer[0] == '-') {
-		printf("\nFehler in der Kommunikation, der Server meldet: %s \n",
-				buffer);
+		printf("\nFehler in der Kommunikation, der Server meldet: %s \n", buffer);
 		return EXIT_FAILURE;
 	}
 
@@ -100,7 +96,7 @@ int handleRecv(int sock, char* buffer) {
 
 /**
  * Ueberprueft die Antworten vom Server
- * in der Spielphase auf jedwede mögliche Kombination
+ * in der Spielphase auf jedwede moegliche Kombination
  *
  * @param Socket, Buffer, SHM
  * @return 0 falls alle Antworten ok, bzw. 2 falls Spiel beendet wurde
@@ -109,8 +105,7 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 
 	/* Der Server meldet einen Fehler in der Kommunikation */
 	if (buffer[0] == '-') {
-		printf("\nFehler in der Kommunikation, der Server meldet: %s \n",
-				buffer);
+		printf("\nFehler in der Kommunikation, der Server meldet: %s \n", buffer);
 		return EXIT_FAILURE;
 	}
 
@@ -120,11 +115,11 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 		if (handleRecv(sock, buffer) != 0) {
 			return EXIT_FAILURE;
 		}
-		sscanf(buffer, "%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),
-				&(shm->fieldX), &(shm->fieldY));
+		sscanf(buffer, "%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace), &(shm->fieldX), &(shm->fieldY));
 		printf("\nFuer deinen Zug hast du %d ms und ", shm->thinkTime);
 
 	}
+
 	/* Falls der Client auf andere Spieler warten muss, warte in der Schleife und scanne die sich unterscheidende Antwort */
 	else if (strcmp(buffer, "+ WAIT\n") == 0) {
 		do {
@@ -134,40 +129,32 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 				return EXIT_FAILURE;
 			}
 		} while (strcmp(buffer, "+ WAIT\n") == 0);
-            if (strncmp(buffer, "+ GAMEOVER", 10) != 0) {
-			    if (handleRecv(sock, buffer) != 0) {
+		if (strncmp(buffer, "+ GAMEOVER", 10) != 0) {
+			if (handleRecv(sock, buffer) != 0) {
 				return EXIT_FAILURE;
-			    }
-			printf("\nBuffer2: %s\n", buffer);
-		    }
-		sscanf(buffer, "%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace),
-				&(shm->fieldX), &(shm->fieldY));
+			}
+		}
+		sscanf(buffer, "%*s %*s %d %*s %*s %d%*[,]%d", &(shm->StoneToPlace), &(shm->fieldX), &(shm->fieldY));
 
 	} else {
-		sscanf(buffer, "%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d",
-				&(shm->thinkTime), &(shm->StoneToPlace), &(shm->fieldX),
-				&(shm->fieldY));
+		sscanf(buffer, "%*s %*s %d %*s %*s %d %*s %*s %d%*[,]%d", &(shm->thinkTime), &(shm->StoneToPlace), &(shm->fieldX), &(shm->fieldY));
 	}
 
-    /*Falls das Spiel zu Ende ist wird hier der Gewinner
-      oder Unentschieden bearbeitet, ein ggf. auftretendes MOVE geschnitten */
+	/*Falls das Spiel zu Ende ist wird hier der Gewinner oder Unentschieden bearbeitet, ein ggf. auftretendes MOVE geschnitten */
 	if (strstr(buffer, "+ GAMEOVER") != NULL ) {
 		int playerNumber;
 		char playerName[BUFFR];
 
 		if (strncmp(buffer, "+ MOVEOK", 8) == 0) {
-
 			buffer = strtok(buffer, "\n");
 			buffer = strtok(NULL, "\n");
 		}
 
-		if (strcmp(buffer, "+ GAMEOVER\n") == 0
-				|| strncmp(buffer, "+ GAMEOVER\n+", 12) == 0) {
+		if (strcmp(buffer, "+ GAMEOVER\n") == 0	|| strncmp(buffer, "+ GAMEOVER\n+", 12) == 0) {
 			printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
 		} else {
 			sscanf(buffer, "%*s %*s %d %s", &playerNumber, playerName);
-			printf("\nDas Spiel ist zu Ende. Der Gewinner ist: %d - %s\n",
-					playerNumber, playerName);
+			printf("\nDas Spiel ist zu Ende. Der Gewinner ist: Spieler %d - %s\n", playerNumber, playerName);
 		}
 		return 2;
 	}
@@ -178,14 +165,13 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 		return 2;
 	}
 
-	printf("Stein %d ist zu setzen!\n", shm->StoneToPlace);
-	printf("\nUnser momentanes Spielfeld mit Groesse %d x %d:\n", shm->fieldX,
-			shm->fieldY);
+	printf("\nStein %d ist zu setzen!\n", shm->StoneToPlace);
+	printf("\nUnser momentanes Spielfeld mit Groesse %d x %d:\n", shm->fieldX, shm->fieldY);
 
 	/* Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren
-       und einhaengen(2x Groesse von fieldX wegen 4 Merkmalen pro Stein!) */
+	 und einhaengen(2x Groesse von fieldX wegen 4 Merkmalen pro Stein!) */
 	if (shm->pfID == 0) {
-		shm->pfID = shmget(KEY, (sizeof(short) * (shm->fieldX) * (shm->fieldX) * (shm->fieldY)),IPC_CREAT | 0775);
+		shm->pfID = shmget(KEY, (sizeof(short) * (shm->fieldX) * (shm->fieldX) * (shm->fieldY)), IPC_CREAT | 0775);
 		if (shm->pfID < 1) {
 			writelog(logdatei, AT);
 			perror("\nFehler beim Initalisieren der Shared Memory pf");
@@ -195,7 +181,7 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 
 	/* Playing Field einhaengen */
 	shm->pf = shmat(shm->pfID, 0, 0);
-        
+
 	readGameField(buffer, shm);
 
 	/* Bereitet den naechsten Zug vor (sendet Signal an Vater-Thinker) */
