@@ -29,13 +29,23 @@ char* recvServerInfo(char* buffer, sharedmem * shm) {
 
 	/* Verarbeite: "+ 1 GEGENSPIELERNAME 0" (Uebermittlung der Gegenspieler
 	 * (Nummer, Name, Flag ob bereit) solange bis Server "+ ENDPLAYERS" sendet) */
-	buffer2 = strtok(NULL, "\n");
-	printf("\nBUFFER: %s\n",buffer2);
+    int rdy =-1;
+	char* temp = malloc(sizeof(char)* 50 );
+    buffer2 = strtok(NULL, "\n");
 	while (strcmp(buffer2, "+ ENDPLAYERS") != 0) {
-		sscanf(buffer2, "%*s %d %s %i", &shm->player[i].playerNumber, shm->player[i].playerName, &shm->player[i].playerReady); buffer2 = strtok(NULL, "\n");
+		sscanf(buffer2, "%*s %d %s %d %d", &shm->player[i].playerNumber, shm->player[i].playerName, &shm->player[i].playerReady, &rdy);
+
+		if (rdy != -1)
+        {
+           snprintf(temp,50," %d",shm->player[i].playerReady);
+           strcpy(shm->player[i].playerName, strcat(shm->player[i].playerName,temp));
+           shm->player[i].playerReady = rdy;
+        }
+                buffer2 = strtok(NULL, "\n");
 		i++;
 	}
-	printf("\nWir sind Spieler: %s\n", shm->player[0].playerName);
+    free(temp);
+    printf("\nWir sind Spieler: %s\n", shm->player[0].playerName);
 	printf("\nInsgesamt spielen diese %i Spieler:\n", shm->playerCount);
 	printf("\n%-15s %-25s %-2s\n", "Spielernummer", "Spielername", "Bereit");
 	/* Wir selbst sind natürlich immer bereit. */
@@ -49,6 +59,7 @@ char* recvServerInfo(char* buffer, sharedmem * shm) {
 	printf("\n");
 	buffer2 = strtok(NULL, "");
 	strcpy(buffer, buffer2);
+
 	return buffer;
 }
 
