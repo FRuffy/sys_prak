@@ -120,7 +120,6 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	if (err > 0) {
 		buffer[err] = '\0';
 	}
-
 	if (buffer[0] == '-') {
 		if (buffer[2] == '-') {
 			printf("\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
@@ -130,8 +129,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 		}
 		return EXIT_FAILURE;
 	} else {
-		sscanf(buffer, "%*s %*s %d %s", &(shm->player[0].playerNumber),
-				(shm->player[0].playerName));
+	    sscanf(buffer, "%*s %*s %d %[^\n]\n", &(shm->player[0].playerNumber),(shm->player[0].playerName));
 	}
 
 	/* Teil 3.2: Hier wird der Uebergang in die Spielverlaufsphase eingeleitet.
