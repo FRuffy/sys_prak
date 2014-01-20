@@ -130,7 +130,7 @@ int think(sharedmem * shm) {
 	srand(time(NULL));
 
 	if (strcasecmp(shm->gameName, "Quarto") && (shm->fieldX != shm->fieldY)) {
-		printf("\nBei Quarto muss die Spielfeldhoehe gleich der -breite sein!\n");
+		perror("\nBei Quarto muss die Spielfeldhoehe gleich der breite sein!\n");
 		return EXIT_FAILURE;
 	}
 
@@ -189,6 +189,7 @@ int think(sharedmem * shm) {
 		printf("#=====================#\n");
 		strcpy(shm->nextField, formatMove(move / 4));
 		chooseStone(shm);
+
 	} else {
 		/* Das Feld durchlaufen und eine Position finden, die dem Gegner nicht den Sieg ermoeglicht
 		 * Tests ergaben: Bei  350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest. 100 sind relativ sicher.  */
@@ -228,6 +229,7 @@ int think(sharedmem * shm) {
 					convertGameFieldQuarto4x4(shm, field);
 					printf("\nMit Stein %d kann der Gegner nicht gewinnen!\n", shm->nextStone);
 					return EXIT_SUCCESS;
+
 				} else {
 					/* Das machen wir nicht! So wuerden wir verlieren (bei intelligentem Gegner) */
 					shm->StoneToPlace = backupStone;
@@ -242,7 +244,6 @@ int think(sharedmem * shm) {
 		printf("\n# Oh nein, wir haben keine Alternative und werden verlieren! #");
 		printf("\n#============================================================#");
 		fflush(stdout);
-
 	}
 
 	return EXIT_SUCCESS;
@@ -269,6 +270,7 @@ int calculateMove(sharedmem *shm, char* stones, int silent) {
 	char* stone = malloc(sizeof(char) * 5);
 	addchar(stone);
 	int i, j;
+
 	/* Stein, der zu setzen ist, wird separat gespeichert */
 	byte_to_binary(shm->StoneToPlace, stone);
 
