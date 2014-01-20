@@ -106,10 +106,7 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 			/* Fall die Pipe ready to read ist */
 			} else if (FD_ISSET(pipe, &fds)) {
 				doMove(sock, buffer, fd);
-<<<<<<< HEAD
-=======
-               
->>>>>>> e9e727f01912596c27bd88666bc4cbfc0439a567
+
 			}
 
 		/* Falls select 0 returned bedeutet dies, dass die Wartezeit ohne Ereignis abgelaufen ist.*/
