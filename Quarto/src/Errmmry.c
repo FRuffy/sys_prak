@@ -13,7 +13,7 @@ int countchar = 0;
  * Fuegt den Pointer auf den spaeter zu befreienden Bereich in ein Array hinzu
  *
  * @param adr der Pointer auf den Speicherbereich
- * @return 0 / 1
+ * @return 0 / -1
  */
 int addint(int* intadr) {
 	if (intadr == NULL ) {
