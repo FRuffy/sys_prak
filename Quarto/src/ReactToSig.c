@@ -26,9 +26,9 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[]) {
 		/* Sicherstellen, dass SIGUSR1 vom Kind kam */
 		if (shm->pleaseThink == 1) {
 			shm->pleaseThink = 0;
-		if 	(think(shm) !=0) {
-            return EXIT_FAILURE;
-		    }
+			if (think(shm) != 0) {
+				return EXIT_FAILURE;
+			}
 
 			char* reply = malloc(sizeof(char) * 15);
 			addchar(reply);
@@ -49,7 +49,8 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[]) {
 			/* Denken beendet */
 			shm->thinking = 0;
 		}
-		// CTRL + C wurde gedrueckt
+
+	// CTRL + C wurde gedrueckt
 	} else if (signal == 1) {
 		fclose(logdatei);
 		close(shm->sock);
