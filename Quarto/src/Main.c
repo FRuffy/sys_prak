@@ -14,14 +14,12 @@
 #include "InitConnection.h"
 #include "ReactToSig.h"
 
-
-
 int main(int argc, char** argv) {
 
 	/* Die Struktur, die die Konfigurationsparameter der Datei speichert */
 	config_struct *conf;
-        /* Pipe */
-        int fd[2];
+	/* Pipe */
+	int fd[2];
 	logdatei = fopen("log.txt", "w+");
 	conf = calloc(5, sizeof(config_struct));
 
@@ -66,7 +64,6 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "\nFehler bei fork(): %s\n", strerror(errno));
 		writelog(logdatei, AT);
 		shmdt(shm);
-		shmctl(shmID, IPC_RMID, NULL );
 		fclose(logdatei);
 		return EXIT_FAILURE;
 	} else if (pid == 0) {
@@ -80,7 +77,7 @@ int main(int argc, char** argv) {
 
 			/* Abfangen von CTRL + C mit Signal "SIGINT" */
 			if (signum == SIGINT) {
-				reactToSig(shm, 1, conf, fd);
+				reactToSig(shm, 1, conf, fd, shmID);
 			}
 		}
 
@@ -91,7 +88,8 @@ int main(int argc, char** argv) {
 
 		/* Ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert */
 		if (argc == 1 || (strlen(argv[1])) > 18) {
-			printf("\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
+			printf(
+					"\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
 			return EXIT_FAILURE;
 		} else {
 			if (argc == 3) {
@@ -113,21 +111,22 @@ int main(int argc, char** argv) {
 
 	} else {
 		/* Elternprozess - soll laut Spezifikation den Thinker implementieren */
-		
+
 		/* Lese-Seite der Pipe wird geschlossen */
 		close(fd[0]);
 
 		/* SignalHandler */
 		void signal_handler(int signum) {
 			if (signum == SIGUSR1) {
-				reactToSig(shm, 0, conf, fd);
+				reactToSig(shm, 0, conf, fd, shmID);
 			}
 			/* Abfangen von CTRL + C mit Signal "SIGINT" */
 			else if (signum == SIGINT) {
-				reactToSig(shm, 1, conf, fd);
+				reactToSig(shm, 1, conf, fd, shmID);
 			}
 		}
-		if (signal(SIGINT, signal_handler) == SIG_ERR || signal(SIGUSR1, signal_handler) == SIG_ERR ) {
+		if (signal(SIGINT, signal_handler) == SIG_ERR
+				|| signal(SIGUSR1, signal_handler) == SIG_ERR ) {
 			perror("\nFehler beim Aufsetzen des Signal Handlers\n");
 			return EXIT_FAILURE;
 		}
@@ -136,9 +135,10 @@ int main(int argc, char** argv) {
 		pid_t result;
 
 		/* Ueberprueft ob Kind-Prozess noch existiert */
-		do {    usleep(50000);
-			result = waitpid(pid, &status, WNOHANG);
-                       
+		do {
+			usleep(50000);
+			result = waitpid(shm->pidKid, &status, WNOHANG);
+
 		} while (result == 0);
 
 		/*Detache und vernichte die beiden Shared Memory Segmente */
