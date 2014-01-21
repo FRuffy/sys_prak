@@ -72,7 +72,7 @@ int readConfig(FILE* configFile, config_struct* conf) {
 	int count = 0;
 	char* pName = malloc(sizeof(char) * 128 * 10);
 	addchar(pName);
-	char* pValue = malloc(sizeof(char) * 128 * 10);
+	char* pValue = calloc(128*10,sizeof(char));
 	addchar(pValue);
 	char* buffer = malloc(sizeof(char) * 256);
 	addchar(buffer);
