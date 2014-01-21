@@ -184,9 +184,9 @@ int think(sharedmem * shm) {
 	move = calculateMove(shm, field, 1);
 
 	if (move != -1) {
-		printf("\n#=====================#");
-		printf("\n# Wir gewinnen jetzt! #");
-		printf("\n#=====================#\n");
+		printf("#=====================#\n");
+		printf("# Wir gewinnen jetzt! #\n");
+		printf("#=====================#\n");
 		strcpy(shm->nextField, formatMove(move / 4));
 		chooseStone(shm);
 
@@ -242,7 +242,7 @@ int think(sharedmem * shm) {
 
 		printf("\n#============================================================#");
 		printf("\n# Oh nein, wir haben keine Alternative und werden verlieren! #");
-		printf("\n#============================================================#\n");
+		printf("\n#============================================================#");
 		fflush(stdout);
 	}
 

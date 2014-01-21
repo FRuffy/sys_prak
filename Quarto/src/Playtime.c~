@@ -153,7 +153,7 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 		if (strcmp(buffer, "+ GAMEOVER\n") == 0	|| strncmp(buffer, "+ GAMEOVER\n+", 12) == 0) {
 			printf("\nDas Spiel ist zu Ende. Es gibt keinen Gewinner.\n");
 		} else {
-			sscanf(buffer, "%*s %*s %d %[^\n]\n", &playerNumber, playerName);
+			sscanf(buffer, "%*s %*s %d %s", &playerNumber, playerName);
 			printf("\nDas Spiel ist zu Ende. Der Gewinner ist: Spieler %d - %s\n", playerNumber, playerName);
 		}
 		return 2;

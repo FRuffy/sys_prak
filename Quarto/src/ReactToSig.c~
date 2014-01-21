@@ -33,7 +33,7 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
 				return EXIT_FAILURE;
 			}
 
-			char* reply = calloc(15,sizeof(char));
+			char* reply = malloc(sizeof(char) * 15);
 			addchar(reply);
 			if (shm->nextStone == -1) {
 				sprintf(reply, "PLAY %s", shm->nextField);

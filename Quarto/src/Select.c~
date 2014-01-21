@@ -24,7 +24,7 @@
  */
 int doMove(int sock, char* buffer, int fd[]) {
 	int size;
-	char* reply = calloc(15,sizeof(char));
+	char* reply = malloc(sizeof(char) * 15);
 	addchar(reply);
 	size = read(fd[0], reply, 15);
 	if (size < 0) {
