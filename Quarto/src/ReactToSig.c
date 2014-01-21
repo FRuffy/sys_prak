@@ -60,11 +60,13 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
 		freeall();
 		if (shm->pidKid == getpid()) {
 			/* Kind */
+                        close(fd[0]);
 			close(shm->sock);
 			shmdt(shm->pf);
 			shmdt(shm);
 			printf("\nKind wurde durch Tasenkombination CTRL + C beendet\n");
 		} else {
+                        close(fd[1]);
 			/* Vater */
 			if (shm->pfID != 0) {
 			shmdt(shm->pf);
