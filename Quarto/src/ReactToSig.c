@@ -67,13 +67,17 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
 		} else {
 			/* Vater */
 			if (shm->pfID != 0) {
-				shmdt(shm->pf);
-				shmctl(shm->pfID, IPC_RMID, NULL );
+			shmdt(shm->pf);
+			if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
+				perror("\nParent: Fehler bei Zerstoerung von pf \n");
 			}
-			shmdt(shm);
-			shmctl(shmID, IPC_RMID, NULL );
+		         }
+		        shmdt(shm);
+		        if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
+			perror("\nParent: Fehler bei Zerstoerung von shm \n");
+		        }
 			printf("\nVater wurde durch Tasenkombination CTRL + C beendet\n");
-		}
+		        }
 
 		exit(EXIT_FAILURE);
 	}
