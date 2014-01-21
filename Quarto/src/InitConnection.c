@@ -17,7 +17,6 @@
  */
 int initConnection(sharedmem * shm, config_struct* conf, int fd[]) {
 	shm->sock = socket(AF_INET, SOCK_STREAM, 0);
-	writelog(logdatei, AT);
 	struct sockaddr_in host;
 	struct hostent* ip;
 
