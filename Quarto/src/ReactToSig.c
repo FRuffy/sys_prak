@@ -66,14 +66,6 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
 			printf("\nKind wurde durch Tasenkombination CTRL + C beendet\n");
 		} else {
 			/* Vater */
-			/* Ueberprueft ob Kind-Prozess noch existiert */
-			int status;
-			pid_t result = waitpid(shm->pidKid, &status, WNOHANG);
-			do {
-				usleep(3000000);
-				/* Warten - Kind benoetigt den shm noch zum korrekten beenden */
-				result = waitpid(shm->pidKid, &status, WNOHANG);
-			} while (result == 0);
 			if (shm->pfID != 0) {
 				shmdt(shm->pf);
 				shmctl(shm->pfID, IPC_RMID, NULL );
