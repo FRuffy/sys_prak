@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
 		writelog(logdatei, AT);
 		shmdt(shm);
 		fclose(logdatei);
+                close(fd[0]);
+                close(fd[1]);
 		return EXIT_FAILURE;
 	} else if (pid == 0) {
 		/* Kind-Prozess soll laut Spezifikation die Verbindung herstellen (init/performConnection() ausfuehren) */
@@ -83,24 +85,35 @@ int main(int argc, char** argv) {
 
 		if (signal(SIGINT, signal_handler) == SIG_ERR ) {
 			perror("\nFehler beim aufsetzen des Signal Handlers!\n");
+                        close(fd[0]);
+                        free(conf);
+	                fclose(logdatei);
 			return EXIT_FAILURE;
 		}
 
 		/* Ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert */
 		if (argc == 1 || (strlen(argv[1])) > 18) {
-			printf(
-					"\nDer uebergebene Parameter hat nicht die korrekte Laenge\n");
+			printf("\nDer uebergebene Parameter hat nicht die korrekte Laenge!\n");
+                        close(fd[0]);                       
+	                free(conf);
+	                fclose(logdatei);
 			return EXIT_FAILURE;
 		} else {
 			if (argc == 3) {
 				/* Falls Custom-config angegeben wurde */
 				if (openConfig(argv[2], conf) != 0) {
-					return EXIT_FAILURE;
+				       close(fd[0]);
+	                               free(conf);
+	                               fclose(logdatei);
+				       return EXIT_FAILURE;
 				}
 			} else {
 				/* Sonst Standard-config */
 				if (openConfig("client.conf", conf) != 0) {
-					return EXIT_FAILURE;
+                                       close(fd[0]);
+	                               free(conf);
+	                               fclose(logdatei);
+				       return EXIT_FAILURE;
 				}
 			}
 			strcpy(shm->gameID, argv[1]);
@@ -128,6 +141,9 @@ int main(int argc, char** argv) {
 		if (signal(SIGINT, signal_handler) == SIG_ERR
 				|| signal(SIGUSR1, signal_handler) == SIG_ERR ) {
 			perror("\nFehler beim Aufsetzen des Signal Handlers\n");
+                        close(fd[1]);
+	                free(conf);
+	                fclose(logdatei);
 			return EXIT_FAILURE;
 		}
 
@@ -152,10 +168,10 @@ int main(int argc, char** argv) {
 		if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
 			perror("\nParent: Fehler bei Zerstoerung von shm \n");
 		}
-
-		freeall();
+	     freeall();
 	}
-
+        close(fd[0]);
+        close(fd[1]);
 	free(conf);
 	fclose(logdatei);
 	return EXIT_SUCCESS;
