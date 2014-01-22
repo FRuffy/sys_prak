@@ -50,7 +50,7 @@ char* recvServerInfo(char* buffer, sharedmem * shm) {
 	printf("\nWir sind Spieler: %s\n", shm->player[0].playerName);
 	printf("\nInsgesamt spielen diese %i Spieler:\n", shm->playerCount);
 	printf("\n%-15s %-25s %-2s\n", "Spielernummer", "Spielername", "Bereit");
-	/* Wir selbst sind natürlich immer bereit. */
+	/* Wir selbst sind natuerlich immer bereit. */
 	printf("%-15d %-25s %-2d\n", shm->player[0].playerNumber, shm->player[0].playerName, 1);
 
 	/* Funktioniert eigentlich aber Server scheint hier unberechenbare Spielerinfo zu senden */
