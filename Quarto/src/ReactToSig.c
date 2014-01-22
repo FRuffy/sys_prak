@@ -11,14 +11,13 @@
 #include "QuartoThinker.h"
 
 /**
- * Signal Handler des Parent Prozesses. Ruft den thinker auf, wenn das signal gesendet wurde.
+ * Signal Handler des Vater-Prozesses. Ruft den thinker auf, wenn das signal gesendet wurde.
  *
  * @param SHM, signal (0 = Zug soll berechnet werden | 1 = CTRL + C wurde gedrueckt),
  * config_struct für free-Befehl, fd[] fuer Spielzug, shmID zum detatchen zur zerstoren des shm
  * @return 0 falls SIGUSR vom Kind
  */
-int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
-		int shmID) {
+int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[], int shmID) {
 	/* Zug soll berechnet werden */
 	if (signal == 0) {
 		/* Signal SIGUSR1 wurde empfangen */
@@ -60,14 +59,14 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
 		freeall();
 		if (shm->pidKid == getpid()) {
 			/* Kind */
-                        close(fd[0]);
+            close(fd[0]);
 			close(shm->sock);
 			shmdt(shm->pf);
 			shmdt(shm);
 			printf("\nKind wurde durch Tasenkombination CTRL + C beendet\n");
 		} else {
-                        close(fd[1]);
 			/* Vater */
+			close(fd[1]);
 			if (shm->pfID != 0) {
 			shmdt(shm->pf);
 			if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
