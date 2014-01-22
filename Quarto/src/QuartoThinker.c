@@ -192,7 +192,7 @@ int think(sharedmem * shm) {
 
 	} else {
 		/* Das Feld durchlaufen und eine Position finden, die dem Gegner nicht den Sieg ermoeglicht
-		 * Tests ergaben: Bei  350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest. 100 sind relativ sicher.  */
+		 * Tests ergaben: Bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest. 50 sind relativ sicher.  */
 		for (i = 0; i < 50; i++) {
 			move = rand() % 16;
 
@@ -249,20 +249,19 @@ int think(sharedmem * shm) {
 	return EXIT_SUCCESS;
 }
 
-/* Unsere "kluge" KI!
- * Sie übernimmt den string stones der in der printfunktion bereits konvertiert wurde und liest diesen aus
+/* calculateMove uebernimmt den string stones der in der printfunktion bereits konvertiert wurde und liest diesen aus
  * (printf("\n%s",stones); zum besseren Verstaendnis). Das Feld ist insgesamt 64 Zeichen lang und ein Stein hat
- * 4 Zeichen, d.h. wir vergleichen die binären Eigentschaften vertikal und horizontal.
+ * 4 Zeichen, d.h. wir vergleichen die binaeren Eigentschaften vertikal und horizontal.
  * Horizontal: stones[((i+4)%16)+(i/16)*16+j]);
- * (i+4)%16): wählt beispielswiese den Nachbarstein aus, falls i+4 >16 fangen wir einfach von vorn an
- * (i/16)*16+j: i wäht die i-te Reihe und j wählt die j-te Eigenschaft aus die zu vergleichen ist.
+ * (i+4)%16): waehlt beispielswiese den Nachbarstein aus, falls i+4 >16 fangen wir einfach von vorn an
+ * (i/16)*16+j: i waeht die i-te Reihe und j waehlt die j-te Eigenschaft aus die zu vergleichen ist.
  * Vertikal: stones[(i+16)%64+j])
- * (i+16)%64: wählt die Zeile die zu vergleichen ist ( Ein Zeilensprung ist +16)
+ * (i+16)%64: waehlt die Zeile die zu vergleichen ist ( Ein Zeilensprung ist +16)
  * rechts-links diagonal: stones[(i+20)%80+j])
- * (i+20)%80: wählt das diagonalfeld von 0-60 in 20er Schritten
+ * (i+20)%80: waehlt das diagonalfeld von 0-60 in 20er Schritten
  * links-rechts diagonal: stones[i%48+12+j]
- * i%48+12: wählt das diagonalfeld in 12er Schritten wobei mindestens bzw. höchstens12-48 möglich ist
- * Hat das Programm eine Lösung gefunden gibt es eine Lösung aus, diese wird durch 4 geteilt um die korrekte Position
+ * i%48+12: waehlt das diagonalfeld in 12er Schritten wobei mindestens bzw. hoechstens12-48 moeglich ist
+ * Hat das Programm eine Loesung gefunden gibt es eine Loesung aus, diese wird durch 4 geteilt um die korrekte Position
  * zu ermitteln und an domove weitergegeben
  * Mit silent=1 wird verhindert, dass die Ausgabe bei jedem test ob der Gegner gewinnen kann angezeigt wird */
 
@@ -276,7 +275,7 @@ int calculateMove(sharedmem *shm, char* stones, int silent) {
 
 	/* Suche nach einem Platz der zum Sieg fuehrt */
 	for (i = 0; i < 64; i = i + 4) {
-		/* Ist der Platz frei wird die KI ausgeführt */
+		/* Ist der Platz frei wird die KI ausgefuehrt */
 		if (stones[i] == '*') {
 			for (j = 0; j < 4; j++) {
 
