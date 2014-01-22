@@ -19,7 +19,7 @@
  * Liest den Zug, den der Thinker berechnet hat aus der Pipe aus
  * und sendet diesen an den Server
  *
- * @param Socket, Buffer,pipe
+ * @param Socket, Buffer, pipe
  * @return 0 falls move ok
  */
 int doMove(int sock, char* buffer, int fd[]) {
@@ -51,7 +51,7 @@ int doMove(int sock, char* buffer, int fd[]) {
  * Diese Funktion implementiert select() und wechselt zwischen der Berechnung des naechsten
  * Zugs (Vater-Thinker) und der fortfuehrung der Kommunikation mit dem Server (Kind-Connector)
  *
- * @param Socket fuer Kommunikation mit Server, Buffer fuer auslesen der Antwort, SHM
+ * @param Socket fuer Kommunikation mit Server, Buffer fuer auslesen der Antwort, SHM, pipe
  * @return 0
  */
 int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
@@ -77,14 +77,14 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 		FD_SET(sock, &fds);
 		FD_SET(pipe, &fds);
 
-		/* Zeitlimit fuer select wird eingestellt (hier 10 Sekunden, kann beliebig angepasst werden!) */
+		/* Zeitlimit fuer select wird eingestellt (kann beliebig angepasst werden) */
 		timeout.tv_sec = 30;
 		timeout.tv_usec = 0;
 
-		/* Select laesst den Prozess schlafen und beobachtet fuer eine in timeout spezifizierte Zeit lang die in fds hinzugefuegten
-		 * Filedescriptoren (in unserem Falle Socket und Pipe).
-		 * Falls waehrenddessen ein Filedescriptor ready to read wird, weckt select den Prozess auf und gibt die Anzahl der ready to read
-		 * Filedescriptoren zurueck */
+		/* Select laesst den Prozess schlafen und beobachtet fuer eine in timeout spezifizierte Zeit 
+		 * lang die in fds hinzugefuegten Filedescriptoren (in unserem Falle Socket und Pipe).
+		 * Falls waehrenddessen ein Filedescriptor ready to read wird, weckt select den Prozess auf
+		 * und gibt die Anzahl der ready to read Filedescriptoren zurueck */
 		rc = select(biggest + 1, &fds, NULL, NULL, &timeout);
 		if (rc == -1) {
 			perror("Error, select failed! \n");
