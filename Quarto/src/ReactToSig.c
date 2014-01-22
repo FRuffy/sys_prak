@@ -11,13 +11,15 @@
 #include "QuartoThinker.h"
 
 /**
- * Signal Handler des Vater-Prozesses. Ruft den thinker auf, wenn das signal gesendet wurde.
+ * Signal "SIGUSR1": Der Vater ruft den Thinker auf.
+ * Signal "SIGINT" : CTRL + C wurde gedrueckt - Vater und Kind beenden sich
  *
  * @param SHM, signal (0 = Zug soll berechnet werden | 1 = CTRL + C wurde gedrueckt),
  * config_struct für free-Befehl, fd[] fuer Spielzug, shmID zum detatchen zur zerstoren des shm
- * @return 0 falls SIGUSR vom Kind
+ * @return 0 bei Sielzug in Pipe geschrieben, -1 bei Fehler
  */
-int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[], int shmID) {
+int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
+		int shmID) {
 	/* Zug soll berechnet werden */
 	if (signal == 0) {
 		/* Signal SIGUSR1 wurde empfangen */
@@ -32,7 +34,7 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[], int sh
 				return EXIT_FAILURE;
 			}
 
-			char* reply = calloc(15,sizeof(char));
+			char* reply = calloc(15, sizeof(char));
 			addchar(reply);
 			if (shm->nextStone == -1) {
 				sprintf(reply, "PLAY %s", shm->nextField);
@@ -59,26 +61,24 @@ int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[], int sh
 		freeall();
 		if (shm->pidKid == getpid()) {
 			/* Kind */
-            close(fd[0]);
+			close(fd[0]);
 			close(shm->sock);
 			shmdt(shm->pf);
 			shmdt(shm);
-			printf("\nKind wurde durch Tasenkombination CTRL + C beendet\n");
 		} else {
 			/* Vater */
 			close(fd[1]);
 			if (shm->pfID != 0) {
-			shmdt(shm->pf);
-			if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
-				perror("\nParent: Fehler bei Zerstoerung von pf \n");
+				shmdt(shm->pf);
+				if (shmctl(shm->pfID, IPC_RMID, NULL ) == -1) {
+					perror("\nParent: Fehler bei Zerstoerung von pf \n");
+				}
 			}
-		         }
-		        shmdt(shm);
-		        if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
-			perror("\nParent: Fehler bei Zerstoerung von shm \n");
-		        }
-			printf("\nVater wurde durch Tasenkombination CTRL + C beendet\n");
-		        }
+			shmdt(shm);
+			if (shmctl(shmID, IPC_RMID, NULL ) == -1) {
+				perror("\nParent: Fehler bei Zerstoerung von shm \n");
+			}
+		}
 
 		exit(EXIT_FAILURE);
 	}
