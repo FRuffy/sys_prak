@@ -55,7 +55,8 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	char* buffer = malloc(sizeof(char) * BUFFR);
 	addchar(buffer);
 
-	/* Teil 1: Lese die Client-Version des Servers und antworte mit eigener (formatierten) Version; Behandle die Antwort des Servers */
+	/* Teil 1: Lese die Client-Version des Servers und antworte mit eigener (formatierten) Version; 
+	 * Behandle die Antwort des Servers */
 	err = recv(sock, buffer, BUFFR - 1, 0);
 	writelog(logdatei, AT);
 	sscanf(buffer, "%*s%*s%*s%s", reader);
@@ -100,8 +101,9 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 		printf("\nDer Server moechte %s spielen. Und wir auch!\n", reader);
 	}
 
-	/* Teil 3.1: Hatten wir mit unserer ID Erfolg erfahren wir zunaechst den Namen des Spiels und senden die ggf. uebergebene Spielernummer.
-	 * Anschliessend wird die Antwort des Servers auf die Nummer behandelt und Name und Nummer des Spielerplatzes ausgelesen */
+	/* Teil 3.1: Hatten wir mit unserer ID Erfolg erfahren wir zunaechst den Namen des Spiels und 
+	 * senden die ggf. uebergebene Spielernummer. Anschliessend wird die Antwort des Servers auf 
+	 * die Nummer behandelt und Name und Nummer des Spielerplatzes ausgelesen */
 	err = recv(sock, buffer, BUFFR - 1, 0);
 	writelog(logdatei, AT);
 	if (err > 0) {
@@ -122,15 +124,18 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 			printf("\nEs wurde eine ungueltige Spielernummer eingegeben! Beende Verbindung\n");
 		} else {
 			printf("\nEs wurde kein freier Platz gefunden, versuchen sie es spaeter noch einmal!\n");
-			//ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde!
+			/* ACHTUNG. Diese Meldung erscheint auch, wenn man in der client.conf eine Spielernummer an gibt, 
+			 * die beim Erstellen des Spiels einem Computerspieler zugeordnet wurde! */
 		}
 		return EXIT_FAILURE;
 	} else {
-		sscanf(buffer, "%*s %*s %d %[^\n]\n", &(shm->player[0].playerNumber), (shm->player[0].playerName));
+		sscanf(buffer, "%*s %*s %d %[^\n]\n", &(shm->player[0].playerNumber),
+				(shm->player[0].playerName));
 	}
 
 	/* Teil 3.2: Hier wird der Uebergang in die Spielverlaufsphase eingeleitet.
-	 * Der Server sendet uns die Namen unseres Gegenspielers und des Spielernummer, wobei ueberprueft wird ob ein Spieler bereits verbunden ist. */
+	 * Der Server sendet uns die Namen unseres Gegenspielers und der Spielernummer, wobei ueberprueft wird, 
+	 * ob ein Spieler bereits verbunden ist. */
 	err = recv(sock, buffer, BUFFR - 1, 0);
 	writelog(logdatei, AT);
 	if (err > 0) {
@@ -146,7 +151,8 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 		return EXIT_FAILURE;
 	}
 
-	/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt und mit dem Thinker zusammenarbeitet */
+	/* Hier faengt im Endeffekt der Connector an, der die laufende Verbindung mit dem Server haendelt und 
+	 * mit dem Thinker zusammenarbeitet */
 	if (waitforfds(sock, buffer, shm, fd) != 0) {
 		return EXIT_FAILURE;
 	}
