@@ -6,7 +6,7 @@
 #include "PerformConnection.h"
 
 /**
- *  Funktion, die unsere Konfigurationsdatei ausliest und Werte der Struktur zuweist
+ *  Liest unsere Konfigurationsdatei in die Struktur ein 
  *
  * @param Pointer auf Name, Wert, Struktur
  * @return 0 falls Konfigurationsdaten korrekt, -1 falls der Parameter nicht gefunden wurde
@@ -90,7 +90,7 @@ int readConfig(FILE* configFile, config_struct* conf) {
 }
 
 /**
- * Oeffnet die Datei und liest den Parameter aus der Datei aus, um sie in die Struktur zu schreiben
+ * Oeffnet die Datei und liest den Parameter aus der Datei aus, um diesen in die Struktur zu schreiben
  *
  * @param Poineter auf Datei Name, Struktur
  * @return 0 falls Datei existiert
