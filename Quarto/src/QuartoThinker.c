@@ -192,8 +192,8 @@ int think(sharedmem * shm) {
 
 	} else {
 		/* Das Feld durchlaufen und eine Position finden, die dem Gegner nicht den Sieg ermoeglicht
-		 * Tests ergaben: Bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest. 50 sind relativ sicher.  */
-		for (i = 0; i < 50; i++) {
+		 * Tests ergaben: Bei 350-450 durchlaeufen wuerde ein Sockettimeout ausgeloest. 100 sind relativ sicher.  */
+		for (i = 0; i < 100; i++) {
 			move = rand() % 16;
 
 			if (*(shm->pf + move) == -1) {
