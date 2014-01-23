@@ -21,7 +21,7 @@ typedef struct sharedmem {
 	int sock, playerCount, thinkTime, thinking, pleaseThink, fieldX, fieldY,
 			StoneToPlace, nextStone, pfID;
 	int *pf;
-	struct spieler {
+	struct player {
 		int playerNumber;
 		char playerName[MAXPLAYERNAME];
 		int playerReady;
