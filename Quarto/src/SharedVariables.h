@@ -29,5 +29,4 @@ typedef struct sharedmem {
 	} player[8];
 } sharedmem;
 
-//sharedmem *shm; // shm MUSS global sein (wegen Signal)
 #endif
