@@ -18,8 +18,7 @@
  * config_struct für free-Befehl, fd[] fuer Spielzug, shmID zum detatchen zur zerstoren des shm
  * @return 0 bei Sielzug in Pipe geschrieben, -1 bei Fehler
  */
-int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[],
-		int shmID) {
+int reactToSig(sharedmem* shm, int signal, config_struct *conf, int fd[], int shmID) {
 	/* Zug soll berechnet werden */
 	if (signal == 0) {
 		/* Signal SIGUSR1 wurde empfangen */
