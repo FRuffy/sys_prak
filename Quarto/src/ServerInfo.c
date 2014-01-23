@@ -31,6 +31,7 @@ char* recvServerInfo(char* buffer, sharedmem * shm) {
 	 * (Nummer, Name, Flag ob bereit) solange bis Server "+ ENDPLAYERS" sendet) */
 	int rdy = -1;
 	char* temp = malloc(sizeof(char) * 50);
+	addchar(temp);
 	buffer2 = strtok(NULL, "\n");
 
 	while (strcmp(buffer2, "+ ENDPLAYERS") != 0) {
@@ -46,7 +47,6 @@ char* recvServerInfo(char* buffer, sharedmem * shm) {
 		i++;
 	}
 
-	free(temp);
 	printf("\nWir sind Spieler: %s\n", shm->player[0].playerName);
 	printf("\nInsgesamt spielen diese %i Spieler:\n", shm->playerCount);
 	printf("\n%-15s %-25s %-2s\n", "Spielernummer", "Spielername", "Bereit");
