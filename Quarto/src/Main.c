@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 		}
 
 		/* Ueberpruefe ob die angegebene Game-ID ueberhaupt die richtige Laenge hat oder existiert */
-		if (argc == 1 || (strlen(argv[1])) > 13) {
+		if (argc == 1 || (strlen(argv[1])) >= MAXGAMEID) {
 			printf("\nDer uebergebene Parameter hat nicht die korrekte Laenge!\n");
 			close(fd[0]);
 			free(conf);
