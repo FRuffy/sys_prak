@@ -1,7 +1,7 @@
 #ifndef SharedVariables
 #define SharedVariables
 /* Alle Variablen und Funktionen die zwischen den einzelnen Modulen geteilt werden */
-#define MAXGAMEID 30
+#define MAXGAMEID 42
 #define MAXGAMENAME 50
 #define MAXPLAYERNAME 50
 #define KEY 5678
