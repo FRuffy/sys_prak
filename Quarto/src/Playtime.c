@@ -171,7 +171,7 @@ int checkServerReply(int sock, char* buffer, sharedmem * shm) {
 	/* Wir kennen jetzt die Spielfeldgroesse => SHM-pf (Playing Field) dafuer reservieren
 	 und einhaengen(2x Groesse von fieldX wegen 4 Merkmalen pro Stein!) */
 	if (shm->pfID == 0) {
-		shm->pfID = shmget(KEY, (sizeof(int) * (shm->fieldX) * (shm->fieldY)), IPC_CREAT | 0775);
+		shm->pfID = shmget(KEY, (sizeof(int) * (shm->fieldX) * (shm->fieldY) + 3), IPC_CREAT | 0775);
 		if (shm->pfID < 1) {
 			writelog(logdatei, AT);
 			perror("\nFehler beim Initalisieren der Shared Memory pf");
