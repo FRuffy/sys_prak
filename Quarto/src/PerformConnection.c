@@ -8,7 +8,6 @@
 #include "SharedVariables.h"
 #include "Errmmry.h"
 #include "Select.h"
-#include "ServerInfo.h"
 #include "InitConnection.h"
 #define BUFFR 512
 
