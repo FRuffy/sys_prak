@@ -146,7 +146,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	}
 
 	/* Empfange die Serverdaten, falls ein Fehler hier auftritt Programm beenden */
-	if (recvServerInfo(buffer, shm) == NULL ) {
+	if (recvPlayerInfo(buffer, shm) == NULL ) {
 		return EXIT_FAILURE;
 	}
 
