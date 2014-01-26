@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 
 	/* Im Fehlerfall pointed shm auf -1 */
 	if (shm == (void *) -1) {
-		fprintf(stderr, "Fehler, shm: %s\n", strerror(errno));
+		perror("Fehler, shm");
 		writelog(logdatei, AT);
 		return EXIT_FAILURE;
 	}
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	/* Ab hier wird in 2 Prozesse, dem Thinker und dem Connector, aufgespalten */
 
 	if ((pid) < 0) {
-		fprintf(stderr, "\nFehler bei fork(): %s\n", strerror(errno));
+		perror("\nFehler bei fork()");
 		writelog(logdatei, AT);
 		shmdt(shm);
 		fclose(logdatei);
