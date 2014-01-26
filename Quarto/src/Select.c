@@ -10,7 +10,7 @@
 #include <sys/shm.h>
 #include "SharedVariables.h"
 #include "Errmmry.h"
-#include "Playtime.h"
+#include "ParseServerReply.h"
 #include "PerformConnection.h"
 
 #define BUFFR 512
@@ -66,7 +66,7 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 		biggest = sock;
 	}
 
-	status = checkServerReply(sock, buffer, shm);
+	status = parseServerReply(sock, buffer, shm);
 	if (status != 0) {
 		return EXIT_FAILURE;
 	}
@@ -81,7 +81,7 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 		timeout.tv_sec = 30;
 		timeout.tv_usec = 0;
 
-		/* Select laesst den Prozess schlafen und beobachtet fuer eine in timeout spezifizierte Zeit 
+		/* Select laesst den Prozess schlafen und beobachtet fuer eine in timeout spezifizierte Zeit
 		 * lang die in fds hinzugefuegten Filedescriptoren (in unserem Falle Socket und Pipe).
 		 * Falls waehrenddessen ein Filedescriptor ready to read wird, weckt select den Prozess auf
 		 * und gibt die Anzahl der ready to read Filedescriptoren zurueck */
@@ -99,7 +99,7 @@ int waitforfds(int sock, char* buffer, sharedmem * shm, int fd[]) {
 				if (size > 0) {
 					buffer[size] = '\0';
 				}
-				status = checkServerReply(sock, buffer, shm);
+				status = parseServerReply(sock, buffer, shm);
 				if (status != 0) {
 					return EXIT_FAILURE;
 				}
