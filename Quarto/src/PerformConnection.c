@@ -170,7 +170,7 @@ int performConnection(int sock, sharedmem * shm, config_struct* conf, int fd[]) 
 	}
 
 	sscanf(buffer, "%*s%s", shm->gameName);
-	printf("\nSpiel: %s\n", shm->gameName); //Zeige Spielnamen an, schneide das "+" ab
+	printf("\nSpiel: %s\n", shm->gameName);
 	antistrcat(conf->playernumber, "PLAYER ", temp);
 	sendReplyFormatted(sock, temp);
 	err = recv(sock, buffer, BUFFR - 1, 0);
