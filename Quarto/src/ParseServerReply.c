@@ -101,7 +101,7 @@ int handleRecv(int sock, char* buffer) {
  * @param Socket, Buffer, SHM
  * @return 0 falls alle Antworten ok, bzw. 2 falls Spiel beendet wurde
  */
-int checkServerReply(int sock, char* buffer, sharedmem * shm) {
+int parseServerReply(int sock, char* buffer, sharedmem * shm) {
 
 	/* Der Server meldet einen Fehler in der Kommunikation */
 	if (buffer[0] == '-') {
